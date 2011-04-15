@@ -3,8 +3,6 @@ Upskirt
 
 > The Markdown library that sucks less than your Markdown library
 
-<center><img src="http://octodex.github.com/images/monroe.jpg"></center>
-
 Why doesn't Upskirt suck?
 -------------------------
 
