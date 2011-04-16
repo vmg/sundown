@@ -26,7 +26,7 @@ all:		libupskirt.so upskirt
 # libraries
 
 libupskirt.so:	libupskirt.so.1
-	ln -s $^ $@
+	ln -f -s $^ $@
 
 libupskirt.so.1: src/markdown.o src/array.o src/buffer.o
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@

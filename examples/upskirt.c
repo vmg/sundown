@@ -59,7 +59,7 @@ main(int argc, char **argv)
 	ob = bufnew(OUTPUT_UNIT);
 
 	ups_xhtml_renderer(&renderer, 0);
-	ups_markdown(ob, ib, &renderer, 0);
+	ups_markdown(ob, ib, &renderer, 0xFF);
 	ups_free_renderer(&renderer);
 
 	/* writing the result to stdout */
