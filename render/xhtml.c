@@ -234,6 +234,7 @@ rndr_listitem(struct buf *ob, struct buf *text, int flags, void *opaque)
 static void
 rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 {
+	struct xhtml_renderopt *options = opaque;
 	size_t i = 0;
 
 	if (ob->size) bufputc(ob, '\n');
@@ -243,11 +244,30 @@ rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 
 	while (i < text->size && isspace(text->data[i])) i++;
 
-	if (i < text->size) {
-		BUFPUTSL(ob, "<p>");
+	if (i == text->size)
+		return;
+
+	BUFPUTSL(ob, "<p>");
+	if (options->flags & XHTML_HARD_WRAP) {
+		size_t org;
+		while (i < text->size) {
+			org = i;
+			while (i < text->size && text->data[i] != '\n')
+				i++;
+
+			if (i > org)
+				bufput(ob, text->data + org, i - org);
+
+			if (i >= text->size)
+				break;
+
+			BUFPUTSL(ob, "<br/>");
+			i++;
+		}
+	} else {
 		bufput(ob, &text->data[i], text->size - i);
-		BUFPUTSL(ob, "</p>\n");
 	}
+	BUFPUTSL(ob, "</p>\n");
 }
 
 static void
