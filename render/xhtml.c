@@ -119,9 +119,9 @@ rndr_blockcode(struct buf *ob, struct buf *text, struct buf *syntax, void *opaqu
 	if (syntax && syntax->size) {
 		BUFPUTSL(ob, "<pre lang=\"");
 		bufput(ob, syntax->data, syntax->size);
-		BUFPUTSL(ob, "\"><code>\n");
+		BUFPUTSL(ob, "\"><code>");
 	} else
-		BUFPUTSL(ob, "<pre><code>\n");
+		BUFPUTSL(ob, "<pre><code>");
 
 	if (text)
 		lus_attr_escape(ob, text->data, text->size);
