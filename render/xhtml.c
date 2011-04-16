@@ -112,13 +112,13 @@ rndr_autolink(struct buf *ob, struct buf *link, enum mkd_autolink type, void *op
 }
 
 static void
-rndr_blockcode(struct buf *ob, struct buf *text, struct buf *syntax, void *opaque)
+rndr_blockcode(struct buf *ob, struct buf *text, struct buf *lang, void *opaque)
 {
 	if (ob->size) bufputc(ob, '\n');
 
-	if (syntax && syntax->size) {
+	if (lang && lang->size) {
 		BUFPUTSL(ob, "<pre lang=\"");
-		bufput(ob, syntax->data, syntax->size);
+		bufput(ob, lang->data, lang->size);
 		BUFPUTSL(ob, "\"><code>");
 	} else
 		BUFPUTSL(ob, "<pre><code>");

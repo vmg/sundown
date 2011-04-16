@@ -947,7 +947,7 @@ is_hrule(char *data, size_t size)
 static size_t
 is_codefence(char *data, size_t size, struct buf *syntax)
 {
-	size_t i = 0, n = 0, syn;
+	size_t i = 0, n = 0;
 	char c;
 
 	/* skipping initial spaces */
@@ -970,29 +970,26 @@ is_codefence(char *data, size_t size, struct buf *syntax)
 	if (n < 3)
 		return 0;
 
-	if (syntax == NULL) {
-		while (i < size && data[i] != '\n') {
-			if (!isspace(data[i]))
-				return 0;
+	if (syntax != NULL) {
+		size_t syn = 0;
 
+		while (i < size && (data[i] == ' ' || data[i] == '\t'))
 			i++;
-		}
-	} else {
-		syntax->data = data + i;
-		syn = 0;
 
-		while (i < size && data[i] != '\n') {
+		syntax->data = data + i;
+
+		while (i < size && !isspace(data[i])) {
 			syn++; i++;
 		}
 
-		while (syn > 0 && isspace(syntax->data[syn - 1]))
-			syn--;
-
-		while (syn > 0 && isspace(syntax->data[0])) {
-			syntax->data++; syn--;
-		}
-
 		syntax->size = syn;
+	}
+
+	while (i < size && data[i] != '\n') {
+		if (!isspace(data[i]))
+			return 0;
+
+		i++;
 	}
 
 	return i + 1;
@@ -1244,9 +1241,9 @@ parse_fencedcode(struct buf *ob, struct render *rndr, char *data, size_t size)
 {
 	size_t beg, end;
 	struct buf *work = 0;
-	struct buf syntax = { 0, 0, 0, 0, 0 };
+	struct buf lang = { 0, 0, 0, 0, 0 };
 
-	beg = is_codefence(data, size, &syntax);
+	beg = is_codefence(data, size, &lang);
 	if (beg == 0) return 0;
 
 	if (rndr->work.size < rndr->work.asize) {
@@ -1282,7 +1279,7 @@ parse_fencedcode(struct buf *ob, struct render *rndr, char *data, size_t size)
 		bufputc(work, '\n');
 
 	if (rndr->make.blockcode)
-		rndr->make.blockcode(ob, work, syntax.size ? &syntax : NULL, rndr->make.opaque);
+		rndr->make.blockcode(ob, work, lang.size ? &lang : NULL, rndr->make.opaque);
 
 	rndr->work.size -= 1;
 	return beg;
