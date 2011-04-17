@@ -34,7 +34,7 @@ main(int argc, char **argv)
 	size_t ret;
 	FILE *in = stdin;
 	struct mkd_renderer renderer;
-	size_t i, iterations = 20000;
+	size_t i, iterations = 1;
 
 	/* opening the file if given from the command line */
 	if (argc > 1) {
