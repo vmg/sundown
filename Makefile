@@ -15,8 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 DEPDIR=depends
-CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender -pg
-LDFLAGS=-g -O3 -Wall -Werror -pg
+CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender
+LDFLAGS=-g -O3 -Wall -Werror
 CC=gcc
 
 all:		libupskirt.so upskirt
