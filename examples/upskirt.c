@@ -34,6 +34,7 @@ main(int argc, char **argv)
 	size_t ret;
 	FILE *in = stdin;
 	struct mkd_renderer renderer;
+	size_t i, iterations = 20000;
 
 	/* opening the file if given from the command line */
 	if (argc > 1) {
@@ -58,9 +59,13 @@ main(int argc, char **argv)
 	/* performing markdown parsing */
 	ob = bufnew(OUTPUT_UNIT);
 
-	ups_xhtml_renderer(&renderer, 0);
-	ups_markdown(ob, ib, &renderer, 0xFF);
-	ups_free_renderer(&renderer);
+	for (i = 0; i < iterations; ++i) {
+		ob->size = 0;
+
+		ups_xhtml_renderer(&renderer, 0);
+		ups_markdown(ob, ib, &renderer, 0xFF);
+		ups_free_renderer(&renderer);
+	}
 
 	/* writing the result to stdout */
 	fwrite(ob->data, 1, ob->size, stdout);

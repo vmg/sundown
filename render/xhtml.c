@@ -261,7 +261,7 @@ rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 			if (i >= text->size)
 				break;
 
-			BUFPUTSL(ob, "<br/>");
+			BUFPUTSL(ob, "<br/>\n");
 			i++;
 		}
 	} else {
