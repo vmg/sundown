@@ -11,7 +11,7 @@ extensions and corner cases which makes writing a parser for it not trivial. Thi
 makes any Markdown parser or converter inherently sucky. Here's why Upskirt is the
 least sucky of the Markdown parsers:
 
-*	**If your Markdown library is not standards compliant, Markdown is.**
+*	**If your Markdown library is not standards compliant, Upskirt is.**
 
 	Upskirt passes out of the box the official Markdown v1.0.0 and v1.0.3
 	test suites, and has been extensively tested with additional corner cases
