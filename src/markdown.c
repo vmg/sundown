@@ -1544,21 +1544,9 @@ parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, in
 	i = 1;
 	found = 0;
 
-	while (i < size) {
-		i += 1;
-		while (i < size && !(data[i - 2] == '\n'
-		&& data[i - 1] == '<' && data[i] == '/'))
-			i += 1;
-		if (i + 2 + curtag->size >= size) break;
-		j = htmlblock_end(curtag, rndr, data + i - 1, size - i + 1);
-		if (j) {
-			i += j - 1;
-			found = 1;
-			break; } }
-
 	/* if not found, trying a second pass looking for indented match */
 	/* but not if tag is "ins" or "del" (following original Markdown.pl) */
-	if (!found && curtag != INS_TAG && curtag != DEL_TAG) {
+	if (curtag != INS_TAG && curtag != DEL_TAG) {
 		i = 1;
 		while (i < size) {
 			i++;
