@@ -944,8 +944,21 @@ is_codefence(char *data, size_t size, struct buf *syntax)
 
 		syntax->data = data + i;
 
-		while (i < size && !isspace(data[i])) {
-			syn++; i++;
+		if (i < size && data[i] == '{') {
+			i++; syntax->data++;
+
+			while (i < size && data[i] != '}' && data[i] != '\n') {
+				syn++; i++;
+			}
+
+			if (i == size || data[i] != '}')
+				return 0;
+
+			i++;
+		} else {
+			while (i < size && !isspace(data[i])) {
+				syn++; i++;
+			}
 		}
 
 		syntax->size = syn;
