@@ -707,7 +707,7 @@ char_link(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t
 		/* skipping initial whitespace */
 		i += 1;
 
-		while (i < size && (data[i] == ' ' || data[i] == '\t'))
+		while (i < size && isspace(data[i]))
 			i++;
 
 		link_b = i;
@@ -740,7 +740,7 @@ char_link(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t
 		}
 
 		/* remove whitespace at the end of the link */
-		while (link_e > link_b && (data[link_e - 1] == ' ' || data[link_e - 1] == '\t'))
+		while (link_e > link_b && isspace(data[link_e - 1]))
 			link_e--;
 
 		/* remove optional angle brackets around the link */
