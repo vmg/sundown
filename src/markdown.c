@@ -137,7 +137,7 @@ is_safe_link(const char *link, size_t link_len)
 	for (i = 0; i < valid_uris_count; ++i) {
 		size_t len = strlen(valid_uris[i]);
 
-		if (link_len > len && memcmp(link, valid_uris[i], len) == 0)
+		if (link_len > len && strncasecmp(link, valid_uris[i], len) == 0)
 			return 1;
 	}
 
@@ -1974,8 +1974,13 @@ ups_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndrer, 
 
 	if (extensions & MKDEXT_AUTOLINK) {
 		rndr.active_char['h'] = char_autolink; // http, https
+		rndr.active_char['H'] = char_autolink;
+
 		rndr.active_char['f'] = char_autolink; // ftp
+		rndr.active_char['F'] = char_autolink;
+
 		rndr.active_char['m'] = char_autolink; // mailto
+		rndr.active_char['M'] = char_autolink;
 	}
 
 	/* Extension data */
