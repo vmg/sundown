@@ -37,15 +37,15 @@ struct xhtml_renderopt {
 	unsigned int flags;
 };
 
-static inline int
+static inline void
 put_scaped_char(struct buf *ob, char c)
 {
 	switch (c) {
-		case '<': BUFPUTSL(ob, "&lt;"); return 1;
-		case '>': BUFPUTSL(ob, "&gt;"); return 1;
-		case '&': BUFPUTSL(ob, "&amp;"); return 1;
-		case '"': BUFPUTSL(ob, "&quot;"); return 1;
-		default: return 0;
+		case '<': BUFPUTSL(ob, "&lt;"); break;
+		case '>': BUFPUTSL(ob, "&gt;"); break;
+		case '&': BUFPUTSL(ob, "&amp;"); break;
+		case '"': BUFPUTSL(ob, "&quot;"); break;
+		default: bufputc(ob, c); break;
 	}
 }
 
@@ -605,8 +605,7 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 		/*
 		 * Copy raw character
 		 */
-		if (!put_scaped_char(ob, c))
-			bufputc(ob, c);
+		put_scaped_char(ob, c);
 	}
 }
 
