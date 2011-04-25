@@ -227,7 +227,7 @@ bufputc(struct buf *buf, char c) {
 /* bufrelease • decrease the reference count and free the buffer if needed */
 void
 bufrelease(struct buf *buf) {
-	if (!buf || !buf->unit || !buf->asize) return;
+	if (!buf) return;
 	buf->ref -= 1;
 	if (buf->ref == 0) {
 #ifdef BUFFER_STATS
@@ -241,7 +241,7 @@ bufrelease(struct buf *buf) {
 /* bufreset • frees internal data of the buffer */
 void
 bufreset(struct buf *buf) {
-	if (!buf || !buf->unit || !buf->asize) return;
+	if (!buf) return;
 #ifdef BUFFER_STATS
 	buffer_stat_alloc_bytes -= buf->asize;
 #endif
