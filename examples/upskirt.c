@@ -16,6 +16,7 @@
 
 #include "markdown.h"
 #include "xhtml.h"
+#include "buffer.h"
 
 #include <errno.h>
 #include <getopt.h>
