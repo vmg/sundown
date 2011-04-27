@@ -64,15 +64,12 @@ uri_escape(struct buf *ob, const char *src, size_t size)
 		}
 
 		switch (c) {
-			case ';':
-			case '/':
-			case '?':
-			case ':':
-			case '@':
-			case '=':
-			case '#':
-			case '&':
-			case '.':
+			case ';': case '/':
+			case '?': case ':':
+			case '@': case '=':
+			case '#': case '&':
+			case '.': case '+':
+			case '-':
 				bufputc(ob, c);
 				continue;
 		}

@@ -687,7 +687,7 @@ char_autolink(struct buf *ob, struct render *rndr, char *data, size_t offset, si
 		struct buf *u_link = rndr_newbuf(rndr);
 		unscape_text(u_link, &work);
 
-		rndr->make.autolink(ob, &work, MKDA_NORMAL, rndr->make.opaque);
+		rndr->make.autolink(ob, u_link, MKDA_NORMAL, rndr->make.opaque);
 		rndr_popbuf(rndr);
 	}
 
@@ -895,8 +895,10 @@ char_link(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t
 		else parse_inline(content, rndr, data + 1, txt_e - 1);
 	}
 
-	u_link = rndr_newbuf(rndr);
-	unscape_text(u_link, link);
+	if (link) {
+		u_link = rndr_newbuf(rndr);
+		unscape_text(u_link, link);
+	}
 
 	/* calling the relevant rendering function */
 	if (is_img) {
