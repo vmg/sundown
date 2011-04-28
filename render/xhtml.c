@@ -55,7 +55,7 @@ uri_escape(struct buf *ob, const char *src, size_t size)
 	size_t i;
 
 	for (i = 0; i < size; ++i) {
-		char c = src[i];
+		unsigned char c = src[i];
 
 		if (c == '%' && i + 2 < size && isxdigit(src[i + 1]) && isxdigit(src[i + 2])) {
 			bufput(ob, src + i, 3);
