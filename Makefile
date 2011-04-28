@@ -33,7 +33,7 @@ libupskirt.so.1: src/markdown.o src/array.o src/buffer.o
 
 # executables
 
-upskirt:	examples/upskirt.o libupskirt.so render/xhtml.o
+upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/xhtml.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # housekeeping
