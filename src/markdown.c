@@ -673,15 +673,45 @@ static size_t
 char_autolink(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size)
 {
 	struct buf work = { data, 0, 0, 0, 0 };
+	char cclose = 0;
+	size_t link_end;
 
-	if (offset > 0 && !isspace(data[-1]))
-		return 0;
+	/* TODO:
+	 * what's the fastest check we can do, previous char
+	 * or URI prefix? We want to do the fastest one first
+	 * to break asap
+	 */
+
+	if (offset > 0) {
+		switch (data[-1]) {
+		case '"':	cclose = '"'; break;
+		case '\'':	cclose = '\''; break;
+		case '(':	cclose = ')'; break;
+		case '[':	cclose = ']'; break;
+		case '{':	cclose = '}'; break;
+		case ' ': case '\t': case '\n': break;
+		default:
+			return 0;
+		}
+	}
 
 	if (!is_safe_link(data, size))
 		return 0;
 
-	while (work.size < size && !isspace(data[work.size]))
-		work.size++;
+	link_end = 0;
+	while (link_end < size && !isspace(data[link_end]))
+		link_end++;
+
+	if (cclose != 0) {
+		size_t i = link_end;
+		while (i > 0 && data[i] != cclose)
+			i--;
+
+		if (i > 0)
+			link_end = i;
+	}
+
+	work.size = link_end;
 
 	if (rndr->make.autolink) {
 		struct buf *u_link = rndr_newbuf(rndr);
