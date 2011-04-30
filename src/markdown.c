@@ -26,8 +26,8 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#define TEXT_UNIT 64	/* unit for the copy of the input buffer */
-#define WORK_UNIT 64	/* block-level working buffer */
+#define TEXT_UNIT 256	/* unit for the copy of the input buffer */
+#define WORK_UNIT 256	/* block-level working buffer */
 
 #define MKD_LI_END 8	/* internal list flag */
 
@@ -2106,18 +2106,17 @@ ups_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndrer, 
 	if (rndr.refs.size)
 		qsort(rndr.refs.base, rndr.refs.size, rndr.refs.unit, cmp_link_ref_sort);
 
-	/* adding a final newline if not already present */
-	if (!text->size)
-		goto cleanup;
-
-	if (text->data[text->size - 1] != '\n' &&  text->data[text->size - 1] != '\r')
-		bufputc(text, '\n');
-
 	/* second pass: actual rendering */
 	if (rndr.make.doc_header)
 		rndr.make.doc_header(ob, rndr.make.opaque);
 
-	parse_block(ob, &rndr, text->data, text->size);
+	if (text->size) {
+		/* adding a final newline if not already present */
+		if (text->data[text->size - 1] != '\n' &&  text->data[text->size - 1] != '\r')
+			bufputc(text, '\n');
+
+		parse_block(ob, &rndr, text->data, text->size);
+	}
 
 	if (rndr.make.doc_footer)
 		rndr.make.doc_footer(ob, rndr.make.opaque);
