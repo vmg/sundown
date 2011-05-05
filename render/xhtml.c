@@ -504,36 +504,6 @@ rndr_tablecell(struct buf *ob, struct buf *text, int align, void *opaque)
 	BUFPUTSL(ob, "</td>");
 }
 
-static struct {
-    char c0;
-    const char *pattern;
-    const char *entity;
-    int skip;
-} smartypants_subs[] = {
-    { '\'', "'s>",      "&rsquo;",  0 },
-    { '\'', "'t>",      "&rsquo;",  0 },
-    { '\'', "'re>",     "&rsquo;",  0 },
-    { '\'', "'ll>",     "&rsquo;",  0 },
-    { '\'', "'ve>",     "&rsquo;",  0 },
-    { '\'', "'m>",      "&rsquo;",  0 },
-    { '\'', "'d>",      "&rsquo;",  0 },
-    { '-',  "--",       "&mdash;",  1 },
-    { '-',  "<->",      "&ndash;",  0 },
-    { '.',  "...",      "&hellip;", 2 },
-    { '.',  ". . .",    "&hellip;", 4 },
-    { '(',  "(c)",      "&copy;",   2 },
-    { '(',  "(r)",      "&reg;",    2 },
-    { '(',  "(tm)",     "&trade;",  3 },
-    { '3',  "<3/4>",    "&frac34;", 2 },
-    { '3',  "<3/4ths>", "&frac34;", 2 },
-    { '1',  "<1/2>",    "&frac12;", 2 },
-    { '1',  "<1/4>",    "&frac14;", 2 },
-    { '1',  "<1/4th>",  "&frac14;", 2 },
-    { '&',  "&#0;",      0,       3 },
-};
-
-#define SUBS_COUNT (sizeof(smartypants_subs) / sizeof(smartypants_subs[0]))
-
 static inline int
 word_boundary(char c)
 {
@@ -607,25 +577,42 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 		return;
 
 	for (i = 0; i < text->size; ++i) {
-		size_t sub;
-		char c = text->data[i];
+		const char c = text->data[i];
 
-		for (sub = 0; sub < SUBS_COUNT; ++sub) {
-			if (c == smartypants_subs[sub].c0 &&
-				smartypants_cmpsub(text, i, smartypants_subs[sub].pattern)) {
+		/* inline lookup table for great performance justice
+		 *
+		 *   { '\'', "'s>",      "&rsquo;",  0 },
+		 *   { '\'', "'t>",      "&rsquo;",  0 },
+		 *   { '\'', "'re>",     "&rsquo;",  0 },
+		 *   { '\'', "'ll>",     "&rsquo;",  0 },
+		 *   { '\'', "'ve>",     "&rsquo;",  0 },
+		 *   { '\'', "'m>",      "&rsquo;",  0 },
+		 *   { '\'', "'d>",      "&rsquo;",  0 },
+		 *   { '-',  "--",       "&mdash;",  1 },
+		 *   { '-',  "<->",      "&ndash;",  0 },
+		 *   { '.',  "...",      "&hellip;", 2 },
+		 *   { '.',  ". . .",    "&hellip;", 4 },
+		 *   { '(',  "(c)",      "&copy;",   2 },
+		 *   { '(',  "(r)",      "&reg;",    2 },
+		 *   { '(',  "(tm)",     "&trade;",  3 },
+		 *   { '3',  "<3/4>",    "&frac34;", 2 },
+		 *   { '3',  "<3/4ths>", "&frac34;", 2 },
+		 *   { '1',  "<1/2>",    "&frac12;", 2 },
+		 *   { '1',  "<1/4>",    "&frac14;", 2 },
+		 *   { '1',  "<1/4th>",  "&frac14;", 2 },
+		 *   { '&',  "&#0;",      0,         3 },
+		 */
 
-				if (smartypants_subs[sub].entity)
-					bufputs(ob, smartypants_subs[sub].entity);
-
-				i += smartypants_subs[sub].skip;
-				break;
-			}
-		}
-
-		if (sub < SUBS_COUNT)
-			continue;
-
+/* HACK avoid doing strlen(s) again and again, #undef'd below */
+#define my_bufputs(ob, s) bufput(ob, s, sizeof(s) - 1)
 		switch (c) {
+		case '&':
+			if (smartypants_cmpsub(text, i + 1, "#0;")) {
+				i += 3;
+				continue;
+			}
+			break;
+
 		case '\"':
 			if (smartypants_quotes(ob, text, i, options->quotes.in_dquote)) {
 				options->quotes.in_dquote = !options->quotes.in_dquote;
@@ -634,12 +621,98 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 			break;
 
 		case '\'':
+			if (smartypants_cmpsub(text, i + 1, "s>")
+			|| smartypants_cmpsub(text, i + 1, "t>")
+			|| smartypants_cmpsub(text, i + 1, "re>")
+			|| smartypants_cmpsub(text, i + 1, "ll>")
+			|| smartypants_cmpsub(text, i + 1, "ve>")
+			|| smartypants_cmpsub(text, i + 1, "m>")
+			|| smartypants_cmpsub(text, i + 1, "d>"))
+			{
+				my_bufputs(ob, "&rsquo;");
+				continue;
+			}
 			if (smartypants_quotes(ob, text, i, options->quotes.in_squote)) {
 				options->quotes.in_squote = !options->quotes.in_squote;
 				continue;
 			}
 			break;
+
+		case '(':
+			if (smartypants_cmpsub(text, i + 1, "c)")) {
+				my_bufputs(ob, "&copy;");
+				i += 2;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i + 1, "r)")) {
+				my_bufputs(ob, "&reg;");
+				i += 2;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i + 1, "tm)")) {
+				my_bufputs(ob, "&trade;");
+				i += 3;
+				continue;
+			}
+			break;
+
+		case '-':
+			if (smartypants_cmpsub(text, i + 1, "-")) {
+				my_bufputs(ob, "&mdash;");
+				i += 1;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i, "<->")) {
+				my_bufputs(ob, "&ndash;");
+				continue;
+			}
+			break;
+
+		case '.':
+			if (smartypants_cmpsub(text, i + 1, "..")) {
+				my_bufputs(ob, "&hellip;");
+				i += 2;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i + 1, " . .")) {
+				my_bufputs(ob, "&hellip;");
+				i += 4;
+				continue;
+			}
+			break;
+
+		case '1':
+			if (smartypants_cmpsub(text, i, "<1/2>")) {
+				my_bufputs(ob, "&frac12;");
+				i += 2;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i, "<1/4>")) {
+				my_bufputs(ob, "&frac14;");
+				i += 2;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i, "<1/4th>")) {
+				my_bufputs(ob, "&frac14;");
+				i += 2;
+				continue;
+			}
+			break;
+
+		case '3':
+			if (smartypants_cmpsub(text, i, "<3/4>")) {
+				my_bufputs(ob, "&frac34;");
+				i += 2;
+				continue;
+			}
+			if (smartypants_cmpsub(text, i, "<3/4th>")) {
+				my_bufputs(ob, "&frac34;");
+				i += 2;
+				continue;
+			}
+			break;
 		}
+#undef my_bufputs
 
 		/*
 		 * Copy raw character
