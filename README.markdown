@@ -49,30 +49,20 @@ least sucky of the Markdown parsers:
 	on a dynamic language such as Python or Ruby, it has shown to be up to 40
 	times faster than other native alternatives.
 
-*	**If your Markdown library has retarded dependencies, Upskirt doesn't.**
+*	**If your Markdown library has unreasonable dependencies, Upskirt doesn't.**
 
 	Upskirt is a zero-dependency library composed of 3 `.c` files and their headers.
 	No dependencies, no bullshit. Only standard C99 that builds everywhere.
 
-This is a fork
---------------
+Credits
+-------
 
-The original `libupskirt` is the amazing work of Natacha Porté and may be found
-on its Fossil repository at:
+Upskirt wouldn't be possible without the contributions of the following people: 
 
-	http://fossil.instinctive.eu/libupskirt/home
-
-We've created this fork of the library to focus on implementing extensive security fixes and
-additional Markdown extensions which we believe are indispensable on a Markdown library
-for the web. The original `libupskirt` backports some of these fixes, and we strongly
-encourage you to check it out if you require a more UNIX-y Markdown library instead of one
-aimed at the web.
-
-None of this would be possible without Natacha's invaluable contributions, both when
-writing the original library and when kindly reviewing and auditing the many changes
-committed in this fork.
-
-Henceforward she shall be known as the Lady of Markdown.
+* Natacha Porté (original author)
+* Vicent Martí
+* Ben Noordhuis
+* Bruno Michel
 
 Help us
 -------
