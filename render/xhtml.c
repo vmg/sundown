@@ -607,7 +607,7 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 #define my_bufputs(ob, s) bufput(ob, s, sizeof(s) - 1)
 		switch (c) {
 		case '&':
-			if (smartypants_cmpsub(text, i, "&#0;")) {
+			if (smartypants_cmpsub(text, i + 1, "#0;")) {
 				i += 3;
 				continue;
 			}
@@ -621,13 +621,13 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 			break;
 
 		case '\'':
-			if (smartypants_cmpsub(text, i, "'s>")
-			|| smartypants_cmpsub(text, i, "'t>")
-			|| smartypants_cmpsub(text, i, "'re>")
-			|| smartypants_cmpsub(text, i, "'ll>")
-			|| smartypants_cmpsub(text, i, "'ve>")
-			|| smartypants_cmpsub(text, i, "'m>")
-			|| smartypants_cmpsub(text, i, "'d>"))
+			if (smartypants_cmpsub(text, i + 1, "s>")
+			|| smartypants_cmpsub(text, i + 1, "t>")
+			|| smartypants_cmpsub(text, i + 1, "re>")
+			|| smartypants_cmpsub(text, i + 1, "ll>")
+			|| smartypants_cmpsub(text, i + 1, "ve>")
+			|| smartypants_cmpsub(text, i + 1, "m>")
+			|| smartypants_cmpsub(text, i + 1, "d>"))
 			{
 				my_bufputs(ob, "&rsquo;");
 				continue;
@@ -639,17 +639,17 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 			break;
 
 		case '(':
-			if (smartypants_cmpsub(text, i, "(c)")) {
+			if (smartypants_cmpsub(text, i + 1, "c)")) {
 				my_bufputs(ob, "&copy;");
 				i += 2;
 				continue;
 			}
-			if (smartypants_cmpsub(text, i, "(r)")) {
+			if (smartypants_cmpsub(text, i + 1, "r)")) {
 				my_bufputs(ob, "&reg;");
 				i += 2;
 				continue;
 			}
-			if (smartypants_cmpsub(text, i, "(tm)")) {
+			if (smartypants_cmpsub(text, i + 1, "tm)")) {
 				my_bufputs(ob, "&trade;");
 				i += 3;
 				continue;
@@ -657,7 +657,7 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 			break;
 
 		case '-':
-			if (smartypants_cmpsub(text, i, "--")) {
+			if (smartypants_cmpsub(text, i + 1, "-")) {
 				my_bufputs(ob, "&mdash;");
 				i += 1;
 				continue;
@@ -669,12 +669,12 @@ rndr_smartypants(struct buf *ob, struct buf *text, void *opaque)
 			break;
 
 		case '.':
-			if (smartypants_cmpsub(text, i, "...")) {
+			if (smartypants_cmpsub(text, i + 1, "..")) {
 				my_bufputs(ob, "&hellip;");
 				i += 2;
 				continue;
 			}
-			if (smartypants_cmpsub(text, i, ". . .")) {
+			if (smartypants_cmpsub(text, i + 1, " . .")) {
 				my_bufputs(ob, "&hellip;");
 				i += 4;
 				continue;
