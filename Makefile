@@ -19,7 +19,7 @@ CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender -fPIC
 LDFLAGS=-g -O3 -Wall -Werror
 CC=gcc
 
-all:		libupskirt.so upskirt
+all:		libupskirt.so upskirt smartypants
 
 .PHONY:		all clean
 
@@ -33,7 +33,10 @@ libupskirt.so.1: src/markdown.o src/array.o src/buffer.o
 
 # executables
 
-upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/xhtml.o
+upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/xhtml.o render/xhtml_smartypants.o
+	$(CC) $(LDFLAGS) $^ -o $@
+
+smartypants: examples/smartypants.o src/buffer.o render/xhtml_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # housekeeping
