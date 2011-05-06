@@ -15,7 +15,7 @@
  */
 
 #include "markdown.h"
-#include "xhtml.h"
+#include "html.h"
 #include "buffer.h"
 
 #include <errno.h>
@@ -63,9 +63,9 @@ main(int argc, char **argv)
 	for (i = 0; i < iterations; ++i) {
 		ob->size = 0;
 
-		ups_xhtml_renderer(&renderer, 0);
+		upshtml_renderer(&renderer, 0);
 		ups_markdown(ob, ib, &renderer, 0xFF);
-		ups_free_renderer(&renderer);
+		upshtml_free_renderer(&renderer);
 	}
 
 	/* writing the result to stdout */

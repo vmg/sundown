@@ -33,10 +33,10 @@ libupskirt.so.1: src/markdown.o src/array.o src/buffer.o
 
 # executables
 
-upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/xhtml.o render/xhtml_smartypants.o
+upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/html.o render/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-smartypants: examples/smartypants.o src/buffer.o render/xhtml_smartypants.o
+smartypants: examples/smartypants.o src/buffer.o render/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # housekeeping

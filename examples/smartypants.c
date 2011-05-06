@@ -15,7 +15,7 @@
  */
 
 #include "markdown.h"
-#include "xhtml.h"
+#include "html.h"
 #include "buffer.h"
 
 #include <errno.h>
@@ -57,7 +57,7 @@ main(int argc, char **argv)
 	/* performing markdown parsing */
 	ob = bufnew(OUTPUT_UNIT);
 
-	ups_xhtml_smartypants(ob, ib);
+	upshtml_smartypants(ob, ib);
 
 	/* writing the result to stdout */
 	fwrite(ob->data, 1, ob->size, stdout);
