@@ -64,6 +64,16 @@ Upskirt wouldn't be possible without the contributions of the following people:
 * Ben Noordhuis
 * Bruno Michel
 
+Bindings
+--------
+
+Upskirt is available from other programming languages thanks to these bindings developed by our awesome contributors.
+
+- [Redcarpet](https://github.com/tanoku/redcarpet) (Ruby)
+- [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
+- [PantyShot](https://github.com/FSX/pantyshot) (Python)
+- [ffi-Upskirt](https://github.com/postmodern/ffi-upskirt) (Ruby FFI)
+
 Help us
 -------
 
