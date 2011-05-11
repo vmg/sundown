@@ -28,7 +28,7 @@ all:		libupskirt.so upskirt smartypants
 libupskirt.so:	libupskirt.so.1
 	ln -f -s $^ $@
 
-libupskirt.so.1: src/markdown.o src/array.o src/buffer.o
+libupskirt.so.1: src/markdown.o src/array.o src/buffer.o render/html.o render/html_smartypants.o
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
 
 # executables
