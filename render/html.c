@@ -279,7 +279,7 @@ rndr_header(struct buf *ob, struct buf *text, int level, void *opaque)
 		bufputc(ob, '\n');
 
 	if (options->flags & HTML_TOC)
-		bufprintf(ob, "<h%d id=\"toc_%d\"></a>", level, options->toc_data.header_count++);
+		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
 	else
 		bufprintf(ob, "<h%d>", level);
 
