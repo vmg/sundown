@@ -21,10 +21,10 @@
 
 #include "buffer.h"
 
-#define UPSKIRT_VERSION "1.2.0"
+#define UPSKIRT_VERSION "1.13.2"
 #define UPSKIRT_VER_MAJOR 1
-#define UPSKIRT_VER_MINOR 2
-#define UPSKIRT_VER_REVISION 0
+#define UPSKIRT_VER_MINOR 13
+#define UPSKIRT_VER_REVISION 2
 
 /********************
  * TYPE DEFINITIONS *
