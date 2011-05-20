@@ -59,7 +59,7 @@ Credits
 
 Upskirt wouldn't be possible without the contributions of the following people: 
 
-* Natacha Porté (original author)
+* Natacha Porté (original author, [project page](http://fossil.instinctive.eu/libupskirt/index))
 * Vicent Martí
 * Ben Noordhuis
 * Bruno Michel
