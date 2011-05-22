@@ -22,7 +22,7 @@
 
 #include <assert.h>
 #include <string.h>
-#include <strings.h> /* for strncasecmp */
+//#include <strings.h> /* for strncasecmp */
 #include <ctype.h>
 #include <stdio.h>
 
@@ -224,7 +224,7 @@ cmp_html_tag(const void *a, const void *b)
 {
 	const struct html_tag *hta = a;
 	const struct html_tag *htb = b;
-	if (hta->size != htb->size) return (int)((ssize_t)hta->size - (ssize_t)htb->size);
+	if (hta->size != htb->size) return (int)(hta->size - htb->size);
 	return strncasecmp(hta->text, htb->text, hta->size);
 }
 
@@ -357,7 +357,7 @@ parse_inline(struct buf *ob, struct render *rndr, char *data, size_t size)
 	struct buf work = { 0, 0, 0, 0, 0 };
 
 	if (rndr->work_bufs[BUFFER_SPAN].size +
-		rndr->work_bufs[BUFFER_BLOCK].size > rndr->max_nesting)
+		rndr->work_bufs[BUFFER_BLOCK].size > (int)rndr->max_nesting)
 		return;
 
 	while (i < size) {
@@ -1949,7 +1949,7 @@ parse_block(struct buf *ob, struct render *rndr, char *data, size_t size)
 	beg = 0;
 
 	if (rndr->work_bufs[BUFFER_SPAN].size +
-		rndr->work_bufs[BUFFER_BLOCK].size > rndr->max_nesting)
+		rndr->work_bufs[BUFFER_BLOCK].size > (int)rndr->max_nesting)
 		return;
 
 	while (beg < size) {

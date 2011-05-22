@@ -21,6 +21,13 @@
 
 #include <stddef.h>
 
+#if defined(_MSC_VER)
+#define __attribute__(x)
+#define inline
+#define strncasecmp _strnicmp
+#define snprintf _snprintf
+#define va_copy(d,s) ((d) = (s))
+#endif
 
 /********************
  * TYPE DEFINITIONS *
