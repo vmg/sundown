@@ -22,59 +22,160 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #define READ_UNIT 1024
 #define OUTPUT_UNIT 64
 
-/* main • main function, interfacing STDIO with the parser */
+const char *test_files_dir = "..\\..\\peg-markdown\\MarkdownTest_1.0.3\\Tests\\";
+
+const char *test_files[] = {
+    "Nested blockquotes",
+/*    NULL, */
+    "Tidyness",
+    "Strong and em together",
+    "Amps and angle encoding",
+    "Auto links",
+    "Backslash escapes",
+    "Blockquotes with code blocks",
+    "Code Blocks",
+    "Code Spans",
+    "Hard-wrapped paragraphs with list-like lines",
+    "Horizontal rules",
+    "Inline HTML (Advanced)",
+    "Inline HTML (Simple)",
+    "Inline HTML comments",
+    "Links, inline style",
+    "Links, reference style",
+    "Links, shortcut references",
+    "Literal quotes in titles",
+    "Markdown Documentation - Basics",
+    "Markdown Documentation - Syntax",
+    "Ordered and unordered lists",
+    "Tabs",
+    NULL
+};
+
+char *str_cat(const char *s1, const char *s2)
+{
+    size_t l1 = strlen(s1);
+    size_t l2 = strlen(s2);
+    char *s = (char*)malloc(l1 + l2 + 1);
+    strcpy(s, s1);
+    strcpy(s + l1, s2);
+    s[l1+l2] = 0;
+    return s;
+}
+
+struct buf *read_fo(FILE *f)
+{
+	size_t ret;
+	struct buf *b = bufnew(READ_UNIT);
+	bufgrow(b, READ_UNIT);
+	while ((ret = fread(b->data + b->size, 1, b->asize - b->size, f)) > 0) {
+		b->size += ret;
+		bufgrow(b, b->size + READ_UNIT);
+	}
+    return b;
+}
+
+struct buf *read_file(const char *file)
+{
+    struct buf *b;
+    FILE *f = fopen(file, "r");
+    assert(f);
+    b = read_fo(f);
+    fclose(f);
+    return b;
+}
+
+struct buf *read_test_file(const char *base)
+{
+    char *path = str_cat(test_files_dir, base);
+    struct buf *b = read_file(path);
+    free((void*)base);
+    free(path);
+    return b;
+}
+
+struct buf* render_md_to_html(struct buf *md)
+{
+    struct mkd_renderer renderer;
+    struct buf *ob = bufnew(OUTPUT_UNIT);
+    upshtml_renderer(&renderer, 0);
+    //ups_markdown(ob, md, &renderer, 0xFF);
+    ups_markdown(ob, md, &renderer, 0);
+    upshtml_free_renderer(&renderer);
+    return ob;
+}
+
+int iswsp(char c) {
+    return (c == ' ') || (c == '\t') || (c == '\n');
+}
+
+static void bufstrip(struct buf *b)
+{
+    size_t len;
+    char *s = b->data;
+    char *d = s;
+    char *end = s + b->size;
+    int at_line_start = 1;
+    char c;
+    while (s < end) {
+        if (at_line_start) {
+            if (iswsp(*s)) {
+                s++;
+                continue;
+            }
+            at_line_start = 0;
+        }
+        c = *s++;
+        *d++ = c;
+        if (c == '\n')
+            at_line_start = 1;
+    }
+    s = b->data;
+    len = d - s;
+    if ((len > 0) && ('\n' == s[len-1])) {
+        --len;
+    }
+    s[len] = 0;
+    b->size = len;
+}
+
+int test_file(const char *basename)
+{
+    int cmp;
+    struct buf *mdbuf = read_test_file(str_cat(basename, ".text"));
+    struct buf *htmlbufref = read_test_file(str_cat(basename, ".html"));
+    struct buf *htmlbuf = render_md_to_html(mdbuf);
+    bufstrip(htmlbufref);
+    bufstrip(htmlbuf);
+    cmp = bufcmp(htmlbuf, htmlbufref);
+    if (cmp != 0) {
+        printf("Error: failure in test file '%s'\n", basename);
+    } else {
+        printf("Ok: file '%s' passed\n", basename);
+    }
+    bufrelease(mdbuf);
+    bufrelease(htmlbuf);
+    bufrelease(htmlbufref);
+    return cmp;
+}
+
 int
 main(int argc, char **argv)
 {
-	struct buf *ib, *ob;
-	size_t ret;
-	FILE *in = stdin;
-	struct mkd_renderer renderer;
-	size_t i, iterations = 1;
-
-	/* opening the file if given from the command line */
-	if (argc > 1) {
-		in = fopen(argv[1], "r");
-		if (!in) {
-			fprintf(stderr,"Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
-			return 1;
-		}
-	}
-
-	/* reading everything */
-	ib = bufnew(READ_UNIT);
-	bufgrow(ib, READ_UNIT);
-	while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
-		ib->size += ret;
-		bufgrow(ib, ib->size + READ_UNIT);
-	}
-
-	if (in != stdin)
-		fclose(in);
-
-	/* performing markdown parsing */
-	ob = bufnew(OUTPUT_UNIT);
-
-	for (i = 0; i < iterations; ++i) {
-		ob->size = 0;
-
-		upshtml_renderer(&renderer, 0);
-		ups_markdown(ob, ib, &renderer, 0xFF);
-		upshtml_free_renderer(&renderer);
-	}
-
-	/* writing the result to stdout */
-	fwrite(ob->data, 1, ob->size, stdout);
-
-	/* cleanup */
-	bufrelease(ib);
-	bufrelease(ob);
-
-	return 0;
+    int i, ok = 0, fail = 0;
+    for (i=0; test_files[i] != NULL; i++) {
+        int res = test_file(test_files[i]);
+        if (0 == res)
+            ++ok;
+        else
+            ++fail;
+    }
+    printf("ok: %d, fail: %d\n", ok, fail);
+    return 0;
 }
 
 /* vim: set filetype=c: */
