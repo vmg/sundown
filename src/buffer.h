@@ -72,7 +72,7 @@ bufcmp(const struct buf *, const struct buf *);
 int
 bufcmps(const struct buf *, const char *);
 
-/* bufprefix * compare the beggining of a buffer with a string */
+/* bufprefix * compare the beginning of a buffer with a string */
 int
 bufprefix(const struct buf *buf, const char *prefix);
 
