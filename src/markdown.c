@@ -306,7 +306,7 @@ tag_length(char *data, size_t size, enum mkd_autolink *autolink)
 	/* scheme test */
 	*autolink = MKDA_NOT_AUTOLINK;
 
-	/* try to find the beggining of an URI */
+	/* try to find the beginning of an URI */
 	while (i < size && (isalnum(data[i]) || data[i] == '.' || data[i] == '+' || data[i] == '-'))
 		i++;
 
@@ -670,7 +670,7 @@ char_escape(struct buf *ob, struct render *rndr, char *data, size_t offset, size
 }
 
 /* char_entity • '&' escaped when it doesn't belong to an entity */
-/* valid entities are assumed to be anything mathing &#?[A-Za-z0-9]+; */
+/* valid entities are assumed to be anything matching &#?[A-Za-z0-9]+; */
 static size_t
 char_entity(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size)
 {
@@ -1124,7 +1124,7 @@ is_codefence(char *data, size_t size, struct buf *syntax)
 			if (i == size || data[i] != '}')
 				return 0;
 
-			/* strip all whitespace at the beggining and the end
+			/* strip all whitespace at the beginning and the end
 			 * of the {} block */
 			while (syn > 0 && isspace(syntax->data[0])) {
 				syntax->data++; syn--;
@@ -1255,7 +1255,7 @@ static void parse_block(struct buf *ob, struct render *rndr,
 			char *data, size_t size);
 
 
-/* parse_blockquote • hanldes parsing of a blockquote fragment */
+/* parse_blockquote • handles parsing of a blockquote fragment */
 static size_t
 parse_blockquote(struct buf *ob, struct render *rndr, char *data, size_t size)
 {
@@ -1300,7 +1300,7 @@ parse_blockquote(struct buf *ob, struct render *rndr, char *data, size_t size)
 static size_t
 parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, int do_render);
 
-/* parse_blockquote • hanldes parsing of a regular paragraph */
+/* parse_blockquote • handles parsing of a regular paragraph */
 static size_t
 parse_paragraph(struct buf *ob, struct render *rndr, char *data, size_t size)
 {
@@ -1380,7 +1380,7 @@ parse_paragraph(struct buf *ob, struct render *rndr, char *data, size_t size)
 	return end;
 }
 
-/* parse_fencedcode • hanldes parsing of a block-level code fragment */
+/* parse_fencedcode • handles parsing of a block-level code fragment */
 static size_t
 parse_fencedcode(struct buf *ob, struct render *rndr, char *data, size_t size)
 {
@@ -1474,7 +1474,7 @@ parse_listitem(struct buf *ob, struct render *rndr, char *data, size_t size, int
 	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
 	int in_empty = 0, has_inside_empty = 0;
 
-	/* keeping book of the first indentation prefix */
+	/* keeping track of the first indentation prefix */
 	while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
 		orgpre++;
 
@@ -1650,7 +1650,7 @@ htmlblock_end(struct html_tag *tag, struct render *rndr, char *data, size_t size
 
 	/* assuming data[0] == '<' && data[1] == '/' already tested */
 
-	/* checking tag is a match */
+	/* checking if tag is a match */
 	if (tag->size + 3 >= size
 	|| strncasecmp(data + 2, tag->text, tag->size)
 	|| data[tag->size + 2] != '>')
