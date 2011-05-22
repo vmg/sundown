@@ -64,7 +64,7 @@ main(int argc, char **argv)
 		ob->size = 0;
 
 		upshtml_renderer(&renderer, 0);
-		ups_markdown(ob, ib, &renderer, 0xFF);
+		ups_markdown(ob, ib, &renderer, 0);
 		upshtml_free_renderer(&renderer);
 	}
 
