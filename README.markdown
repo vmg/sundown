@@ -74,6 +74,8 @@ Upskirt is available from other programming languages thanks to these bindings d
 - [Pantyshot](https://github.com/FSX/pantyshot) (Python)
 - [ffi-Upskirt](https://github.com/postmodern/ffi-upskirt) (Ruby FFI)
 - [Upskirt HS](https://github.com/rostayob/upskirt) (Haskell)
+- [Goskirt](https://github.com/madari/goskirt) (Go)
+- [Upskirt.go](https://github.com/buu700/upskirt.go) (Go)
 
 Help us
 -------
