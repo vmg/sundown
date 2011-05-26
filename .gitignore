@@ -1,3 +1,10 @@
 *.o
 libupskirt.so*
 upskirt
+mvc/ipch
+*.suo
+*.sdf
+*.opensdf
+*.vcxproj.user
+mvc/Debug
+mvc/Release

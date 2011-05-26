@@ -14,6 +14,10 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#if _WIN32
+#include "win32.h"
+#endif
+
 #include "buffer.h"
 #include "html.h"
 

@@ -21,6 +21,13 @@
 
 #include <stddef.h>
 
+#ifndef UPS_WIN32_H
+	#define ATTRIBUTE_MALLOC __attribute__ ((malloc))
+	#define ATTRIBUTE_FORMAT __attribute__ ((format (printf, 2, 3)))
+	#ifndef LIBEXPORT
+		#define LIBEXPORT extern
+	#endif
+#endif
 
 /********************
  * TYPE DEFINITIONS *
@@ -79,16 +86,16 @@ bufprefix(const struct buf *buf, const char *prefix);
 /* bufdup • buffer duplication */
 struct buf *
 bufdup(const struct buf *, size_t)
-	__attribute__ ((malloc));
+	ATTRIBUTE_MALLOC;
 
 /* bufgrow • increasing the allocated size to the given value */
-int
+LIBEXPORT int
 bufgrow(struct buf *, size_t);
 
 /* bufnew • allocation of a new buffer */
-struct buf *
+LIBEXPORT struct buf *
 bufnew(size_t)
-	__attribute__ ((malloc));
+	ATTRIBUTE_MALLOC;
 
 /* bufnullterm • NUL-termination of the string array (making a C-string) */
 void
@@ -97,7 +104,7 @@ bufnullterm(struct buf *);
 /* bufprintf • formatted printing to a buffer */
 void
 bufprintf(struct buf *, const char *, ...)
-	__attribute__ ((format (printf, 2, 3)));
+	ATTRIBUTE_FORMAT;
 
 /* bufput • appends raw data to a buffer */
 void
@@ -112,7 +119,7 @@ void
 bufputc(struct buf *, char);
 
 /* bufrelease • decrease the reference count and free the buffer if needed */
-void
+LIBEXPORT void
 bufrelease(struct buf *);
 
 /* bufreset • frees internal data of the buffer */

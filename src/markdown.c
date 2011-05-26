@@ -22,7 +22,11 @@
 
 #include <assert.h>
 #include <string.h>
+#ifndef UPS_WIN32_H
 #include <strings.h> /* for strncasecmp */
+#else
+
+#endif
 #include <ctype.h>
 #include <stdio.h>
 
