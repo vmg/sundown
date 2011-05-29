@@ -89,6 +89,14 @@ struct buf *read_file(const char *file)
     return b;
 }
 
+void write_buf_to_file( const char *file, struct buf *b)
+{
+    FILE *f = fopen(file, "w");
+    assert(f);
+    fwrite(b->data, 1, b->size, f);
+    fclose(f);
+}
+
 struct buf *read_test_file(const char *base)
 {
     char *path = str_cat(test_files_dir, base);
@@ -96,6 +104,14 @@ struct buf *read_test_file(const char *base)
     free((void*)base);
     free(path);
     return b;
+}
+
+void write_buf(struct buf *b, const char *base)
+{
+    char *path = str_cat(test_files_dir, base);
+    write_buf_to_file(path, b);
+    free((void*)base);
+    free(path);
 }
 
 struct buf* render_md_to_html(struct buf *md)
@@ -149,6 +165,7 @@ int test_file(const char *basename)
     struct buf *mdbuf = read_test_file(str_cat(basename, ".text"));
     struct buf *htmlbufref = read_test_file(str_cat(basename, ".html"));
     struct buf *htmlbuf = render_md_to_html(mdbuf);
+    write_buf(htmlbuf, str_cat(basename, "_upskirt_ref.html"));
     bufstrip(htmlbufref);
     bufstrip(htmlbuf);
     cmp = bufcmp(htmlbuf, htmlbufref);
@@ -163,8 +180,51 @@ int test_file(const char *basename)
     return cmp;
 }
 
-int
-main(int argc, char **argv)
+void printwithlen(const char *s, int len)
+{
+    //printf("%d:%s\n", len, s);
+    printf("%s\n", s);
+}
+
+void pprint(const char *s, const char *e)
+{
+    struct buf *b = bufnew(e-s+128);
+    const char *s1 = s;
+    while (s < e) {
+        if (*s == '\n') {
+            bufputs(b, "\\n");
+        } else if (*s == '\t') {
+            bufputs(b, "\\t");
+        } else if (*s == '\r') {
+            bufputs(b, "\\r");
+        } else {
+            bufputc(b, *s);
+        }
+        ++s;
+    }
+    bufputc(b, 0);
+    printwithlen(b->data, (int)b->size - 1);
+}
+
+void test_str(const char *s)
+{
+    struct buf *mdbuf;
+    struct buf *htmlbuf;
+    size_t sl = strlen(s);
+    mdbuf = bufnew(sl + 16);
+    bufgrow(mdbuf, sl + 16);
+    memcpy(mdbuf->data, s, sl);
+    mdbuf->size = sl;
+    htmlbuf = render_md_to_html(mdbuf);
+    //bufgrow(htmlbuf, htmlbuf->size + 16);
+    //htmlbuf->data[htmlbuf->size] = 0;
+    pprint(s, s + strlen(s));
+    pprint(htmlbuf->data, htmlbuf->data + htmlbuf->size);
+    bufrelease(mdbuf);
+    bufrelease(htmlbuf);
+}
+
+void test_all_files()
 {
     int i, ok = 0, fail = 0;
     for (i=0; test_files[i] != NULL; i++) {
@@ -175,6 +235,18 @@ main(int argc, char **argv)
             ++fail;
     }
     printf("ok: %d, fail: %d\n", ok, fail);
+}
+
+void test_strings()
+{
+    test_str("foo");
+    test_str("~foo~");
+}
+
+int main(int argc, char **argv)
+{
+    // test_all_files();
+    test_strings();
     return 0;
 }
 
