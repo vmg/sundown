@@ -19,17 +19,11 @@
 #ifndef UPSKIRT_MARKDOWN_H
 #define UPSKIRT_MARKDOWN_H
 
-#if _WIN32
+#if defined(_MSC_VER)
 #include "win32.h"
 #endif
 
 #include "buffer.h"
-
-#if !defined(LIBEXPORT)
-	#ifndef LIBEXPORT
-		#define LIBEXPORT extern
-	#endif
-#endif
 
 #define UPSKIRT_VERSION "1.14.2"
 #define UPSKIRT_VER_MAJOR 1
@@ -120,11 +114,11 @@ is_safe_link(const char *link, size_t link_len);
  **********************/
 
 /* ups_markdown * parses the input buffer and renders it into the output buffer */
-LIBEXPORT void
+WIN32EXPORT extern void
 ups_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndr, unsigned int extensions);
 
 /* ups_version * returns the library version as major.minor.rev */
-LIBEXPORT void
+WIN32EXPORT extern void
 ups_version(int *major, int *minor, int *revision);
 
 #endif

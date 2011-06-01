@@ -22,7 +22,7 @@
 
 #include <assert.h>
 #include <string.h>
-#ifndef UPS_WIN32_H
+#if !defined(_MSC_VER)
 #include <strings.h> /* for strncasecmp */
 #else
 
@@ -361,7 +361,7 @@ parse_inline(struct buf *ob, struct render *rndr, char *data, size_t size)
 	struct buf work = { 0, 0, 0, 0, 0 };
 
 	if (rndr->work_bufs[BUFFER_SPAN].size +
-		rndr->work_bufs[BUFFER_BLOCK].size > rndr->max_nesting)
+		rndr->work_bufs[BUFFER_BLOCK].size > (int)rndr->max_nesting)
 		return;
 
 	while (i < size) {
@@ -1953,7 +1953,7 @@ parse_block(struct buf *ob, struct render *rndr, char *data, size_t size)
 	beg = 0;
 
 	if (rndr->work_bufs[BUFFER_SPAN].size +
-		rndr->work_bufs[BUFFER_BLOCK].size > rndr->max_nesting)
+		rndr->work_bufs[BUFFER_BLOCK].size > (int)rndr->max_nesting)
 		return;
 
 	while (beg < size) {

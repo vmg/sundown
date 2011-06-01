@@ -21,13 +21,6 @@
 
 #include <stddef.h>
 
-#ifndef UPS_WIN32_H
-	#define ATTRIBUTE_MALLOC __attribute__ ((malloc))
-	#define ATTRIBUTE_FORMAT __attribute__ ((format (printf, 2, 3)))
-	#ifndef LIBEXPORT
-		#define LIBEXPORT extern
-	#endif
-#endif
 
 /********************
  * TYPE DEFINITIONS *
@@ -86,16 +79,11 @@ bufprefix(const struct buf *buf, const char *prefix);
 /* bufdup • buffer duplication */
 struct buf *
 bufdup(const struct buf *, size_t)
-	ATTRIBUTE_MALLOC;
+	__attribute__ ((malloc));
 
 /* bufgrow • increasing the allocated size to the given value */
-LIBEXPORT int
+int
 bufgrow(struct buf *, size_t);
-
-/* bufnew • allocation of a new buffer */
-LIBEXPORT struct buf *
-bufnew(size_t)
-	ATTRIBUTE_MALLOC;
 
 /* bufnullterm • NUL-termination of the string array (making a C-string) */
 void
@@ -104,7 +92,7 @@ bufnullterm(struct buf *);
 /* bufprintf • formatted printing to a buffer */
 void
 bufprintf(struct buf *, const char *, ...)
-	ATTRIBUTE_FORMAT;
+	__attribute__ ((format (printf, 2, 3)));
 
 /* bufput • appends raw data to a buffer */
 void
@@ -117,10 +105,6 @@ bufputs(struct buf *, const char*);
 /* bufputc • appends a single char to a buffer */
 void
 bufputc(struct buf *, char);
-
-/* bufrelease • decrease the reference count and free the buffer if needed */
-LIBEXPORT void
-bufrelease(struct buf *);
 
 /* bufreset • frees internal data of the buffer */
 void
@@ -138,7 +122,18 @@ bufslurp(struct buf *, size_t);
 int
 buftoi(struct buf *, size_t, size_t *);
 
+/**********************
+ * EXPORTED FUNCTIONS *
+ **********************/
 
+/* bufnew • allocation of a new buffer */
+extern struct buf *
+bufnew(size_t)
+	__attribute__ ((malloc));
+
+/* bufrelease • decrease the reference count and free the buffer if needed */
+extern void
+bufrelease(struct buf *);
 
 #ifdef BUFFER_STDARG
 #include <stdarg.h>
