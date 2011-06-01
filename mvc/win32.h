@@ -4,21 +4,19 @@
 #include <string.h>
 
 // Redefinitions
-#define strncasecmp stricmplen
+#define strncasecmp _strnicmp
 #define ssize_t int
 #define inline __inline
 #define snprintf _snprintf
 #define va_copy(dst, src) ((void)((dst) = (src)))
+#define __attribute__(x)
 
-// Cross platform definitions
-#define LIBEXPORT __declspec(dllexport)
-#define ATTRIBUTE_MALLOC
-#define ATTRIBUTE_FORMAT
+#pragma warning( disable : 4996 )
 
-static inline int
-stricmplen(const char *string1, const char *string2, int len)
-{
-	return stricmp(string1, string2);
-}
+#if defined(_DLL)
+#define WIN32EXPORT __declspec(dllexport)
+#else
+#define WIN32EXPORT
+#endif
 
 #endif
