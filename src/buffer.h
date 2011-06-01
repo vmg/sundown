@@ -127,12 +127,12 @@ buftoi(struct buf *, size_t, size_t *);
  **********************/
 
 /* bufnew • allocation of a new buffer */
-extern struct buf *
+WIN32EXPORT extern struct buf *
 bufnew(size_t)
 	__attribute__ ((malloc));
 
 /* bufrelease • decrease the reference count and free the buffer if needed */
-extern void
+WIN32EXPORT extern void
 bufrelease(struct buf *);
 
 #ifdef BUFFER_STDARG
