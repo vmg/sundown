@@ -6,19 +6,28 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+<<<<<<< HEAD
 		DebugDll|Win32 = DebugDll|Win32
 		Release|Win32 = Release|Win32
 		ReleaseDll|Win32 = ReleaseDll|Win32
+=======
+		Release|Win32 = Release|Win32
+>>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Debug|Win32.ActiveCfg = Debug|Win32
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Debug|Win32.Build.0 = Debug|Win32
+<<<<<<< HEAD
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.DebugDll|Win32.ActiveCfg = DebugDll|Win32
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.DebugDll|Win32.Build.0 = DebugDll|Win32
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Release|Win32.ActiveCfg = Release|Win32
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Release|Win32.Build.0 = Release|Win32
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.ReleaseDll|Win32.ActiveCfg = ReleaseDll|Win32
 		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.ReleaseDll|Win32.Build.0 = ReleaseDll|Win32
+=======
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Release|Win32.ActiveCfg = Release|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Release|Win32.Build.0 = Release|Win32
+>>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

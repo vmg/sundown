@@ -84,10 +84,10 @@ bufprefix(const struct buf *buf, const char *prefix);
 /* bufdup • buffer duplication */
 struct buf *
 bufdup(const struct buf *, size_t)
-	ATTRIBUTE_MALLOC;
+	__attribute__ ((malloc));
 
 /* bufgrow • increasing the allocated size to the given value */
-LIBEXPORT int
+int
 bufgrow(struct buf *, size_t);
 
 /* bufnullterm • NUL-termination of the string array (making a C-string) */
@@ -97,7 +97,7 @@ bufnullterm(struct buf *);
 /* bufprintf • formatted printing to a buffer */
 void
 bufprintf(struct buf *, const char *, ...)
-	ATTRIBUTE_FORMAT;
+	__attribute__ ((format (printf, 2, 3)));
 
 /* bufput • appends raw data to a buffer */
 void
