@@ -16,6 +16,8 @@
 
 #if _WIN32
 #include "win32.h"
+#else
+#define WIN32EXPORT
 #endif
 
 #include "buffer.h"
