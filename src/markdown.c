@@ -733,7 +733,7 @@ char_langle_tag(struct buf *ob, struct render *rndr, char *data, size_t offset, 
 static size_t
 autolink_delim(char *data, size_t link_end, size_t offset, size_t size)
 {
-	char copen = 0;
+	char cclose, copen = 0;
 
 	/* See if the link finishes with a punctuation sign that can be skipped. */
 	switch (data[link_end - 1]) {
@@ -769,7 +769,9 @@ autolink_delim(char *data, size_t link_end, size_t offset, size_t size)
 		break;
 	}
 
-	switch (data[link_end - 1]) {
+	cclose = data[link_end - 1];
+
+	switch (cclose) {
 	case '"':	copen = '"'; break;
 	case '\'':	copen = '\''; break;
 	case ')':	copen = '('; break;
@@ -778,9 +780,9 @@ autolink_delim(char *data, size_t link_end, size_t offset, size_t size)
 	}
 
 	if (copen != 0) {
-		char *buf_start = data - offset;
-		char *buf_end = data + link_end - 2;
-		char *open_delim = NULL;
+		size_t closing = 0;
+		size_t opening = 0;
+		size_t i = 0;
 
 		/* Try to close the final punctuation sign in this same line;
 		 * if we managed to close it outside of the URL, that means that it's
@@ -802,14 +804,16 @@ autolink_delim(char *data, size_t link_end, size_t offset, size_t size)
 		 *		=> foo http://www.pokemon.com/Pikachu_(Electric)
 		 */
 
-		while (buf_end >= buf_start && *buf_end != '\n') {
-			if (*buf_end == copen)
-				open_delim = buf_end;
+		while (i < link_end) {
+			if (data[i] == copen)
+				opening++;
+			else if (data[i] == cclose)
+				closing++;
 
-			buf_end--;
+			i++;
 		}
 
-		if (open_delim != NULL && open_delim < data)
+		if (closing != opening)
 			link_end--;
 	}
 
