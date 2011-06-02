@@ -20,12 +20,11 @@
 #include "markdown.h"
 #include "array.h"
 
+#include <assert.h>
+#include <string.h>
 #ifndef _MSC_VER
 #include <strings.h> /* for strncasecmp */
 #endif
-
-#include <assert.h>
-#include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 
