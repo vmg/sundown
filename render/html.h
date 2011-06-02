@@ -32,16 +32,16 @@ typedef enum {
 	HTML_USE_XHTML = (1 << 11),
 } render_mode;
 
-extern void
+DLLEXPORT extern void
 upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
 
-extern void
+DLLEXPORT extern void
 upshtml_toc_renderer(struct mkd_renderer *renderer);
 
-extern void
+DLLEXPORT extern void
 upshtml_free_renderer(struct mkd_renderer *renderer);
 
-extern void
+DLLEXPORT extern void
 upshtml_smartypants(struct buf *ob, struct buf *text);
 
 #endif

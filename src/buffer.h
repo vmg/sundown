@@ -21,6 +21,11 @@
 
 #include <stddef.h>
 
+#if _MSC_VER
+#include "win32.h"
+#else
+#define DLLEXPORT
+#endif
 
 /********************
  * TYPE DEFINITIONS *
@@ -85,11 +90,6 @@ bufdup(const struct buf *, size_t)
 int
 bufgrow(struct buf *, size_t);
 
-/* bufnew • allocation of a new buffer */
-struct buf *
-bufnew(size_t)
-	__attribute__ ((malloc));
-
 /* bufnullterm • NUL-termination of the string array (making a C-string) */
 void
 bufnullterm(struct buf *);
@@ -111,10 +111,6 @@ bufputs(struct buf *, const char*);
 void
 bufputc(struct buf *, char);
 
-/* bufrelease • decrease the reference count and free the buffer if needed */
-void
-bufrelease(struct buf *);
-
 /* bufreset • frees internal data of the buffer */
 void
 bufreset(struct buf *);
@@ -131,7 +127,18 @@ bufslurp(struct buf *, size_t);
 int
 buftoi(struct buf *, size_t, size_t *);
 
+/**********************
+ * EXPORTED FUNCTIONS *
+ **********************/
 
+/* bufnew • allocation of a new buffer */
+DLLEXPORT extern struct buf *
+bufnew(size_t)
+	__attribute__ ((malloc));
+
+/* bufrelease • decrease the reference count and free the buffer if needed */
+DLLEXPORT extern void
+bufrelease(struct buf *);
 
 #ifdef BUFFER_STDARG
 #include <stdarg.h>
