@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libupskirt", "libupskirt.vcproj", "{DB903D0E-160A-447B-B41B-9FADBBEB0447}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		DebugDll|Win32 = DebugDll|Win32
+		Release|Win32 = Release|Win32
+		ReleaseDll|Win32 = ReleaseDll|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Debug|Win32.Build.0 = Debug|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.DebugDll|Win32.ActiveCfg = DebugDll|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.DebugDll|Win32.Build.0 = DebugDll|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Release|Win32.ActiveCfg = Release|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.Release|Win32.Build.0 = Release|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.ReleaseDll|Win32.ActiveCfg = ReleaseDll|Win32
+		{DB903D0E-160A-447B-B41B-9FADBBEB0447}.ReleaseDll|Win32.Build.0 = ReleaseDll|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

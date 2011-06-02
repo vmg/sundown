@@ -21,12 +21,10 @@
 
 #include <stddef.h>
 
-#ifndef UPS_WIN32_H
-	#define ATTRIBUTE_MALLOC __attribute__ ((malloc))
-	#define ATTRIBUTE_FORMAT __attribute__ ((format (printf, 2, 3)))
-	#ifndef LIBEXPORT
-		#define LIBEXPORT extern
-	#endif
+#if _MSC_VER
+#include "win32.h"
+#else
+#define DLLEXPORT
 #endif
 
 /********************
@@ -92,11 +90,6 @@ bufdup(const struct buf *, size_t)
 LIBEXPORT int
 bufgrow(struct buf *, size_t);
 
-/* bufnew • allocation of a new buffer */
-LIBEXPORT struct buf *
-bufnew(size_t)
-	ATTRIBUTE_MALLOC;
-
 /* bufnullterm • NUL-termination of the string array (making a C-string) */
 void
 bufnullterm(struct buf *);
@@ -118,10 +111,6 @@ bufputs(struct buf *, const char*);
 void
 bufputc(struct buf *, char);
 
-/* bufrelease • decrease the reference count and free the buffer if needed */
-LIBEXPORT void
-bufrelease(struct buf *);
-
 /* bufreset • frees internal data of the buffer */
 void
 bufreset(struct buf *);
@@ -138,7 +127,18 @@ bufslurp(struct buf *, size_t);
 int
 buftoi(struct buf *, size_t, size_t *);
 
+/**********************
+ * EXPORTED FUNCTIONS *
+ **********************/
 
+/* bufnew • allocation of a new buffer */
+DLLEXPORT extern struct buf *
+bufnew(size_t)
+	__attribute__ ((malloc));
+
+/* bufrelease • decrease the reference count and free the buffer if needed */
+DLLEXPORT extern void
+bufrelease(struct buf *);
 
 #ifdef BUFFER_STDARG
 #include <stdarg.h>
