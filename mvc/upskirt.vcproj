@@ -40,11 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-<<<<<<< HEAD
 				AdditionalIncludeDirectories="..\mvc;..\render;..\src"
-=======
-				AdditionalIncludeDirectories="C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\mvc;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\render;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\src"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -115,11 +111,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-<<<<<<< HEAD
 				AdditionalIncludeDirectories="..\mvc;..\render;..\src"
-=======
-				AdditionalIncludeDirectories="C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\mvc;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\src;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\render"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"

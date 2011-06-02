@@ -19,7 +19,6 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-<<<<<<< HEAD
 			ConfigurationType="4"
 			CharacterSet="2"
 			>
@@ -142,8 +141,6 @@
 			Name="DebugDll|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-=======
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -165,11 +162,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-<<<<<<< HEAD
 				AdditionalIncludeDirectories="..\mvc;..\src;..\render"
-=======
-				AdditionalIncludeDirectories="C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\mvc;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\src;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\render"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -187,12 +180,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-<<<<<<< HEAD
-=======
-				OutputFile="$(OutDir)\$(ProjectName).dll"
-				GenerateDebugInformation="true"
-				TargetMachine="1"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -217,11 +204,7 @@
 			/>
 		</Configuration>
 		<Configuration
-<<<<<<< HEAD
 			Name="ReleaseDll|Win32"
-=======
-			Name="Release|Win32"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
@@ -247,11 +230,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-<<<<<<< HEAD
 				AdditionalIncludeDirectories="..\mvc;..\src;..\render"
-=======
-				AdditionalIncludeDirectories="C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\mvc;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\src;C:\Users\Brandon.MONDOROBOT\projects\downblouse\lib\upskirt\render"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -269,15 +248,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-<<<<<<< HEAD
-=======
-				OutputFile="$(OutDir)\$(ProjectName).dll"
-				GenerateDebugInformation="true"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
-				CLRUnmanagedCodeCheck="false"
->>>>>>> 5f0970456f43477a8ae4abc24a6c0ae429afcb05
 			/>
 			<Tool
 				Name="VCALinkTool"
