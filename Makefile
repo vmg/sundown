@@ -46,7 +46,8 @@ smartypants: examples/smartypants.o src/buffer.o render/html_smartypants.o
 # housekeeping
 clean:
 	rm -f src/*.o render/*.o examples/*.o
-	rm -f libupskirt.so libupskirt.so.1 upskirt
+	rm -f libupskirt.so libupskirt.so.1 upskirt smartypants
+	rm -f upskirt.exe smartypants.exe
 	rm -rf $(DEPDIR)
 
 

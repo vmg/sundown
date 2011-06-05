@@ -1,4 +1,5 @@
 *.o
 libupskirt.so*
 upskirt
+smartypants
 *.exe
