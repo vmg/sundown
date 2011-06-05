@@ -59,7 +59,8 @@ Credits
 
 Upskirt wouldn't be possible without the contributions of the following people: 
 
-* Natacha Porté (original author, [project page](http://fossil.instinctive.eu/libupskirt/index))
+* Natacha Porté (original author,
+  [project page](http://fossil.instinctive.eu/libupskirt/index))
 * Vicent Martí
 * Ben Noordhuis
 * Bruno Michel
@@ -67,7 +68,8 @@ Upskirt wouldn't be possible without the contributions of the following people:
 Bindings
 --------
 
-Upskirt is available from other programming languages thanks to these bindings developed by our awesome contributors.
+Upskirt is available from other programming languages thanks to these bindings developed
+by our awesome contributors.
 
 - [Redcarpet](https://github.com/tanoku/redcarpet) (Ruby)
 - [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
@@ -81,19 +83,22 @@ Upskirt is available from other programming languages thanks to these bindings d
 Help us
 -------
 
-Upskirt is all about security. If you find a (potential) security vulnerability in the library, or a way to make it crash
-through malicious input, please report it to us, either directly via email or by opening an Issue on GitHub, and help
-make the web safer for everybody.
+Upskirt is all about security. If you find a (potential) security vulnerability in the
+library, or a way to make it crash through malicious input, please report it to us,
+either directly via email or by opening an Issue on GitHub, and help make the web safer
+for everybody.
 
 Install
 -------
 
-There is nothing to install. Upskirt is composed of 3 `.c` files (`markdown.c`, `buffer.c` and `array.c`),
-so just throw them in your project. Zero-dependency means zero-dependency. You might want to include `render/xhtml.c`
-if you want to use the included XHTML renderer, or write your own renderer. Either way, it's all fun and joy.
+There is nothing to install. Upskirt is composed of 3 `.c` files (`markdown.c`,
+`buffer.c` and `array.c`), so just throw them in your project. Zero-dependency means
+zero-dependency. You might want to include `render/xhtml.c` if you want to use the
+included XHTML renderer, or write your own renderer. Either way, it's all fun and joy.
 
-If you are hardcore, you can use the included `Makefile` to build Upskirt into a dynamic library, or to build
-the sample `markdown` executable, which is just a commandline Markdown to XHTML parser.
+If you are hardcore, you can use the included `Makefile` to build Upskirt into a dynamic
+library, or to build the sample `markdown` executable, which is just a commandline
+Markdown to XHTML parser.
 
 License
 -------
@@ -109,3 +114,7 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+<!-- Local Variables: -->
+<!-- fill-column: 89 -->
+<!-- End: -->
