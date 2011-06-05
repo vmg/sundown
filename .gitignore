@@ -1,3 +1,4 @@
 *.o
 libupskirt.so*
 upskirt
+*.exe

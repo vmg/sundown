@@ -15,8 +15,12 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 DEPDIR=depends
-CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender -fPIC
-LDFLAGS=-g -O3 -Wall -Werror
+
+# "Machine-dependant" options
+MFLAGS=-fPIC
+
+CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender $(MFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
 all:		libupskirt.so upskirt smartypants

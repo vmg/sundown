@@ -98,7 +98,8 @@ included XHTML renderer, or write your own renderer. Either way, it's all fun an
 
 If you are hardcore, you can use the included `Makefile` to build Upskirt into a dynamic
 library, or to build the sample `markdown` executable, which is just a commandline
-Markdown to XHTML parser.
+Markdown to XHTML parser. (If gcc gives you grief about `-fPIC`, e.g. with MinGW, try
+`make MFLAGS=` instead of just `make`.)
 
 License
 -------
