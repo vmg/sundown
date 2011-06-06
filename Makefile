@@ -15,8 +15,12 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 DEPDIR=depends
-CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender -fPIC
-LDFLAGS=-g -O3 -Wall -Werror
+
+# "Machine-dependant" options
+MFLAGS=-fPIC
+
+CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender $(MFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
 all:		libupskirt.so upskirt smartypants
@@ -42,7 +46,8 @@ smartypants: examples/smartypants.o src/buffer.o render/html_smartypants.o
 # housekeeping
 clean:
 	rm -f src/*.o render/*.o examples/*.o
-	rm -f libupskirt.so libupskirt.so.1 upskirt
+	rm -f libupskirt.so libupskirt.so.1 upskirt smartypants
+	rm -f upskirt.exe smartypants.exe
 	rm -rf $(DEPDIR)
 
 
