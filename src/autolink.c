@@ -49,35 +49,31 @@ autolink_delim(char *data, size_t link_end, size_t offset, size_t size)
 {
 	char cclose, copen = 0;
 
-	/* See if the link finishes with a punctuation sign that can be skipped. */
-	switch (data[link_end - 1]) {
-	case '?':
-	case '!':
-	case '.':
-	case ',':
-		link_end--;
-		break;
-	}
-
-	if (data[link_end - 1] == ';') {
-		size_t new_end = link_end - 2;
-
-		while (new_end > 0 && isalpha(data[new_end]))
-			new_end--;
-
-		if (new_end < link_end - 2 && data[new_end] == '&')
-			link_end = new_end;
-		else
-			link_end--;
-	}
-
-	if (data[link_end - 1] == '>') {
-		while (link_end > 0 && data[link_end] != '<')
+	while (link_end > 0) {
+		if (strchr("?!.,", data[link_end - 1]) != NULL)
 			link_end--;
 
-		if (link_end == 0)
-			return 0;
+		else if (data[link_end - 1] == ';') {
+			size_t new_end = link_end - 2;
+
+			while (new_end > 0 && isalpha(data[new_end]))
+				new_end--;
+
+			if (new_end < link_end - 2 && data[new_end] == '&')
+				link_end = new_end;
+			else
+				link_end--;
+		}
+
+		else if (data[link_end - 1] == '>') {
+			while (link_end > 0 && data[link_end] != '<')
+				link_end--;
+		}
+		else break;
 	}
+
+	if (link_end == 0)
+		return 0;
 
 	cclose = data[link_end - 1];
 

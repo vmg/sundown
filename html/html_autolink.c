@@ -70,13 +70,18 @@ skip_tags(struct buf *ob, const char *text, size_t size)
 	}
 
 	bufput(ob, text, i + 1);
-	return i;
+	return i + 1;
 }
 
 void
-upshtml_autolink(struct buf *ob, struct buf *text, unsigned int flags)
+upshtml_autolink(
+	struct buf *ob,
+	struct buf *text,
+	unsigned int flags,
+	void (*link_text_cb)(struct buf *ob, const struct buf *link, void *payload),
+	void *payload)
 {
-	size_t i;
+	size_t i, end;
 	struct buf *link = bufnew(16);
 	const char *active_chars;
 
@@ -101,72 +106,76 @@ upshtml_autolink(struct buf *ob, struct buf *text, unsigned int flags)
 
 	bufgrow(ob, text->size);
 
-	for (i = 0; i < text->size; ++i) {
-		size_t org, rewind, link_size;
+	i = end = 0;
 
-		org = i;
-		while (i < text->size && strchr(active_chars, text->data[i]) == NULL)
-			i++;
+	while (i < text->size) {
+		size_t rewind;
 
-		if (i > org)
-			bufput(ob, text->data + org, i - org);
+		while (end < text->size && strchr(active_chars, text->data[end]) == NULL)
+			end++;
 
-		if (i == text->size)
+		bufput(ob, text->data + i, end - i);
+
+		if (end >= text->size)
 			break;
 
+		i = end;
 		link->size = 0;
 
 		switch (text->data[i]) {
 		case '@':
-			link_size = ups_autolink__email(&rewind, link, text->data + i, i, text->size - i);
-			if (link_size == 0)
-				break;
-
-			ob->size -= rewind;
-			BUFPUTSL(ob, "<a href=\"mailto:");
-			bufput(ob, link->data, link->size);
-			BUFPUTSL(ob, "\">");
-			upshtml_escape(ob, link->data, link->size);
-			BUFPUTSL(ob, "</a>");
-
-			i += link_size;
-			continue;
+			end = ups_autolink__email(&rewind, link, text->data + i, i, text->size - i);
+			if (end > 0) {
+				ob->size -= rewind;
+				BUFPUTSL(ob, "<a href=\"mailto:");
+				bufput(ob, link->data, link->size);
+				BUFPUTSL(ob, "\">");
+				if (link_text_cb) callback(ob, link, payload);
+				else upshtml_escape(ob, link->data, link->size);
+				BUFPUTSL(ob, "</a>");
+			}
+			break;
 
 		case 'w':
-			link_size = ups_autolink__www(&rewind, link, text->data + i, i, text->size - i);
-			if (link_size == 0)
-				break;
-
-			BUFPUTSL(ob, "<a href=\"http://");
-			bufput(ob, link->data, link->size);
-			BUFPUTSL(ob, "\">");
-			upshtml_escape(ob, link->data, link->size);
-			BUFPUTSL(ob, "</a>");
-
-			i += link_size;
-			continue;
+			end = ups_autolink__www(&rewind, link, text->data + i, i, text->size - i);
+			if (end > 0) {
+				BUFPUTSL(ob, "<a href=\"http://");
+				bufput(ob, link->data, link->size);
+				BUFPUTSL(ob, "\">");
+				if (link_text_cb) callback(ob, link, payload);
+				else upshtml_escape(ob, link->data, link->size);
+				BUFPUTSL(ob, "</a>");
+			}
+			break;
 
 		case ':':
-			link_size = ups_autolink__url(&rewind, link, text->data + i, i, text->size - i);
-			if (link_size == 0)
-				break;
-
-			ob->size -= rewind;
-			BUFPUTSL(ob, "<a href=\"");
-			bufput(ob, link->data, link->size);
-			BUFPUTSL(ob, "\">");
-			upshtml_escape(ob, link->data, link->size);
-			BUFPUTSL(ob, "</a>");
-
-			i += link_size;
-			continue;
+			end = ups_autolink__url(&rewind, link, text->data + i, i, text->size - i);
+			if (end > 0) {
+				ob->size -= rewind;
+				BUFPUTSL(ob, "<a href=\"");
+				bufput(ob, link->data, link->size);
+				BUFPUTSL(ob, "\">");
+				if (link_text_cb) callback(ob, link, payload);
+				else upshtml_escape(ob, link->data, link->size);
+				BUFPUTSL(ob, "</a>");
+			}
+			break;
 
 		case '<':
-			i += skip_tags(ob, text->data + i, text->size - i);
-			continue;
+			end = skip_tags(ob, text->data + i, text->size - i);
+			break;
+
+		default:
+			end = 0;
+			break;
 		}
 
-		bufputc(ob, text->data[i]);
+		if (!end)
+			end = i + 1;
+		else { 
+			i += end;
+			end = i;
+		} 
 	}
 }
 

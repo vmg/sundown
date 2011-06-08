@@ -719,19 +719,17 @@ char_autolink_www(struct buf *ob, struct render *rndr, char *data, size_t offset
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-	if ((link_len = ups_autolink__www(&rewind, link, data, offset, size)) == 0)
-		return 0;
+	if ((link_len = ups_autolink__www(&rewind, link, data, offset, size)) > 0) {
+		link_url = rndr_newbuf(rndr, BUFFER_SPAN);
+		BUFPUTSL(link_url, "http://");
+		bufput(link_url, link->data, link->size);
 
-	link_url = rndr_newbuf(rndr, BUFFER_SPAN);
-	BUFPUTSL(link_url, "http://");
-	bufput(link_url, link->data, link->size);
-
-	ob->size -= rewind;
-	rndr->make.link(ob, link_url, NULL, link, rndr->make.opaque);
+		ob->size -= rewind;
+		rndr->make.link(ob, link_url, NULL, link, rndr->make.opaque);
+		rndr_popbuf(rndr, BUFFER_SPAN);
+	}
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
-	rndr_popbuf(rndr, BUFFER_SPAN);
-
 	return link_len;
 }
 
@@ -746,14 +744,12 @@ char_autolink_email(struct buf *ob, struct render *rndr, char *data, size_t offs
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-	if ((link_len = ups_autolink__email(&rewind, link, data, offset, size)) == 0)
-		return 0;
-
-	ob->size -= rewind;
-	rndr->make.autolink(ob, link, MKDA_EMAIL, rndr->make.opaque);
+	if ((link_len = ups_autolink__email(&rewind, link, data, offset, size)) > 0) {
+		ob->size -= rewind;
+		rndr->make.autolink(ob, link, MKDA_EMAIL, rndr->make.opaque);
+	}
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
-
 	return link_len;
 }
 
@@ -768,14 +764,12 @@ char_autolink_url(struct buf *ob, struct render *rndr, char *data, size_t offset
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-	if ((link_len = ups_autolink__url(&rewind, link, data, offset, size)) == 0)
-		return 0;
-
-	ob->size -= rewind;
-	rndr->make.autolink(ob, link, MKDA_NORMAL, rndr->make.opaque);
+	if ((link_len = ups_autolink__url(&rewind, link, data, offset, size)) > 0) {
+		ob->size -= rewind;
+		rndr->make.autolink(ob, link, MKDA_NORMAL, rndr->make.opaque);
+	}
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
-
 	return link_len;
 }
 
