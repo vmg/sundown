@@ -19,7 +19,7 @@ DEPDIR=depends
 # "Machine-dependant" options
 MFLAGS=-fPIC
 
-CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender $(MFLAGS)
+CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Ihtml $(MFLAGS)
 LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
@@ -32,15 +32,15 @@ all:		libupskirt.so upskirt smartypants
 libupskirt.so:	libupskirt.so.1
 	ln -f -s $^ $@
 
-libupskirt.so.1: src/markdown.o src/array.o src/buffer.o render/html.o render/html_smartypants.o
+libupskirt.so.1: src/markdown.o src/array.o src/buffer.o src/autolink.o html/html.o html/html_smartypants.o html/html_autolink.o
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
 
 # executables
 
-upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/html.o render/html_smartypants.o
+upskirt:	examples/upskirt.o src/markdown.o src/array.o src/autolink.o src/buffer.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-smartypants: examples/smartypants.o src/buffer.o render/html_smartypants.o
+smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # housekeeping
@@ -58,7 +58,7 @@ include $(wildcard $(DEPDIR)/*.d)
 
 # generic object compilations
 
-%.o:	src/%.c examples/%.c render/%.c
+%.o:	src/%.c examples/%.c html/%.c
 	@mkdir -p $(DEPDIR)
 	@$(CC) -MM $< > $(DEPDIR)/$*.d
 	$(CC) $(CFLAGS) -o $@ $<
