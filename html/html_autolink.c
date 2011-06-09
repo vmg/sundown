@@ -14,14 +14,46 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "markdown.h"
+#include "autolink.h"
 #include "buffer.h"
-#include "html.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+
+static void
+autolink_escape_cb(struct buf *ob, const struct buf *text, void *unused)
+{
+	size_t  i = 0, org;
+
+	while (i < text->size) {
+		org = i;
+
+		while (i < text->size &&
+			text->data[i] != '<' &&
+			text->data[i] != '>' &&
+			text->data[i] != '&' &&
+			text->data[i] != '"')
+			i++;
+
+		if (i > org)
+			bufput(ob, text->data + org, i - org);
+
+		if (i >= text->size)
+			break;
+
+		switch (text->data[i]) {
+			case '<': BUFPUTSL(ob, "&lt;"); break;
+			case '>': BUFPUTSL(ob, "&gt;"); break;
+			case '&': BUFPUTSL(ob, "&amp;"); break;
+			case '"': BUFPUTSL(ob, "&quot;"); break;
+			default: bufputc(ob, text->data[i]); break;
+		}
+
+		i++;
+	}
+}
 
 static inline int
 is_closing_a(const char *tag, size_t size)
@@ -78,6 +110,7 @@ upshtml_autolink(
 	struct buf *ob,
 	struct buf *text,
 	unsigned int flags,
+	const char *link_attr,
 	void (*link_text_cb)(struct buf *ob, const struct buf *link, void *payload),
 	void *payload)
 {
@@ -103,6 +136,9 @@ upshtml_autolink(
 		default:
 			return;
 	}
+
+	if (link_text_cb == NULL)
+		link_text_cb = &autolink_escape_cb;
 
 	bufgrow(ob, text->size);
 
@@ -130,8 +166,7 @@ upshtml_autolink(
 				BUFPUTSL(ob, "<a href=\"mailto:");
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
-				if (link_text_cb) callback(ob, link, payload);
-				else upshtml_escape(ob, link->data, link->size);
+				link_text_cb(ob, link, payload);
 				BUFPUTSL(ob, "</a>");
 			}
 			break;
@@ -142,8 +177,7 @@ upshtml_autolink(
 				BUFPUTSL(ob, "<a href=\"http://");
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
-				if (link_text_cb) callback(ob, link, payload);
-				else upshtml_escape(ob, link->data, link->size);
+				link_text_cb(ob, link, payload);
 				BUFPUTSL(ob, "</a>");
 			}
 			break;
@@ -155,8 +189,7 @@ upshtml_autolink(
 				BUFPUTSL(ob, "<a href=\"");
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
-				if (link_text_cb) callback(ob, link, payload);
-				else upshtml_escape(ob, link->data, link->size);
+				link_text_cb(ob, link, payload);
 				BUFPUTSL(ob, "</a>");
 			}
 			break;
