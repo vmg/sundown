@@ -163,7 +163,9 @@ upshtml_autolink(
 			end = ups_autolink__email(&rewind, link, text->data + i, i, text->size - i);
 			if (end > 0) {
 				ob->size -= rewind;
-				BUFPUTSL(ob, "<a href=\"mailto:");
+				BUFPUTSL(ob, "<a");
+				if (link_attr) bufputs(ob, link_attr);
+				BUFPUTSL(ob, " href=\"mailto:");
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
 				link_text_cb(ob, link, payload);
@@ -174,7 +176,9 @@ upshtml_autolink(
 		case 'w':
 			end = ups_autolink__www(&rewind, link, text->data + i, i, text->size - i);
 			if (end > 0) {
-				BUFPUTSL(ob, "<a href=\"http://");
+				BUFPUTSL(ob, "<a");
+				if (link_attr) bufputs(ob, link_attr);
+				BUFPUTSL(ob, " href=\"http://");
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
 				link_text_cb(ob, link, payload);
@@ -186,7 +190,9 @@ upshtml_autolink(
 			end = ups_autolink__url(&rewind, link, text->data + i, i, text->size - i);
 			if (end > 0) {
 				ob->size -= rewind;
-				BUFPUTSL(ob, "<a href=\"");
+				BUFPUTSL(ob, "<a");
+				if (link_attr) bufputs(ob, link_attr);
+				BUFPUTSL(ob, " href=\"");
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
 				link_text_cb(ob, link, payload);
