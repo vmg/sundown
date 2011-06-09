@@ -83,7 +83,7 @@ is_closing_a(const char *tag, size_t size)
 }
 
 static size_t
-skip_tags(struct buf *ob, const char *text, size_t size)
+autolink__skip_tag(struct buf *ob, char *text, size_t size)
 {
 	size_t i = 0;
 
@@ -105,6 +105,30 @@ skip_tags(struct buf *ob, const char *text, size_t size)
 	return i + 1;
 }
 
+typedef size_t (*autolink_parse_cb)(size_t *rewind, struct buf *, char *, size_t, size_t);
+
+typedef enum {
+	AUTOLINK_ACTION_NONE = 0,
+	AUTOLINK_ACTION_WWW,
+	AUTOLINK_ACTION_EMAIL,
+	AUTOLINK_ACTION_URL,
+	AUTOLINK_ACTION_SKIP_TAG
+} autolink_action;
+
+static autolink_parse_cb g_callbacks[] = {
+	NULL,
+	ups_autolink__www,	/* 1 */
+	ups_autolink__email,/* 2 */
+	ups_autolink__url,	/* 3 */
+};
+
+static const char *g_hrefs[] = {
+	NULL,
+	" href=\"http://",
+	" href=\"mailto:",
+	" href=\"",
+};
+
 void
 upshtml_autolink(
 	struct buf *ob,
@@ -116,25 +140,22 @@ upshtml_autolink(
 {
 	size_t i, end;
 	struct buf *link = bufnew(16);
-	const char *active_chars;
+	char active_chars[256];
 
 	if (!text || text->size == 0)
 		return;
 
-	switch (flags) {
-		case AUTOLINK_EMAILS:
-			active_chars = "<@";
-			break;
+	memset(active_chars, 0x0, sizeof(active_chars));
 
-		case AUTOLINK_URLS:
-			active_chars = "<w:";
+	active_chars['<'] = AUTOLINK_ACTION_SKIP_TAG;
 
-		case AUTOLINK_ALL:
-			active_chars = "<@w:";
-			break;
+	if (flags & AUTOLINK_EMAILS)
+		active_chars['@'] = AUTOLINK_ACTION_EMAIL;
 
-		default:
-			return;
+	if (flags & AUTOLINK_URLS) {
+		active_chars['w'] = AUTOLINK_ACTION_WWW;
+		active_chars['W'] = AUTOLINK_ACTION_WWW;
+		active_chars[':'] = AUTOLINK_ACTION_URL;
 	}
 
 	if (link_text_cb == NULL)
@@ -146,8 +167,9 @@ upshtml_autolink(
 
 	while (i < text->size) {
 		size_t rewind;
+		char action;
 
-		while (end < text->size && strchr(active_chars, text->data[end]) == NULL)
+		while (end < text->size && (action = active_chars[(int)text->data[end]]) == 0)
 			end++;
 
 		bufput(ob, text->data + i, end - i);
@@ -156,57 +178,25 @@ upshtml_autolink(
 			break;
 
 		i = end;
+		end = 0;
 		link->size = 0;
 
-		switch (text->data[i]) {
-		case '@':
-			end = ups_autolink__email(&rewind, link, text->data + i, i, text->size - i);
+		if (action == AUTOLINK_ACTION_SKIP_TAG) {
+			end = autolink__skip_tag(ob, text->data + i, text->size - i);
+		} else {
+			end = g_callbacks[(int)action](&rewind, link, text->data + i, i, text->size - i);
+
+			/* print the link */
 			if (end > 0) {
 				ob->size -= rewind;
 				BUFPUTSL(ob, "<a");
 				if (link_attr) bufputs(ob, link_attr);
-				BUFPUTSL(ob, " href=\"mailto:");
+				bufputs(ob, g_hrefs[(int)action]);
 				bufput(ob, link->data, link->size);
 				BUFPUTSL(ob, "\">");
 				link_text_cb(ob, link, payload);
 				BUFPUTSL(ob, "</a>");
 			}
-			break;
-
-		case 'w':
-			end = ups_autolink__www(&rewind, link, text->data + i, i, text->size - i);
-			if (end > 0) {
-				BUFPUTSL(ob, "<a");
-				if (link_attr) bufputs(ob, link_attr);
-				BUFPUTSL(ob, " href=\"http://");
-				bufput(ob, link->data, link->size);
-				BUFPUTSL(ob, "\">");
-				link_text_cb(ob, link, payload);
-				BUFPUTSL(ob, "</a>");
-			}
-			break;
-
-		case ':':
-			end = ups_autolink__url(&rewind, link, text->data + i, i, text->size - i);
-			if (end > 0) {
-				ob->size -= rewind;
-				BUFPUTSL(ob, "<a");
-				if (link_attr) bufputs(ob, link_attr);
-				BUFPUTSL(ob, " href=\"");
-				bufput(ob, link->data, link->size);
-				BUFPUTSL(ob, "\">");
-				link_text_cb(ob, link, payload);
-				BUFPUTSL(ob, "</a>");
-			}
-			break;
-
-		case '<':
-			end = skip_tags(ob, text->data + i, text->size - i);
-			break;
-
-		default:
-			end = 0;
-			break;
 		}
 
 		if (!end)
@@ -216,6 +206,8 @@ upshtml_autolink(
 			end = i;
 		} 
 	}
+
+	bufrelease(link);
 }
 
 
