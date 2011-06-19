@@ -137,7 +137,7 @@ check_domain(char *data, size_t size)
 
 	for (i = 1; i < size - 1; ++i) {
 		if (data[i] == '.') np++;
-		else if (!isalnum(data[i])) break;
+		else if (!isalnum(data[i]) && data[i] != '-') break;
 	}
 
 	if (!isalnum(data[i - 1]) || np == 0)
