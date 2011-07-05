@@ -73,7 +73,7 @@ by our awesome contributors.
 
 - [Redcarpet](https://github.com/tanoku/redcarpet) (Ruby)
 - [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
-- [Pantyshot](https://github.com/FSX/pantyshot) (Python)
+- [Misaka](https://github.com/FSX/misaka) (Python)
 - [ffi-Upskirt](https://github.com/postmodern/ffi-upskirt) (Ruby FFI)
 - [Upskirt HS](https://github.com/rostayob/upskirt) (Haskell)
 - [Goskirt](https://github.com/madari/goskirt) (Go)
