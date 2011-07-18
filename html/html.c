@@ -45,9 +45,9 @@ put_scaped_char(struct buf *ob, char c)
 	}
 }
 
-/* attr_escape • copy the buffer entity-escaping '<', '>', '&' and '"' */
-static void
-attr_escape(struct buf *ob, const char *src, size_t size)
+/* sdhtml_escape • copy the buffer entity-escaping '<', '>', '&' and '"' */
+void
+sdhtml_escape(struct buf *ob, const char *src, size_t size)
 {
 	size_t  i = 0, org;
 	while (i < size) {
@@ -127,9 +127,9 @@ rndr_autolink(struct buf *ob, struct buf *link, enum mkd_autolink type, void *op
 	 * want to print the `mailto:` prefix
 	 */
 	if (bufprefix(link, "mailto:") == 0) {
-		attr_escape(ob, link->data + 7, link->size - 7);
+		sdhtml_escape(ob, link->data + 7, link->size - 7);
 	} else {
-		attr_escape(ob, link->data, link->size);
+		sdhtml_escape(ob, link->data, link->size);
 	}
 
 	BUFPUTSL(ob, "</a>");
@@ -159,7 +159,7 @@ rndr_blockcode(struct buf *ob, struct buf *text, struct buf *lang, void *opaque)
 					org++;
 
 				if (cls) bufputc(ob, ' ');
-				attr_escape(ob, lang->data + org, i - org);
+				sdhtml_escape(ob, lang->data + org, i - org);
 			}
 		}
 
@@ -168,7 +168,7 @@ rndr_blockcode(struct buf *ob, struct buf *text, struct buf *lang, void *opaque)
 		BUFPUTSL(ob, "<pre><code>");
 
 	if (text)
-		attr_escape(ob, text->data, text->size);
+		sdhtml_escape(ob, text->data, text->size);
 
 	BUFPUTSL(ob, "</code></pre>\n");
 }
@@ -204,16 +204,16 @@ rndr_blockcode_github(struct buf *ob, struct buf *text, struct buf *lang, void *
 			i++;
 
 		if (lang->data[0] == '.')
-			attr_escape(ob, lang->data + 1, i - 1);
+			sdhtml_escape(ob, lang->data + 1, i - 1);
 		else
-			attr_escape(ob, lang->data, i);
+			sdhtml_escape(ob, lang->data, i);
 
 		BUFPUTSL(ob, "\"><code>");
 	} else
 		BUFPUTSL(ob, "<pre><code>");
 
 	if (text)
-		attr_escape(ob, text->data, text->size);
+		sdhtml_escape(ob, text->data, text->size);
 
 	BUFPUTSL(ob, "</code></pre>\n");
 }
@@ -230,7 +230,7 @@ static int
 rndr_codespan(struct buf *ob, struct buf *text, void *opaque)
 {
 	BUFPUTSL(ob, "<code>");
-	if (text) attr_escape(ob, text->data, text->size);
+	if (text) sdhtml_escape(ob, text->data, text->size);
 	BUFPUTSL(ob, "</code>");
 	return 1;
 }
@@ -299,7 +299,7 @@ rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *conte
 	if (link && link->size) bufput(ob, link->data, link->size);
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
-		attr_escape(ob, title->data, title->size); }
+		sdhtml_escape(ob, title->data, title->size); }
 	BUFPUTSL(ob, "\">");
 	if (content && content->size) bufput(ob, content->data, content->size);
 	BUFPUTSL(ob, "</a>");
@@ -406,13 +406,13 @@ rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt,
 	struct html_renderopt *options = opaque;	
 	if (!link || !link->size) return 0;
 	BUFPUTSL(ob, "<img src=\"");
-	attr_escape(ob, link->data, link->size);
+	sdhtml_escape(ob, link->data, link->size);
 	BUFPUTSL(ob, "\" alt=\"");
 	if (alt && alt->size)
-		attr_escape(ob, alt->data, alt->size);
+		sdhtml_escape(ob, alt->data, alt->size);
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
-		attr_escape(ob, title->data, title->size); }
+		sdhtml_escape(ob, title->data, title->size); }
 
 	bufputc(ob, '"');
 	bufputs(ob, options->close_tag);
@@ -503,7 +503,7 @@ static void
 rndr_normal_text(struct buf *ob, struct buf *text, void *opaque)
 {
 	if (text)
-		attr_escape(ob, text->data, text->size);
+		sdhtml_escape(ob, text->data, text->size);
 }
 
 static void
@@ -546,7 +546,7 @@ toc_finalize(struct buf *ob, void *opaque)
 }
 
 void
-upshtml_toc_renderer(struct mkd_renderer *renderer)
+sdhtml_toc_renderer(struct mkd_renderer *renderer)
 {
 	static const struct mkd_renderer toc_render = {
 		NULL,
@@ -590,7 +590,7 @@ upshtml_toc_renderer(struct mkd_renderer *renderer)
 }
 
 void
-upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags)
+sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags)
 {
 	static const char *xhtml_close = "/>\n";
 	static const char *html_close = ">\n";
@@ -652,7 +652,7 @@ upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags)
 }
 
 void
-upshtml_free_renderer(struct mkd_renderer *renderer)
+sdhtml_free_renderer(struct mkd_renderer *renderer)
 {
 	free(renderer->opaque);
 }

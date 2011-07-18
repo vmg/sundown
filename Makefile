@@ -15,34 +15,39 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 DEPDIR=depends
-CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Irender -fPIC
-LDFLAGS=-g -O3 -Wall -Werror
+
+# "Machine-dependant" options
+#MFLAGS=-fPIC
+
+CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Ihtml $(MFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
-all:		libupskirt.so upskirt smartypants
+all:		libsundown.so sundown smartypants
 
 .PHONY:		all clean
 
 # libraries
 
-libupskirt.so:	libupskirt.so.1
+libsundown.so:	libsundown.so.1
 	ln -f -s $^ $@
 
-libupskirt.so.1: src/markdown.o src/array.o src/buffer.o render/html.o render/html_smartypants.o
+libsundown.so.1: src/markdown.o src/array.o src/buffer.o src/autolink.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
 
 # executables
 
-upskirt:	examples/upskirt.o src/markdown.o src/array.o src/buffer.o render/html.o render/html_smartypants.o
+sundown:	examples/sundown.o src/markdown.o src/array.o src/autolink.o src/buffer.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-smartypants: examples/smartypants.o src/buffer.o render/html_smartypants.o
+smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # housekeeping
 clean:
-	rm -f src/*.o render/*.o examples/*.o
-	rm -f libupskirt.so libupskirt.so.1 upskirt
+	rm -f src/*.o html/*.o examples/*.o
+	rm -f libsundown.so libsundown.so.1 sundown smartypants
+	rm -f sundown.exe smartypants.exe
 	rm -rf $(DEPDIR)
 
 
@@ -53,7 +58,7 @@ include $(wildcard $(DEPDIR)/*.d)
 
 # generic object compilations
 
-%.o:	src/%.c examples/%.c render/%.c
+%.o:	src/%.c examples/%.c html/%.c
 	@mkdir -p $(DEPDIR)
 	@$(CC) -MM $< > $(DEPDIR)/$*.d
 	$(CC) $(CFLAGS) -o $@ $<

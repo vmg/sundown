@@ -14,35 +14,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef UPSKIRT_HTML_H
-#define UPSKIRT_HTML_H
+#ifndef UPSKIRT_AUTOLINK_H
+#define UPSKIRT_AUTOLINK_H_H
 
-#include "markdown.h"
+#include "buffer.h"
 
-typedef enum {
-	HTML_SKIP_HTML = (1 << 0),
-	HTML_SKIP_STYLE = (1 << 1),
-	HTML_SKIP_IMAGES = (1 << 2),
-	HTML_SKIP_LINKS = (1 << 3),
-	HTML_EXPAND_TABS = (1 << 5),
-	HTML_SAFELINK = (1 << 7),
-	HTML_TOC = (1 << 8),
-	HTML_HARD_WRAP = (1 << 9),
-	HTML_GITHUB_BLOCKCODE = (1 << 10),
-	HTML_USE_XHTML = (1 << 11),
-} render_mode;
+extern size_t
+sd_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
-DLLEXPORT extern void
-upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
 
-DLLEXPORT extern void
-upshtml_toc_renderer(struct mkd_renderer *renderer);
+extern size_t
+sd_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
-DLLEXPORT extern void
-upshtml_free_renderer(struct mkd_renderer *renderer);
-
-DLLEXPORT extern void
-upshtml_smartypants(struct buf *ob, struct buf *text);
+extern size_t
+sd_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
 #endif
 
+/* vim: set filetype=c: */
