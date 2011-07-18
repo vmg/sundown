@@ -21,8 +21,6 @@
 
 #if defined(_MSC_VER)
 #include "win32.h"
-#else
-#define WIN32EXPORT
 #endif
 
 #include "buffer.h"
