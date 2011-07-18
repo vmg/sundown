@@ -26,6 +26,7 @@
 #endif
 
 #include "buffer.h"
+#include "autolink.h"
 
 #define UPSKIRT_VERSION "1.15.2"
 #define UPSKIRT_VER_MAJOR 1

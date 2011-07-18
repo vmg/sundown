@@ -17,29 +17,31 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Upskirt|Win32">
-      <Configuration>Upskirt</Configuration>
+    <ProjectConfiguration Include="Sundown|Win32">
+      <Configuration>Sundown</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\render\html.c" />
-    <ClCompile Include="..\render\html_smartypants.c" />
+    <ClCompile Include="..\html\html.c" />
+    <ClCompile Include="..\html\html_smartypants.c" />
     <ClCompile Include="..\src\array.c" />
+    <ClCompile Include="..\src\autolink.c" />
     <ClCompile Include="..\src\buffer.c" />
     <ClCompile Include="..\src\markdown.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\render\html.h" />
+    <ClInclude Include="..\html\html.h" />
     <ClInclude Include="..\src\array.h" />
+    <ClInclude Include="..\src\autolink.h" />
     <ClInclude Include="..\src\buffer.h" />
     <ClInclude Include="..\src\markdown.h" />
     <ClInclude Include="win32.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BEF78878-99B5-47FC-AE1B-210EDF9643F8}</ProjectGuid>
-    <RootNamespace>libupskirt-mvc</RootNamespace>
-    <ProjectName>libupskirt</ProjectName>
+    <RootNamespace>libsundown-mvc</RootNamespace>
+    <ProjectName>libsundown</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -52,7 +54,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upskirt|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Sundown|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
@@ -78,7 +80,7 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugDll|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Upskirt|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Sundown|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,7 +96,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDll|Win32'">
     <TargetExt>.dll</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Upskirt|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Sundown|Win32'">
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,7 +134,7 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Upskirt|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Sundown|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>

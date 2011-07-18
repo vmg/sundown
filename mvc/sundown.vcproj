@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="upskirt"
+	Name="sundown"
 	ProjectGUID="{BE47161F-589E-4725-8CB4-2FA6746F66DD}"
-	RootNamespace="upskirt"
+	RootNamespace="sundown"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\mvc;..\render;..\src"
+				AdditionalIncludeDirectories="..\mvc;..\html;..\src"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -111,7 +111,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\mvc;..\render;..\src"
+				AdditionalIncludeDirectories="..\mvc;..\html;..\src"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -169,15 +169,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\autolink.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\buffer.c"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html.c"
+				RelativePath="..\html\html.c"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html_smartypants.c"
+				RelativePath="..\html\html_smartypants.c"
 				>
 			</File>
 			<File
@@ -185,7 +189,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\examples\upskirt.c"
+				RelativePath="..\examples\sundown.c"
 				>
 			</File>
 		</Filter>
@@ -199,11 +203,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\autolink.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\buffer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html.h"
+				RelativePath="..\html\html.h"
 				>
 			</File>
 			<File

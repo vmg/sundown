@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="libupskirt"
+	Name="libsundown"
 	ProjectGUID="{DB903D0E-160A-447B-B41B-9FADBBEB0447}"
-	RootNamespace="libupskirt"
+	RootNamespace="libsundown"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -285,15 +285,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\autolink.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\buffer.c"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html.c"
+				RelativePath="..\html\html.c"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html_smartypants.c"
+				RelativePath="..\html\html_smartypants.c"
 				>
 			</File>
 			<File
@@ -311,11 +315,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\autolink.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\buffer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html.h"
+				RelativePath="..\html\html.h"
 				>
 			</File>
 			<File

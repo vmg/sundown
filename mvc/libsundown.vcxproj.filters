@@ -9,12 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\render\html.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\render\html_smartypants.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\array.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -24,11 +18,17 @@
     <ClCompile Include="..\src\markdown.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\autolink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\html\html.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\html\html_smartypants.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\render\html.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -39,6 +39,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\markdown.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\autolink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\html\html.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

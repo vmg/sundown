@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "upskirt", "upskirt.vcproj", "{BE47161F-589E-4725-8CB4-2FA6746F66DD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sundown", "sundown.vcproj", "{BE47161F-589E-4725-8CB4-2FA6746F66DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
