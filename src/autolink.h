@@ -20,13 +20,13 @@
 #include "buffer.h"
 
 extern size_t
-ups_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
+sd_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
 extern size_t
-ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
+sd_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
 extern size_t
-ups_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
+sd_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
 #endif
 

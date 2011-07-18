@@ -110,13 +110,13 @@ is_safe_link(const char *link, size_t link_len);
  * EXPORTED FUNCTIONS *
  **********************/
 
-/* ups_markdown * parses the input buffer and renders it into the output buffer */
+/* sd_markdown * parses the input buffer and renders it into the output buffer */
 extern void
-ups_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndr, unsigned int extensions);
+sd_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndr, unsigned int extensions);
 
-/* ups_version * returns the library version as major.minor.rev */
+/* sd_version * returns the library version as major.minor.rev */
 extern void
-ups_version(int *major, int *minor, int *revision);
+sd_version(int *major, int *minor, int *revision);
 
 #endif
 

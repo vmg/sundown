@@ -147,7 +147,7 @@ check_domain(char *data, size_t size)
 }
 
 size_t
-ups_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
+sd_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
 {
 	size_t link_end;
 
@@ -177,7 +177,7 @@ ups_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset,
 }
 
 size_t
-ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
+sd_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
 {
 	size_t link_end, rewind;
 	int nb = 0, np = 0;
@@ -226,7 +226,7 @@ ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offse
 }
 
 size_t
-ups_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
+sd_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
 {
 	size_t link_end, rewind = 0, domain_len;
 
