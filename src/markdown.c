@@ -719,7 +719,7 @@ char_autolink_www(struct buf *ob, struct render *rndr, char *data, size_t offset
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-	if ((link_len = ups_autolink__www(&rewind, link, data, offset, size)) > 0) {
+	if ((link_len = sd_autolink__www(&rewind, link, data, offset, size)) > 0) {
 		link_url = rndr_newbuf(rndr, BUFFER_SPAN);
 		BUFPUTSL(link_url, "http://");
 		bufput(link_url, link->data, link->size);
@@ -744,7 +744,7 @@ char_autolink_email(struct buf *ob, struct render *rndr, char *data, size_t offs
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-	if ((link_len = ups_autolink__email(&rewind, link, data, offset, size)) > 0) {
+	if ((link_len = sd_autolink__email(&rewind, link, data, offset, size)) > 0) {
 		ob->size -= rewind;
 		rndr->make.autolink(ob, link, MKDA_EMAIL, rndr->make.opaque);
 	}
@@ -764,7 +764,7 @@ char_autolink_url(struct buf *ob, struct render *rndr, char *data, size_t offset
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-	if ((link_len = ups_autolink__url(&rewind, link, data, offset, size)) > 0) {
+	if ((link_len = sd_autolink__url(&rewind, link, data, offset, size)) > 0) {
 		ob->size -= rewind;
 		rndr->make.autolink(ob, link, MKDA_NORMAL, rndr->make.opaque);
 	}
@@ -2102,7 +2102,7 @@ static void expand_tabs(struct buf *ob, const char *line, size_t size)
 
 /* markdown • parses the input buffer and renders it into the output buffer */
 void
-ups_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndrer, unsigned int extensions) {
+sd_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndrer, unsigned int extensions) {
 	struct link_ref *lr;
 	struct buf *text;
 	size_t i, beg, end;
@@ -2225,7 +2225,7 @@ ups_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndrer, 
 }
 
 void
-ups_version(int *ver_major, int *ver_minor, int *ver_revision)
+sd_version(int *ver_major, int *ver_minor, int *ver_revision)
 {
 	*ver_major = UPSKIRT_VER_MAJOR;
 	*ver_minor = UPSKIRT_VER_MINOR;

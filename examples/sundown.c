@@ -62,9 +62,9 @@ main(int argc, char **argv)
 	for (i = 0; i < iterations; ++i) {
 		ob->size = 0;
 
-		upshtml_renderer(&renderer, 0);
-		ups_markdown(ob, ib, &renderer, ~0);
-		upshtml_free_renderer(&renderer);
+		sdhtml_renderer(&renderer, 0);
+		sd_markdown(ob, ib, &renderer, ~0);
+		sdhtml_free_renderer(&renderer);
 	}
 
 	/* writing the result to stdout */

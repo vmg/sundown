@@ -304,7 +304,7 @@ static struct {
 #endif
 
 void
-upshtml_smartypants(struct buf *ob, struct buf *text)
+sdhtml_smartypants(struct buf *ob, struct buf *text)
 {
 	size_t i;
 	struct smartypants_data smrt = {0, 0};

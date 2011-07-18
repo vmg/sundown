@@ -35,19 +35,19 @@ typedef enum {
 } render_mode;
 
 void
-upshtml_escape(struct buf *ob, const char *src, size_t size);
+sdhtml_escape(struct buf *ob, const char *src, size_t size);
 
 extern void
-upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
+sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
 
 extern void
-upshtml_toc_renderer(struct mkd_renderer *renderer);
+sdhtml_toc_renderer(struct mkd_renderer *renderer);
 
 extern void
-upshtml_free_renderer(struct mkd_renderer *renderer);
+sdhtml_free_renderer(struct mkd_renderer *renderer);
 
 extern void
-upshtml_smartypants(struct buf *ob, struct buf *text);
+sdhtml_smartypants(struct buf *ob, struct buf *text);
 
 #endif
 
