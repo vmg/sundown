@@ -15,7 +15,7 @@
  */
 
 #ifndef UPSKIRT_AUTOLINK_H
-#define UPSKIRT_AUTOLINK_H_H
+#define UPSKIRT_AUTOLINK_H
 
 #include "buffer.h"
 
