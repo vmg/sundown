@@ -111,11 +111,11 @@ is_safe_link(const char *link, size_t link_len);
  **********************/
 
 /* sd_markdown * parses the input buffer and renders it into the output buffer */
-extern void
+DLLEXPORT extern void
 sd_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndr, unsigned int extensions);
 
 /* sd_version * returns the library version as major.minor.rev */
-extern void
+DLLEXPORT extern void
 sd_version(int *major, int *minor, int *revision);
 
 #endif

@@ -3,3 +3,12 @@ libupskirt.so*
 upskirt
 smartypants
 *.exe
+mvc/bin
+mvc/obj
+mvc/*.ncb
+mvc/*.sdf
+mvc/*.opensdf
+mvc/*.vcxproj.user
+mvc/*.vcproj.*
+mvc/*.suo
+mvc/ipch
