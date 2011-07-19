@@ -7,7 +7,7 @@
 Features
 --------
 
-*	**Fully standards compilant**
+*	**Fully standards compliant**
 
 	`Sundown` passes out of the box the official Markdown v1.0.0 and v1.0.3
 	test suites, and has been extensively tested with additional corner cases
