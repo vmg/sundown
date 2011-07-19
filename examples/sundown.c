@@ -31,7 +31,7 @@ int
 main(int argc, char **argv)
 {
 	struct buf *ib, *ob;
-	size_t ret;
+	int ret;
 	FILE *in = stdin;
 	struct mkd_renderer renderer;
 	size_t i, iterations = 1;
@@ -68,13 +68,13 @@ main(int argc, char **argv)
 	}
 
 	/* writing the result to stdout */
-	fwrite(ob->data, 1, ob->size, stdout);
+	ret = fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
 	bufrelease(ib);
 	bufrelease(ob);
 
-	return 0;
+	return (ret < 0) ? -1 : 0;
 }
 
 /* vim: set filetype=c: */
