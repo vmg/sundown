@@ -40,7 +40,7 @@ libsundown.so.1: src/markdown.o src/array.o src/buffer.o src/autolink.o html/htm
 sundown:	examples/sundown.o src/markdown.o src/array.o src/autolink.o src/buffer.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
-smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o
+smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o html/html.o src/autolink.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # housekeeping

@@ -34,8 +34,17 @@ typedef enum {
 	HTML_USE_XHTML = (1 << 11),
 } render_mode;
 
+typedef enum {
+	HTML_TAG_NONE = 0,
+	HTML_TAG_OPEN,
+	HTML_TAG_CLOSE,
+} html_tag;
+
 void
 sdhtml_escape(struct buf *ob, const char *src, size_t size);
+
+int
+sdhtml_tag(const char *tag_data, size_t tag_size, const char *tagname);
 
 extern void
 sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);

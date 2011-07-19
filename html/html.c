@@ -66,37 +66,37 @@ sdhtml_escape(struct buf *ob, const char *src, size_t size)
 	}
 }
 
-static int
-is_html_tag(struct buf *tag, const char *tagname)
+int
+sdhtml_tag(const char *tag_data, size_t tag_size, const char *tagname)
 {
-	size_t i = 0;
+	size_t i;
+	int closed = 0;
 
-	if (i < tag->size && tag->data[0] != '<')
-		return 0;
+	if (tag_size < 3 || tag_data[0] != '<')
+		return HTML_TAG_NONE;
 
-	i++;
+	i = 1;
 
-	while (i < tag->size && isspace(tag->data[i]))
+	if (tag_data[i] == '/') {
+		closed = 1;
 		i++;
+	}
 
-	if (i < tag->size && tag->data[i] == '/')
-		i++;
-
-	while (i < tag->size && isspace(tag->data[i]))
-		i++;
-
-	for (; i < tag->size; ++i, ++tagname) {
+	for (; i < tag_size; ++i, ++tagname) {
 		if (*tagname == 0)
 			break;
 
-		if (tag->data[i] != *tagname)
-			return 0;
+		if (tag_data[i] != *tagname)
+			return HTML_TAG_NONE;
 	}
 
-	if (i == tag->size)
-		return 0;
+	if (i == tag_size)
+		return HTML_TAG_NONE;
 
-	return (isspace(tag->data[i]) || tag->data[i] == '>');
+	if (isspace(tag_data[i]) || tag_data[i] == '>')
+		return closed ? HTML_TAG_CLOSE : HTML_TAG_OPEN;
+
+	return HTML_TAG_NONE;
 }
 
 /********************
@@ -111,7 +111,7 @@ rndr_autolink(struct buf *ob, struct buf *link, enum mkd_autolink type, void *op
 		return 0;
 
 	if ((options->flags & HTML_SAFELINK) != 0 &&
-		!is_safe_link(link->data, link->size) &&
+		!sd_autolink_issafe(link->data, link->size) &&
 		type != MKDA_EMAIL)
 		return 0;
 
@@ -292,7 +292,7 @@ rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *conte
 {
 	struct html_renderopt *options = opaque;
 	
-	if ((options->flags & HTML_SAFELINK) != 0 && !is_safe_link(link->data, link->size))
+	if ((options->flags & HTML_SAFELINK) != 0 && !sd_autolink_issafe(link->data, link->size))
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
@@ -436,13 +436,13 @@ rndr_raw_html(struct buf *ob, struct buf *text, void *opaque)
 	if ((options->flags & HTML_SKIP_HTML) != 0)
 		return 1;
 
-	if ((options->flags & HTML_SKIP_STYLE) != 0 && is_html_tag(text, "style"))
+	if ((options->flags & HTML_SKIP_STYLE) != 0 && sdhtml_tag(text->data, text->size, "style"))
 		return 1;
 
-	if ((options->flags & HTML_SKIP_LINKS) != 0 && is_html_tag(text, "a"))
+	if ((options->flags & HTML_SKIP_LINKS) != 0 && sdhtml_tag(text->data, text->size, "a"))
 		return 1;
 
-	if ((options->flags & HTML_SKIP_IMAGES) != 0 && is_html_tag(text, "img"))
+	if ((options->flags & HTML_SKIP_IMAGES) != 0 && sdhtml_tag(text->data, text->size, "img"))
 		return 1;
 
 	bufput(ob, text->data, text->size);

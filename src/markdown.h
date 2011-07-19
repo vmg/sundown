@@ -100,12 +100,6 @@ struct mkd_renderer {
 #define MKD_TABLE_ALIGN_R (1 << 1)
 #define MKD_TABLE_ALIGN_CENTER (MKD_TABLE_ALIGN_L | MKD_TABLE_ALIGN_R)
 
-/*******************
- * Auxiliar methods
- *******************/
-int
-is_safe_link(const char *link, size_t link_len);
-
 /**********************
  * EXPORTED FUNCTIONS *
  **********************/
