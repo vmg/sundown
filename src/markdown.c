@@ -22,7 +22,9 @@
 
 #include <assert.h>
 #include <string.h>
-//#include <strings.h> /* for strncasecmp */
+#ifndef _MSC_VER
+#include <strings.h> /* for strncasecmp */
+#endif
 #include <ctype.h>
 #include <stdio.h>
 
