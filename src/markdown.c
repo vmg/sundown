@@ -380,47 +380,72 @@ find_emph_char(char *data, size_t size, char c)
 	size_t i = 1;
 
 	while (i < size) {
-		while (i < size && data[i] != c
-		&& data[i] != '`' && data[i] != '[')
+		while (i < size && data[i] != c && data[i] != '`' && data[i] != '[')
 			i += 1;
-		if (data[i] == c) return i;
+
+		if (i == size)
+			return 0;
+
+		if (data[i] == c)
+			return i;
 
 		/* not counting escaped chars */
-		if (i && data[i - 1] == '\\') { i += 1; continue; }
+		if (i && data[i - 1] == '\\') {
+			i += 1; continue;
+		}
 
 		/* skipping a code span */
 		if (data[i] == '`') {
 			size_t tmp_i = 0;
+
 			i += 1;
 			while (i < size && data[i] != '`') {
 				if (!tmp_i && data[i] == c) tmp_i = i;
-				i += 1; }
-			if (i >= size) return tmp_i;
-			i += 1; }
+				i += 1; 
+			}
 
+			if (i >= size)
+				return tmp_i;
+
+			i += 1; 
+		}
 		/* skipping a link */
 		else if (data[i] == '[') {
 			size_t tmp_i = 0;
 			char cc;
+
 			i += 1;
 			while (i < size && data[i] != ']') {
 				if (!tmp_i && data[i] == c) tmp_i = i;
-				i += 1; }
-			i += 1;
-			while (i < size && (data[i] == ' '
-			|| data[i] == '\t' || data[i] == '\n'))
 				i += 1;
-			if (i >= size) return tmp_i;
+			}
+
+			i += 1;
+			while (i < size && (data[i] == ' ' || data[i] == '\t' || data[i] == '\n'))
+				i += 1;
+
+			if (i >= size)
+				return tmp_i;
+
 			if (data[i] != '[' && data[i] != '(') { /* not a link*/
 				if (tmp_i) return tmp_i;
-				else continue; }
+				else continue;
+			}
+
 			cc = data[i];
 			i += 1;
 			while (i < size && data[i] != cc) {
 				if (!tmp_i && data[i] == c) tmp_i = i;
-				i += 1; }
-			if (i >= size) return tmp_i;
-			i += 1; } }
+				i += 1;
+			}
+
+			if (i >= size)
+				return tmp_i;
+
+			i += 1;
+		}
+	}
+
 	return 0;
 }
 
