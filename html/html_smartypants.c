@@ -161,16 +161,14 @@ smartypants_cb__parens(struct buf *ob, struct smartypants_data *smrt, char previ
 static size_t
 smartypants_cb__dash(struct buf *ob, struct smartypants_data *smrt, char previous_char, const char *text, size_t size)
 {
-	if (size >= 2) {
-		if (text[1] == '-') {
-			BUFPUTSL(ob, "&mdash;");
-			return 1;
-		}
+	if (size >= 3 && text[1] == '-' && text[2] == '-') {
+		BUFPUTSL(ob, "&mdash;");
+		return 2;
+	}
 
-		if (word_boundary(previous_char) && word_boundary(text[1])) {
-			BUFPUTSL(ob, "&ndash;");
-			return 0;
-		}
+	if (size >= 2 && text[1] == '-') {
+		BUFPUTSL(ob, "&ndash;");
+		return 1;
 	}
 
 	bufputc(ob, text[0]);
