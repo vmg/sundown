@@ -145,13 +145,14 @@ static struct html_tag block_tags[] = {
 	{ "h6",		2 },
 	{ "ol",		2 },
 	{ "ul",		2 },
-/*10*/	{ "del",	3 },
+	{ "del",	3 }, /* 10 */
 	{ "div",	3 },
-/*12*/	{ "ins",	3 },
+	{ "ins",	3 }, /* 12 */
 	{ "pre",	3 },
 	{ "form",	4 },
 	{ "math",	4 },
 	{ "table",	5 },
+	{ "figure",	6 },
 	{ "iframe",	6 },
 	{ "script",	6 },
 	{ "fieldset",	8 },
