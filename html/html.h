@@ -47,10 +47,10 @@ int
 sdhtml_tag(const char *tag_data, size_t tag_size, const char *tagname);
 
 extern void
-sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
+sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *extra);
 
 extern void
-sdhtml_toc_renderer(struct mkd_renderer *renderer);
+sdhtml_toc_renderer(struct mkd_renderer *renderer, void *extra);
 
 extern void
 sdhtml_free_renderer(struct mkd_renderer *renderer);
