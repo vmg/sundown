@@ -62,7 +62,7 @@ main(int argc, char **argv)
 	for (i = 0; i < iterations; ++i) {
 		ob->size = 0;
 
-		sdhtml_renderer(&renderer, 0);
+		sdhtml_renderer(&renderer, 0, NULL);
 		sd_markdown(ob, ib, &renderer, ~0);
 		sdhtml_free_renderer(&renderer);
 	}
