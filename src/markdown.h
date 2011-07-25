@@ -46,6 +46,7 @@ enum mkd_extensions {
 	MKDEXT_STRIKETHROUGH = (1 << 4),
 	MKDEXT_LAX_HTML_BLOCKS = (1 << 5),
 	MKDEXT_SPACE_HEADERS = (1 << 6),
+	MKDEXT_SUPERSCRIPT = (1 << 7),
 };
 
 /* mkd_renderer • functions for rendering parsed data */
@@ -75,6 +76,7 @@ struct mkd_renderer {
 	int (*raw_html_tag)(struct buf *ob, struct buf *tag, void *opaque);
 	int (*triple_emphasis)(struct buf *ob, struct buf *text, void *opaque);
 	int (*strikethrough)(struct buf *ob, struct buf *text, void *opaque);
+	int (*superscript)(struct buf *ob, struct buf *text, void *opaque);
 
 	/* low level callbacks - NULL copies input directly into the output */
 	void (*entity)(struct buf *ob, struct buf *entity, void *opaque);

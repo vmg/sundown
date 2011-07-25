@@ -501,6 +501,16 @@ rndr_tablecell(struct buf *ob, struct buf *text, int align, void *opaque)
 	BUFPUTSL(ob, "</td>");
 }
 
+static int
+rndr_superscript(struct buf *ob, struct buf *text, void *opaque)
+{
+	if (!text || !text->size) return 0;
+	BUFPUTSL(ob, "<sup>");
+	bufput(ob, text->data, text->size);
+	BUFPUTSL(ob, "</sup>");
+	return 1;
+}
+
 static void
 rndr_normal_text(struct buf *ob, struct buf *text, void *opaque)
 {
@@ -573,6 +583,7 @@ sdhtml_toc_renderer(struct mkd_renderer *renderer, void *extra)
 		NULL,
 		rndr_triple_emphasis,
 		rndr_strikethrough,
+		rndr_superscript,
 
 		NULL,
 		NULL,
@@ -621,6 +632,7 @@ sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *
 		rndr_raw_html,
 		rndr_triple_emphasis,
 		rndr_strikethrough,
+		rndr_superscript,
 
 		NULL,
 		rndr_normal_text,

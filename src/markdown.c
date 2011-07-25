@@ -60,6 +60,7 @@ static size_t char_autolink_url(struct buf *ob, struct render *rndr, char *data,
 static size_t char_autolink_email(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size);
 static size_t char_autolink_www(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size);
 static size_t char_link(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size);
+static size_t char_superscript(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size);
 
 enum markdown_char_t {
 	MD_CHAR_NONE = 0,
@@ -72,7 +73,8 @@ enum markdown_char_t {
 	MD_CHAR_ENTITITY,
 	MD_CHAR_AUTOLINK_URL,
 	MD_CHAR_AUTOLINK_EMAIL,
-	MD_CHAR_AUTOLINK_WWW
+	MD_CHAR_AUTOLINK_WWW,
+	MD_CHAR_SUPERSCRIPT,
 };
 
 static char_trigger markdown_char_ptrs[] = {
@@ -87,6 +89,7 @@ static char_trigger markdown_char_ptrs[] = {
 	&char_autolink_url,
 	&char_autolink_email,
 	&char_autolink_www,
+	&char_superscript,
 };
 
 /* render • structure containing one particular render */
@@ -1021,7 +1024,43 @@ cleanup:
 	return ret ? i : 0;
 }
 
+static size_t
+char_superscript(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t size)
+{
+	size_t sup_start, sup_len;
+	struct buf *sup;
 
+	if (!rndr->make.superscript)
+		return 0;
+
+	if (size < 2)
+		return 0;
+
+	if (data[1] == '(') {
+		sup_start = sup_len = 2;
+
+		while (sup_len < size && data[sup_len] != ')' && data[sup_len - 1] != '\\')
+			sup_len++;
+
+		if (sup_len == size)
+			return 0;
+	} else {
+		sup_start = sup_len = 1;
+
+		while (sup_len < size && !isspace(data[sup_len]))
+			sup_len++;
+	}
+
+	if (sup_len - sup_start == 0)
+		return (sup_start == 2) ? 3 : 0;
+
+	sup = rndr_newbuf(rndr, BUFFER_SPAN);
+	parse_inline(sup, rndr, data + sup_start, sup_len - sup_start);
+	rndr->make.superscript(ob, sup, rndr->make.opaque);
+	rndr_popbuf(rndr, BUFFER_SPAN);
+
+	return (sup_start == 2) ? sup_len + 1 : sup_len;
+}
 
 /*********************************
  * BLOCK-LEVEL PARSING FUNCTIONS *
@@ -2178,6 +2217,9 @@ sd_markdown(struct buf *ob, struct buf *ib, const struct mkd_renderer *rndrer, u
 		rndr.active_char['@'] = MD_CHAR_AUTOLINK_EMAIL;
 		rndr.active_char['w'] = MD_CHAR_AUTOLINK_WWW;
 	}
+
+	if (extensions & MKDEXT_SUPERSCRIPT)
+		rndr.active_char['^'] = MD_CHAR_SUPERSCRIPT;
 
 	/* Extension data */
 	rndr.ext_flags = extensions;
