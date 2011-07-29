@@ -64,12 +64,13 @@ by our awesome contributors.
 - [Redcarpet](https://github.com/tanoku/redcarpet) (Ruby)
 - [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
 - [Misaka](https://github.com/FSX/misaka) (Python)
-- [ffi-Upskirt](https://github.com/postmodern/ffi-upskirt) (Ruby FFI)
+- [ffi-sundown](https://github.com/postmodern/ffi-sundown) (Ruby FFI)
 - [Upskirt HS](https://github.com/rostayob/upskirt) (Haskell)
 - [Goskirt](https://github.com/madari/goskirt) (Go)
 - [Upskirt.go](https://github.com/buu700/upskirt.go) (Go)
 - [MoonShine](https://github.com/brandonc/moonshine) (.NET)
-- [PHPSkirt](https://github.com/chobie/phpskirt) (PHP)
+- [PHP-Sundown](https://github.com/chobie/php-sundown) (PHP)
+- [Sundown.net](https://github.com/txdv/sundown.net) (.NET)
 
 Help us
 -------
