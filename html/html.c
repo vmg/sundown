@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
+
 struct html_renderopt {
 	void *extra;
 
@@ -32,7 +34,6 @@ struct html_renderopt {
 	} toc_data;
 
 	unsigned int flags;
-	const char *close_tag;
 };
 
 static inline void
@@ -223,9 +224,10 @@ rndr_blockcode_github(struct buf *ob, struct buf *text, struct buf *lang, void *
 static void
 rndr_blockquote(struct buf *ob, struct buf *text, void *opaque)
 {
+	if (ob->size) bufputc(ob, '\n');
 	BUFPUTSL(ob, "<blockquote>\n");
 	if (text) bufput(ob, text->data, text->size);
-	BUFPUTSL(ob, "</blockquote>");
+	BUFPUTSL(ob, "</blockquote>\n");
 }
 
 static int
@@ -370,8 +372,7 @@ rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 			 * trailing whitespace (which should be the case).
 			 */
 			if (text->data[i + 1] != '<' && text->data[i - 1] != '>') {
-				BUFPUTSL(ob, "<br");
-				bufputs(ob, options->close_tag);
+				bufputs(ob, USE_XHTML(options) ? "<br/>" : "<br>");
 			}
 
 			bufputc(ob, '\n');
@@ -413,8 +414,7 @@ rndr_hrule(struct buf *ob, void *opaque)
 {
 	struct html_renderopt *options = opaque;	
 	if (ob->size) bufputc(ob, '\n');
-	BUFPUTSL(ob, "<hr");
-	bufputs(ob, options->close_tag);
+	bufputs(ob, USE_XHTML(options) ? "<hr/>\n" : "<hr>\n");
 }
 
 static int
@@ -431,8 +431,7 @@ rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt,
 		BUFPUTSL(ob, "\" title=\"");
 		sdhtml_escape(ob, title->data, title->size); }
 
-	bufputc(ob, '"');
-	bufputs(ob, options->close_tag);
+	bufputs(ob, USE_XHTML(options) ? "\"/>" : "\">");
 	return 1;
 }
 
@@ -440,8 +439,7 @@ static int
 rndr_linebreak(struct buf *ob, void *opaque)
 {
 	struct html_renderopt *options = opaque;	
-	BUFPUTSL(ob, "<br");
-	bufputs(ob, options->close_tag);
+	bufputs(ob, USE_XHTML(options) ? "<br/>\n" : "<br>\n");
 	return 1;
 }
 
@@ -473,26 +471,24 @@ rndr_table(struct buf *ob, struct buf *header, struct buf *body, void *opaque)
 	BUFPUTSL(ob, "<table><thead>\n");
 	if (header)
 		bufput(ob, header->data, header->size);
-	BUFPUTSL(ob, "\n</thead><tbody>\n");
+	BUFPUTSL(ob, "</thead><tbody>\n");
 	if (body)
 		bufput(ob, body->data, body->size);
-	BUFPUTSL(ob, "\n</tbody></table>");
+	BUFPUTSL(ob, "</tbody></table>\n");
 }
 
 static void
 rndr_tablerow(struct buf *ob, struct buf *text, void *opaque)
 {
-	if (ob->size) bufputc(ob, '\n');
 	BUFPUTSL(ob, "<tr>\n");
 	if (text)
 		bufput(ob, text->data, text->size);
-	BUFPUTSL(ob, "\n</tr>");
+	BUFPUTSL(ob, "</tr>\n");
 }
 
 static void
 rndr_tablecell(struct buf *ob, struct buf *text, int align, void *opaque)
 {
-	if (ob->size) bufputc(ob, '\n');
 	switch (align) {
 	case MKD_TABLE_ALIGN_L:
 		BUFPUTSL(ob, "<td align=\"left\">");
@@ -513,7 +509,7 @@ rndr_tablecell(struct buf *ob, struct buf *text, int align, void *opaque)
 
 	if (text)
 		bufput(ob, text->data, text->size);
-	BUFPUTSL(ob, "</td>");
+	BUFPUTSL(ob, "</td>\n");
 }
 
 static int
@@ -621,9 +617,6 @@ sdhtml_toc_renderer(struct mkd_renderer *renderer, void *extra)
 void
 sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *extra)
 {
-	static const char *xhtml_close = "/>\n";
-	static const char *html_close = ">\n";
-
 	static const struct mkd_renderer renderer_default = {
 		rndr_blockcode,
 		rndr_blockquote,
@@ -661,7 +654,6 @@ sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *
 	struct html_renderopt *options;	
 	options = calloc(1, sizeof(struct html_renderopt));
 	options->flags = render_flags;
-	options->close_tag = (render_flags & HTML_USE_XHTML) ? xhtml_close : html_close;
 	options->extra = extra;
 
 	memcpy(renderer, &renderer_default, sizeof(struct mkd_renderer));
