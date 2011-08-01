@@ -274,6 +274,14 @@ rndr_emphasis(struct buf *ob, struct buf *text, void *opaque)
 	return 1;
 }
 
+static int
+rndr_linebreak(struct buf *ob, void *opaque)
+{
+	struct html_renderopt *options = opaque;	
+	bufputs(ob, USE_XHTML(options) ? "<br/>\n" : "<br>\n");
+	return 1;
+}
+
 static void
 rndr_header(struct buf *ob, struct buf *text, int level, void *opaque)
 {
@@ -364,18 +372,7 @@ rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 			if (i >= text->size - 1)
 				break;
 			
-			/*
-			 * check that this newline is not between HTML tags;
-			 * if this is so, we shouldn't print a line break.
-			 *
-			 * note that this assumes that Sundown generates no
-			 * trailing whitespace (which should be the case).
-			 */
-			if (text->data[i + 1] != '<' && text->data[i - 1] != '>') {
-				bufputs(ob, USE_XHTML(options) ? "<br/>" : "<br>");
-			}
-
-			bufputc(ob, '\n');
+			rndr_linebreak(ob, opaque);
 			i++;
 		}
 	} else {
@@ -432,14 +429,6 @@ rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt,
 		sdhtml_escape(ob, title->data, title->size); }
 
 	bufputs(ob, USE_XHTML(options) ? "\"/>" : "\">");
-	return 1;
-}
-
-static int
-rndr_linebreak(struct buf *ob, void *opaque)
-{
-	struct html_renderopt *options = opaque;	
-	bufputs(ob, USE_XHTML(options) ? "<br/>\n" : "<br>\n");
 	return 1;
 }
 
