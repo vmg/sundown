@@ -355,11 +355,26 @@ rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 			if (i > org)
 				bufput(ob, text->data + org, i - org);
 
-			if (i >= text->size)
+			/*
+			 * do not insert a line break if this newline
+			 * is the last character on the paragraph
+			 */
+			if (i >= text->size - 1)
 				break;
+			
+			/*
+			 * check that this newline is not between HTML tags;
+			 * if this is so, we shouldn't print a line break.
+			 *
+			 * note that this assumes that Sundown generates no
+			 * trailing whitespace (which should be the case).
+			 */
+			if (text->data[i + 1] != '<' && text->data[i - 1] != '>') {
+				BUFPUTSL(ob, "<br");
+				bufputs(ob, options->close_tag);
+			}
 
-			BUFPUTSL(ob, "<br");
-			bufputs(ob, options->close_tag);
+			bufputc(ob, '\n');
 			i++;
 		}
 	} else {
