@@ -1,5 +1,5 @@
 *.o
-libupskirt.so*
-upskirt
+libsundown.so*
+sundown
 smartypants
 *.exe
