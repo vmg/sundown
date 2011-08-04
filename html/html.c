@@ -25,17 +25,6 @@
 
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
-struct html_renderopt {
-	void *extra;
-
-	struct {
-		int header_count;
-		int current_level;
-	} toc_data;
-
-	unsigned int flags;
-};
-
 static inline void
 put_scaped_char(struct buf *ob, char c)
 {
@@ -122,7 +111,14 @@ rndr_autolink(struct buf *ob, struct buf *link, enum mkd_autolink type, void *op
 	if (type == MKDA_EMAIL)
 		BUFPUTSL(ob, "mailto:");
 	bufput(ob, link->data, link->size);
-	BUFPUTSL(ob, "\">");
+
+	if (options->link_attributes) {
+		bufputc(ob, '\"');
+		options->link_attributes(ob, link, opaque);
+		bufputc(ob, '>');
+	} else {
+		BUFPUTSL(ob, "\">");
+	}
 
 	/*
 	 * Pretty printing: if we get an email address as
@@ -308,11 +304,23 @@ rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *conte
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
-	if (link && link->size) bufput(ob, link->data, link->size);
+
+	if (link && link->size)
+		bufput(ob, link->data, link->size);
+
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
-		sdhtml_escape(ob, title->data, title->size); }
-	BUFPUTSL(ob, "\">");
+		sdhtml_escape(ob, title->data, title->size);
+	}
+
+	if (options->link_attributes) {
+		bufputc(ob, '\"');
+		options->link_attributes(ob, link, opaque);
+		bufputc(ob, '>');
+	} else {
+		BUFPUTSL(ob, "\">");
+	}
+
 	if (content && content->size) bufput(ob, content->data, content->size);
 	BUFPUTSL(ob, "</a>");
 	return 1;
@@ -558,7 +566,7 @@ toc_finalize(struct buf *ob, void *opaque)
 }
 
 void
-sdhtml_toc_renderer(struct mkd_renderer *renderer, void *extra)
+sdhtml_toc_renderer(struct mkd_renderer *renderer, struct html_renderopt *options)
 {
 	static const struct mkd_renderer toc_render = {
 		NULL,
@@ -594,17 +602,17 @@ sdhtml_toc_renderer(struct mkd_renderer *renderer, void *extra)
 		NULL
 	};
 
-	struct html_renderopt *options;	
-	options = calloc(1, sizeof(struct html_renderopt));
+	if (options == NULL)
+		options = calloc(1, sizeof(struct html_renderopt));
+
 	options->flags = HTML_TOC;
-	options->extra = extra;
 
 	memcpy(renderer, &toc_render, sizeof(struct mkd_renderer));
 	renderer->opaque = options;
 }
 
 void
-sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *extra)
+sdhtml_renderer(struct mkd_renderer *renderer, struct html_renderopt *options, unsigned int render_flags)
 {
 	static const struct mkd_renderer renderer_default = {
 		rndr_blockcode,
@@ -640,10 +648,10 @@ sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *
 		NULL
 	};
 
-	struct html_renderopt *options;	
-	options = calloc(1, sizeof(struct html_renderopt));
+	if (options == NULL)
+		options = calloc(1, sizeof(struct html_renderopt));
+
 	options->flags = render_flags;
-	options->extra = extra;
 
 	memcpy(renderer, &renderer_default, sizeof(struct mkd_renderer));
 	renderer->opaque = options;
@@ -662,10 +670,3 @@ sdhtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags, void *
 	if (render_flags & HTML_GITHUB_BLOCKCODE)
 		renderer->blockcode = rndr_blockcode_github;
 }
-
-void
-sdhtml_free_renderer(struct mkd_renderer *renderer)
-{
-	free(renderer->opaque);
-}
-

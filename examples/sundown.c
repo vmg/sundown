@@ -33,7 +33,10 @@ main(int argc, char **argv)
 	struct buf *ib, *ob;
 	int ret;
 	FILE *in = stdin;
+
 	struct mkd_renderer renderer;
+	struct html_renderopt options;
+
 	size_t i, iterations = 1;
 
 	/* opening the file if given from the command line */
@@ -62,9 +65,8 @@ main(int argc, char **argv)
 	for (i = 0; i < iterations; ++i) {
 		ob->size = 0;
 
-		sdhtml_renderer(&renderer, 0, NULL);
+		sdhtml_renderer(&renderer, &options, 0);
 		sd_markdown(ob, ib, &renderer, ~0);
-		sdhtml_free_renderer(&renderer);
 	}
 
 	/* writing the result to stdout */
