@@ -44,7 +44,7 @@ typedef enum {
 	HTML_HARD_WRAP = (1 << 9),
 	HTML_GITHUB_BLOCKCODE = (1 << 10),
 	HTML_USE_XHTML = (1 << 11),
-} render_mode;
+} html_render_mode;
 
 typedef enum {
 	HTML_TAG_NONE = 0,
@@ -59,10 +59,10 @@ int
 sdhtml_tag(const char *tag_data, size_t tag_size, const char *tagname);
 
 extern void
-sdhtml_renderer(struct mkd_renderer *renderer, struct html_renderopt *options_ptr, unsigned int render_flags);
+sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options_ptr, unsigned int render_flags);
 
 extern void
-sdhtml_toc_renderer(struct mkd_renderer *renderer, struct html_renderopt *options_ptr);
+sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options_ptr);
 
 extern void
 sdhtml_smartypants(struct buf *ob, struct buf *text);

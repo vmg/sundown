@@ -34,10 +34,8 @@ main(int argc, char **argv)
 	int ret;
 	FILE *in = stdin;
 
-	struct mkd_renderer renderer;
+	struct sd_callbacks callbacks;
 	struct html_renderopt options;
-
-	size_t i, iterations = 1;
 
 	/* opening the file if given from the command line */
 	if (argc > 1) {
@@ -62,12 +60,8 @@ main(int argc, char **argv)
 	/* performing markdown parsing */
 	ob = bufnew(OUTPUT_UNIT);
 
-	for (i = 0; i < iterations; ++i) {
-		ob->size = 0;
-
-		sdhtml_renderer(&renderer, &options, 0);
-		sd_markdown(ob, ib, &renderer, ~0);
-	}
+	sdhtml_renderer(&callbacks, &options, 0);
+	sd_markdown(ob, ib, ~0, &callbacks, &options);
 
 	/* writing the result to stdout */
 	ret = fwrite(ob->data, 1, ob->size, stdout);

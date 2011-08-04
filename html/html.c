@@ -566,9 +566,9 @@ toc_finalize(struct buf *ob, void *opaque)
 }
 
 void
-sdhtml_toc_renderer(struct mkd_renderer *renderer, struct html_renderopt *options)
+sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options)
 {
-	static const struct mkd_renderer toc_render = {
+	static const struct sd_callbacks cb_default = {
 		NULL,
 		NULL,
 		NULL,
@@ -598,23 +598,18 @@ sdhtml_toc_renderer(struct mkd_renderer *renderer, struct html_renderopt *option
 
 		NULL,
 		toc_finalize,
-
-		NULL
 	};
 
-	if (options == NULL)
-		options = calloc(1, sizeof(struct html_renderopt));
-
+	memset(options, 0x0, sizeof(struct html_renderopt));
 	options->flags = HTML_TOC;
 
-	memcpy(renderer, &toc_render, sizeof(struct mkd_renderer));
-	renderer->opaque = options;
+	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
 }
 
 void
-sdhtml_renderer(struct mkd_renderer *renderer, struct html_renderopt *options, unsigned int render_flags)
+sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, unsigned int render_flags)
 {
-	static const struct mkd_renderer renderer_default = {
+	static const struct sd_callbacks cb_default = {
 		rndr_blockcode,
 		rndr_blockquote,
 		rndr_raw_block,
@@ -644,29 +639,26 @@ sdhtml_renderer(struct mkd_renderer *renderer, struct html_renderopt *options, u
 
 		NULL,
 		NULL,
-
-		NULL
 	};
 
-	if (options == NULL)
-		options = calloc(1, sizeof(struct html_renderopt));
-
+	/* Prepare the options pointer */
+	memset(options, 0x0, sizeof(struct html_renderopt));
 	options->flags = render_flags;
 
-	memcpy(renderer, &renderer_default, sizeof(struct mkd_renderer));
-	renderer->opaque = options;
+	/* Prepare the callbacks */
+	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
 
 	if (render_flags & HTML_SKIP_IMAGES)
-		renderer->image = NULL;
+		callbacks->image = NULL;
 
 	if (render_flags & HTML_SKIP_LINKS) {
-		renderer->link = NULL;
-		renderer->autolink = NULL;
+		callbacks->link = NULL;
+		callbacks->autolink = NULL;
 	}
 
 	if (render_flags & HTML_SKIP_HTML)
-		renderer->blockhtml = NULL;
+		callbacks->blockhtml = NULL;
 
 	if (render_flags & HTML_GITHUB_BLOCKCODE)
-		renderer->blockcode = rndr_blockcode_github;
+		callbacks->blockcode = rndr_blockcode_github;
 }
