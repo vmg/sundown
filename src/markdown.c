@@ -29,6 +29,9 @@
 #define BUFFER_BLOCK 0
 #define BUFFER_SPAN 1
 
+#define TABLE_HEADER 0
+#define TABLE_BODY 1
+
 #define MKD_LI_END 8	/* internal list flag */
 
 /***************
@@ -1808,10 +1811,11 @@ parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, in
 }
 
 static void
-parse_table_row(struct buf *ob, struct render *rndr, char *data, size_t size, size_t columns, int *col_data)
+parse_table_row(struct buf *ob, struct render *rndr, char *data, size_t size, size_t columns, int *col_data, int row_type)
 {
 	size_t i = 0, col;
 	struct buf *row_work = 0;
+	int base_flags = (row_type) == TABLE_HEADER ? MKD_TABLE_HEADER : 0;
 
 	row_work = rndr_newbuf(rndr, BUFFER_SPAN);
 
@@ -1821,6 +1825,7 @@ parse_table_row(struct buf *ob, struct render *rndr, char *data, size_t size, si
 	for (col = 0; col < columns && i < size; ++col) {
 		size_t cell_start, cell_end;
 		struct buf *cell_work;
+		int flags = base_flags;
 
 		cell_work = rndr_newbuf(rndr, BUFFER_SPAN);
 
@@ -1838,8 +1843,11 @@ parse_table_row(struct buf *ob, struct render *rndr, char *data, size_t size, si
 			cell_end--;
 
 		parse_inline(cell_work, rndr, data + cell_start, 1 + cell_end - cell_start);
-		if (rndr->cb.table_cell)
-			rndr->cb.table_cell(row_work, cell_work, col_data ? col_data[col] : 0, rndr->opaque);
+		if (rndr->cb.table_cell) {
+			if (col_data) {
+				flags |= col_data[col]; }
+			rndr->cb.table_cell(row_work, cell_work, flags, rndr->opaque);
+		}
 
 		rndr_popbuf(rndr, BUFFER_SPAN);
 		i++;
@@ -1847,8 +1855,12 @@ parse_table_row(struct buf *ob, struct render *rndr, char *data, size_t size, si
 
 	for (; col < columns; ++col) {
 		struct buf empty_cell = {0, 0, 0, 0, 0};
-		if (rndr->cb.table_cell)
-			rndr->cb.table_cell(row_work, &empty_cell, col_data ? col_data[col] : 0, rndr->opaque);
+		int flags = base_flags;
+		if (rndr->cb.table_cell) {
+			if (col_data) {
+				flags |= col_data[col]; }
+			rndr->cb.table_cell(row_work, &empty_cell, flags, rndr->opaque);
+		}
 	}
 
 	if (rndr->cb.table_row)
@@ -1926,7 +1938,7 @@ parse_table_header(struct buf *ob, struct render *rndr, char *data, size_t size,
 	if (col < *columns)
 		return 0;
 
-	parse_table_row(ob, rndr, data, header_end, *columns, *column_data);
+	parse_table_row(ob, rndr, data, header_end, *columns, *column_data, TABLE_HEADER);
 	return under_end + 1;
 }
 
@@ -1962,7 +1974,7 @@ parse_table(struct buf *ob, struct render *rndr, char *data, size_t size)
 				break;
 			}
 
-			parse_table_row(body_work, rndr, data + row_start, i - row_start, columns, col_data);
+			parse_table_row(body_work, rndr, data + row_start, i - row_start, columns, col_data, TABLE_BODY);
 			i++;
 		}
 

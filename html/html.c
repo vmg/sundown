@@ -484,29 +484,32 @@ rndr_tablerow(struct buf *ob, struct buf *text, void *opaque)
 }
 
 static void
-rndr_tablecell(struct buf *ob, struct buf *text, int align, void *opaque)
+rndr_tablecell(struct buf *ob, struct buf *text, int flags, void *opaque)
 {
-	switch (align) {
-	case MKD_TABLE_ALIGN_L:
-		BUFPUTSL(ob, "<td align=\"left\">");
-		break;
+	if ((flags & MKD_TABLE_HEADER) == MKD_TABLE_HEADER) {
+		BUFPUTSL(ob, "<th");
+	} else {
+		BUFPUTSL(ob, "<td");
+	}
 
-	case MKD_TABLE_ALIGN_R:
-		BUFPUTSL(ob, "<td align=\"right\">");
-		break;
-
-	case MKD_TABLE_ALIGN_CENTER:
-		BUFPUTSL(ob, "<td align=\"center\">");
-		break;
-
-	default:
-		BUFPUTSL(ob, "<td>");
-		break;
+	if ((flags & MKD_TABLE_ALIGN_CENTER) == MKD_TABLE_ALIGN_CENTER) {
+		BUFPUTSL(ob, " align=\"center\">");
+	} else if ((flags & MKD_TABLE_ALIGN_L) == MKD_TABLE_ALIGN_L) {
+		BUFPUTSL(ob, " align=\"left\">");
+	} else if ((flags & MKD_TABLE_ALIGN_R) == MKD_TABLE_ALIGN_R) {
+		BUFPUTSL(ob, " align=\"right\">");
+	} else {
+		BUFPUTSL(ob, ">");
 	}
 
 	if (text)
 		bufput(ob, text->data, text->size);
-	BUFPUTSL(ob, "</td>\n");
+
+	if (flags & MKD_TABLE_HEADER) {
+		BUFPUTSL(ob, "</th>\n");
+	} else {
+		BUFPUTSL(ob, "</td>\n");
+	}
 }
 
 static int
