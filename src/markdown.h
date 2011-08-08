@@ -99,6 +99,8 @@ struct sd_callbacks {
 #define MKD_TABLE_ALIGN_R (1 << 1)
 #define MKD_TABLE_ALIGN_CENTER (MKD_TABLE_ALIGN_L | MKD_TABLE_ALIGN_R)
 
+#define MKD_TABLE_HEADER (1 << 2)
+
 /**********************
  * EXPORTED FUNCTIONS *
  **********************/
