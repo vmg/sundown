@@ -300,7 +300,7 @@ rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *conte
 {
 	struct html_renderopt *options = opaque;
 	
-	if ((options->flags & HTML_SAFELINK) != 0 && !sd_autolink_issafe(link->data, link->size))
+	if (link != NULL && (options->flags & HTML_SAFELINK) != 0 && !sd_autolink_issafe(link->data, link->size))
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
