@@ -486,19 +486,26 @@ rndr_tablerow(struct buf *ob, struct buf *text, void *opaque)
 static void
 rndr_tablecell(struct buf *ob, struct buf *text, int flags, void *opaque)
 {
-	if ((flags & MKD_TABLE_HEADER) == MKD_TABLE_HEADER) {
+	if (flags & MKD_TABLE_HEADER) {
 		BUFPUTSL(ob, "<th");
 	} else {
 		BUFPUTSL(ob, "<td");
 	}
 
-	if ((flags & MKD_TABLE_ALIGN_CENTER) == MKD_TABLE_ALIGN_CENTER) {
+	switch (flags & MKD_TABLE_ALIGNMASK) {
+	case MKD_TABLE_ALIGN_CENTER:
 		BUFPUTSL(ob, " align=\"center\">");
-	} else if ((flags & MKD_TABLE_ALIGN_L) == MKD_TABLE_ALIGN_L) {
+		break;
+
+	case MKD_TABLE_ALIGN_L:
 		BUFPUTSL(ob, " align=\"left\">");
-	} else if ((flags & MKD_TABLE_ALIGN_R) == MKD_TABLE_ALIGN_R) {
+		break;
+
+	case MKD_TABLE_ALIGN_R:
 		BUFPUTSL(ob, " align=\"right\">");
-	} else {
+		break;
+
+	default:
 		BUFPUTSL(ob, ">");
 	}
 

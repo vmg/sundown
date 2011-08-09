@@ -38,6 +38,14 @@ enum mkd_autolink {
 	MKDA_EMAIL,			/* e-mail link without explit mailto: */
 };
 
+enum mkd_tableflags {
+	MKD_TABLE_ALIGN_L = 1,
+	MKD_TABLE_ALIGN_R = 2,
+	MKD_TABLE_ALIGN_CENTER = 3,
+	MKD_TABLE_ALIGNMASK = 3,
+	MKD_TABLE_HEADER = 4
+};
+
 enum mkd_extensions {
 	MKDEXT_NO_INTRA_EMPHASIS = (1 << 0),
 	MKDEXT_TABLES = (1 << 1),
@@ -94,12 +102,6 @@ struct sd_callbacks {
 /* list/listitem flags */
 #define MKD_LIST_ORDERED	1
 #define MKD_LI_BLOCK		2  /* <li> containing block data */
-
-#define MKD_TABLE_ALIGN_L (1 << 0)
-#define MKD_TABLE_ALIGN_R (1 << 1)
-#define MKD_TABLE_ALIGN_CENTER (MKD_TABLE_ALIGN_L | MKD_TABLE_ALIGN_R)
-
-#define MKD_TABLE_HEADER (1 << 2)
 
 /**********************
  * EXPORTED FUNCTIONS *
