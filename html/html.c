@@ -110,7 +110,7 @@ rndr_autolink(struct buf *ob, struct buf *link, enum mkd_autolink type, void *op
 	BUFPUTSL(ob, "<a href=\"");
 	if (type == MKDA_EMAIL)
 		BUFPUTSL(ob, "mailto:");
-	bufput(ob, link->data, link->size);
+	sdhtml_escape(ob, link->data, link->size);
 
 	if (options->link_attributes) {
 		bufputc(ob, '\"');
@@ -306,7 +306,7 @@ rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *conte
 	BUFPUTSL(ob, "<a href=\"");
 
 	if (link && link->size)
-		bufput(ob, link->data, link->size);
+		sdhtml_escape(ob, link->data, link->size);
 
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
