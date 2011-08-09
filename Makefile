@@ -19,7 +19,7 @@ DEPDIR=depends
 # "Machine-dependant" options
 #MFLAGS=-fPIC
 
-CFLAGS=-c -g -O3 -Wall -Werror -Isrc -Ihtml $(MFLAGS)
+CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Isrc -Ihtml $(MFLAGS)
 LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
