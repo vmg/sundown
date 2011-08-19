@@ -541,24 +541,26 @@ toc_header(struct buf *ob, struct buf *text, int level, void *opaque)
 {
 	struct html_renderopt *options = opaque;
 
-	while (level > options->toc_data.current_level) {
-		if (options->toc_data.current_level > 0)
-			BUFPUTSL(ob, "<li>");
-		BUFPUTSL(ob, "<ul>\n");
-		options->toc_data.current_level++;
+	if (level > options->toc_data.current_level) {
+		while (level > options->toc_data.current_level) {
+			BUFPUTSL(ob, "<ul>\n<li>\n");
+			options->toc_data.current_level++;
+		}
+	} else if (level < options->toc_data.current_level) {
+		BUFPUTSL(ob, "</li>\n");
+		while (level < options->toc_data.current_level) {
+			BUFPUTSL(ob, "</ul>\n</li>\n");
+			options->toc_data.current_level--;
+		}
+		BUFPUTSL(ob,"<li>\n");
+	} else {
+		BUFPUTSL(ob,"</li>\n<li>\n");
 	}
 
-	while (level < options->toc_data.current_level) {
-		BUFPUTSL(ob, "</ul>");
-		if (options->toc_data.current_level > 1)
-			BUFPUTSL(ob, "</li>\n");
-		options->toc_data.current_level--;
-	}
-
-	bufprintf(ob, "<li><a href=\"#toc_%d\">", options->toc_data.header_count++);
+	bufprintf(ob, "<a href=\"#toc_%d\">", options->toc_data.header_count++);
 	if (text)
 		bufput(ob, text->data, text->size);
-	BUFPUTSL(ob, "</a></li>\n");
+	BUFPUTSL(ob, "</a>\n");
 }
 
 static void
@@ -566,13 +568,10 @@ toc_finalize(struct buf *ob, void *opaque)
 {
 	struct html_renderopt *options = opaque;
 
-	while (options->toc_data.current_level > 1) {
-		BUFPUTSL(ob, "</ul></li>\n");
+	while (options->toc_data.current_level > 0) {
+		BUFPUTSL(ob, "</li>\n</ul>\n");
 		options->toc_data.current_level--;
 	}
-
-	if (options->toc_data.current_level)
-		BUFPUTSL(ob, "</ul>\n");
 }
 
 void
