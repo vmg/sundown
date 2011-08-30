@@ -31,6 +31,11 @@
 
 #define MKD_LI_END 8	/* internal list flag */
 
+#define gperf_case_strncmp(s1, s2, n) strncasecmp(s1, s2, n)
+#define GPERF_DOWNCASE 1
+#define GPERF_CASE_STRNCMP 1
+#include "html_blocks.h"
+
 /***************
  * LOCAL TYPES *
  ***************/
@@ -104,11 +109,9 @@ struct render {
 	size_t max_nesting;
 };
 
-/* html_tag • structure for quick HTML tag search (inspired from discount) */
-struct html_tag {
-	const char *text;
-	size_t size;
-};
+/***************************
+ * HELPER FUNCTIONS *
+ ***************************/
 
 static inline struct buf *
 rndr_newbuf(struct render *rndr, int type)
@@ -134,43 +137,6 @@ rndr_popbuf(struct render *rndr, int type)
 	rndr->work_bufs[type].size--;
 }
 
-/********************
- * GLOBAL VARIABLES *
- ********************/
-
-/* block_tags • recognised block tags, sorted by cmp_html_tag */
-static struct html_tag block_tags[] = {
-/*0*/	{ "p",		1 },
-	{ "dl",		2 },
-	{ "h1",		2 },
-	{ "h2",		2 },
-	{ "h3",		2 },
-	{ "h4",		2 },
-	{ "h5",		2 },
-	{ "h6",		2 },
-	{ "ol",		2 },
-	{ "ul",		2 },
-	{ "del",	3 }, /* 10 */
-	{ "div",	3 },
-	{ "ins",	3 }, /* 12 */
-	{ "pre",	3 },
-	{ "form",	4 },
-	{ "math",	4 },
-	{ "table",	5 },
-	{ "figure",	6 },
-	{ "iframe",	6 },
-	{ "script",	6 },
-	{ "fieldset",	8 },
-	{ "noscript",	8 },
-	{ "blockquote",	10 }
-};
-
-#define INS_TAG (block_tags + 12)
-#define DEL_TAG (block_tags + 10)
-
-/***************************
- * HELPER FUNCTIONS *
- ***************************/
 static void
 unscape_text(struct buf *ob, struct buf *src)
 {
@@ -206,39 +172,6 @@ cmp_link_ref_sort(const void *a, const void *b)
 	const struct link_ref *lra = a;
 	const struct link_ref *lrb = b;
 	return bufcasecmp(lra->id, lrb->id);
-}
-
-/* cmp_html_tag • comparison function for bsearch() (stolen from discount) */
-static int
-cmp_html_tag(const void *a, const void *b)
-{
-	const struct html_tag *hta = a;
-	const struct html_tag *htb = b;
-	if (hta->size != htb->size) return (int)(hta->size - htb->size);
-	return strncasecmp(hta->text, htb->text, hta->size);
-}
-
-
-/* find_block_tag • returns the current block tag */
-static struct html_tag *
-find_block_tag(char *data, size_t size)
-{
-	size_t i = 0;
-	struct html_tag key;
-
-	/* looking for the word end */
-	while (i < size && ((data[i] >= '0' && data[i] <= '9')
-				|| (data[i] >= 'A' && data[i] <= 'Z')
-				|| (data[i] >= 'a' && data[i] <= 'z')))
-		i++;
-	if (i >= size) return 0;
-
-	/* binary search of the tag */
-	key.text = data;
-	key.size = i;
-	return bsearch(&key, block_tags,
-				sizeof block_tags / sizeof block_tags[0],
-				sizeof block_tags[0], cmp_html_tag);
 }
 
 /****************************
@@ -1680,20 +1613,18 @@ parse_atxheader(struct buf *ob, struct render *rndr, char *data, size_t size)
 /* htmlblock_end • checking end of HTML block : </tag>[ \t]*\n[ \t*]\n */
 /*	returns the length on match, 0 otherwise */
 static size_t
-htmlblock_end(struct html_tag *tag, struct render *rndr, char *data, size_t size)
+htmlblock_end(const char *tag, size_t tag_len, struct render *rndr, char *data, size_t size)
 {
 	size_t i, w;
 
-	/* assuming data[0] == '<' && data[1] == '/' already tested */
-
 	/* checking if tag is a match */
-	if (tag->size + 3 >= size
-	|| strncasecmp(data + 2, tag->text, tag->size)
-	|| data[tag->size + 2] != '>')
+	if (tag_len + 3 >= size ||
+		strncasecmp(data + 2, tag, tag_len) != 0 ||
+		data[tag_len + 2] != '>')
 		return 0;
 
 	/* checking white lines */
-	i = tag->size + 3;
+	i = tag_len + 3;
 	w = 0;
 	if (i < size && (w = is_empty(data + i, size - i)) == 0)
 		return 0; /* non-blank after tag */
@@ -1717,7 +1648,7 @@ static size_t
 parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, int do_render)
 {
 	size_t i, j = 0;
-	struct html_tag *curtag;
+	const char *curtag;
 	int found;
 	struct buf work = { data, 0, 0, 0, 0 };
 
@@ -1777,17 +1708,18 @@ parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, in
 
 	/* if not found, trying a second pass looking for indented match */
 	/* but not if tag is "ins" or "del" (following original Markdown.pl) */
-	if (curtag != INS_TAG && curtag != DEL_TAG) {
+	if (strcmp(curtag, "ins") != 0 && strcmp(curtag, "del") != 0) {
+		size_t tag_size = strlen(curtag);
 		i = 1;
 		while (i < size) {
 			i++;
 			while (i < size && !(data[i - 1] == '<' && data[i] == '/'))
 				i++;
 
-			if (i + 2 + curtag->size >= size)
+			if (i + 2 + tag_size >= size)
 				break;
 
-			j = htmlblock_end(curtag, rndr, data + i - 1, size - i + 1);
+			j = htmlblock_end(curtag, tag_size, rndr, data + i - 1, size - i + 1);
 
 			if (j) {
 				i += j - 1;

@@ -23,7 +23,7 @@ CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Isrc -Ihtml $(MFLAGS)
 LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
-all:		libsundown.so sundown smartypants
+all:		libsundown.so sundown smartypants html_blocks
 
 .PHONY:		all clean
 
@@ -42,6 +42,13 @@ sundown:	examples/sundown.o src/markdown.o src/array.o src/autolink.o src/buffer
 
 smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o html/html.o src/autolink.o
 	$(CC) $(LDFLAGS) $^ -o $@
+
+# perfect hashing
+html_blocks: src/html_blocks.h
+
+src/html_blocks.h: html_block_names.txt
+	gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case $^ > $@
+
 
 # housekeeping
 clean:
