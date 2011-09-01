@@ -36,6 +36,7 @@ main(int argc, char **argv)
 
 	struct sd_callbacks callbacks;
 	struct html_renderopt options;
+	struct sd_markdown *markdown;
 
 	/* opening the file if given from the command line */
 	if (argc > 1) {
@@ -61,7 +62,10 @@ main(int argc, char **argv)
 	ob = bufnew(OUTPUT_UNIT);
 
 	sdhtml_renderer(&callbacks, &options, 0);
-	sd_markdown(ob, ib, ~0, &callbacks, &options);
+	markdown = sd_markdown_new(0, 16, &callbacks, &options);
+
+	sd_markdown_render(ob, ib, markdown);
+	sd_markdown_free(markdown);
 
 	/* writing the result to stdout */
 	ret = fwrite(ob->data, 1, ob->size, stdout);

@@ -95,6 +95,8 @@ struct sd_callbacks {
 	void (*doc_footer)(struct buf *ob, void *opaque);
 };
 
+struct sd_markdown;
+
 /*********
  * FLAGS *
  *********/
@@ -107,11 +109,19 @@ struct sd_callbacks {
  * EXPORTED FUNCTIONS *
  **********************/
 
-/* sd_markdown * parses the input buffer and renders it into the output buffer */
-extern void
-sd_markdown(struct buf *ob, const struct buf *ib, unsigned int extensions, const struct sd_callbacks *rndr, void *opaque);
+extern struct sd_markdown *
+sd_markdown_new(
+	unsigned int extensions,
+	size_t max_nesting,
+	const struct sd_callbacks *callbacks,
+	void *opaque); 
 
-/* sd_version * returns the library version as major.minor.rev */
+extern void
+sd_markdown_render(struct buf *ob, const struct buf *ib, struct sd_markdown *md);
+
+extern void
+sd_markdown_free(struct sd_markdown *md);
+
 extern void
 sd_version(int *major, int *minor, int *revision);
 
