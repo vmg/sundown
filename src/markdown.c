@@ -471,11 +471,6 @@ parse_emph1(struct buf *ob, struct sd_markdown *rndr, char *data, size_t size, c
 		i += len;
 		if (i >= size) return 0;
 
-		if (i + 1 < size && data[i + 1] == c) {
-			i++;
-			continue;
-		}
-
 		if (data[i] == c && !isspace(data[i - 1])) {
 
 			if (rndr->ext_flags & MKDEXT_NO_INTRA_EMPHASIS) {
