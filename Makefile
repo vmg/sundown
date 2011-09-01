@@ -32,12 +32,12 @@ all:		libsundown.so sundown smartypants html_blocks
 libsundown.so:	libsundown.so.1
 	ln -f -s $^ $@
 
-libsundown.so.1: src/markdown.o src/array.o src/buffer.o src/autolink.o html/html.o html/html_smartypants.o
+libsundown.so.1: src/markdown.o src/stack.o src/buffer.o src/autolink.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
 
 # executables
 
-sundown:	examples/sundown.o src/markdown.o src/array.o src/autolink.o src/buffer.o html/html.o html/html_smartypants.o
+sundown:	examples/sundown.o src/markdown.o src/stack.o src/autolink.o src/buffer.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) $^ -o $@
 
 smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o html/html.o src/autolink.o

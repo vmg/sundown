@@ -18,13 +18,14 @@
  */
 
 #include "markdown.h"
-#include "array.h"
+#include "stack.h"
 
 #include <assert.h>
 #include <string.h>
-//#include <strings.h> /* for strncasecmp */
 #include <ctype.h>
 #include <stdio.h>
+
+#define REF_TABLE_SIZE 8
 
 #define BUFFER_BLOCK 0
 #define BUFFER_SPAN 1
@@ -40,14 +41,17 @@
  * LOCAL TYPES *
  ***************/
 
-/* link_ref • reference to a link */
+/* link_ref: reference to a link */
 struct link_ref {
-	struct buf *id;
-	struct buf *link;
-	struct buf *title;
+	unsigned int id;
+
+	struct buf link;
+	struct buf title;
+
+	struct link_ref *next;
 };
 
-/* char_trigger • function pointer to render active chars */
+/* char_trigger: function pointer to render active chars */
 /*   returns the number of chars taken care of */
 /*   data is the pointer of the beginning of the span */
 /*   offset is the number of valid chars before data */
@@ -102,9 +106,9 @@ struct render {
 	struct sd_callbacks	cb;
 	void *opaque;
 
-	struct array refs;
+	struct link_ref *refs[REF_TABLE_SIZE];
 	char active_char[256];
-	struct parray work_bufs[2];
+	struct stack work_bufs[2];
 	unsigned int ext_flags;
 	size_t max_nesting;
 };
@@ -118,14 +122,15 @@ rndr_newbuf(struct render *rndr, int type)
 {
 	static const size_t buf_size[2] = {256, 64};
 	struct buf *work = NULL;
-	struct parray *queue = &rndr->work_bufs[type];
+	struct stack *pool = &rndr->work_bufs[type];
 
-	if (queue->size < queue->asize) {
-		work = queue->item[queue->size++];
+	if (pool->size < pool->asize &&
+		pool->item[pool->size] != NULL) {
+		work = pool->item[pool->size++];
 		work->size = 0;
 	} else {
 		work = bufnew(buf_size[type]);
-		parr_push(queue, work);
+		stack_push(pool, work);
 	}
 
 	return work;
@@ -157,21 +162,72 @@ unscape_text(struct buf *ob, struct buf *src)
 	}
 }
 
-/* cmp_link_ref • comparison function for link_ref sorted arrays */
-static int
-cmp_link_ref(void *key, void *array_entry)
+static unsigned int
+hash_link_ref(char *link_ref, size_t length)
 {
-	struct link_ref *lr = array_entry;
-	return bufcasecmp(key, lr->id);
+	size_t i;
+	unsigned int hash = 0;
+
+	for (i = 0; i < length; ++i)
+		hash = tolower(link_ref[i]) + (hash << 6) + (hash << 16) - hash;
+
+	return hash;
 }
 
-/* cmp_link_ref_sort • comparison function for link_ref qsort */
-static int
-cmp_link_ref_sort(const void *a, const void *b)
+static void add_link_ref(
+	struct link_ref **references,
+	char *name, size_t name_size,
+	char *link, size_t link_size,
+	char *title, size_t title_size)
 {
-	const struct link_ref *lra = a;
-	const struct link_ref *lrb = b;
-	return bufcasecmp(lra->id, lrb->id);
+	struct link_ref *ref = calloc(1, sizeof(struct link_ref));
+
+	if (!ref)
+		return;
+
+	ref->id = hash_link_ref(name, name_size);
+	ref->next = references[ref->id % REF_TABLE_SIZE];
+
+	ref->link.data = link;
+	ref->link.size = link_size;
+
+	ref->title.data = title;
+	ref->title.size = title_size;
+
+	references[ref->id % REF_TABLE_SIZE] = ref;
+}
+
+static struct link_ref *
+find_link_ref(struct link_ref **references, char *name, size_t length)
+{
+	unsigned int hash = hash_link_ref(name, length);
+	struct link_ref *ref = NULL;
+
+	ref = references[hash % REF_TABLE_SIZE];
+
+	while (ref != NULL) {
+		if (ref->id == hash)
+			return ref;
+
+		ref = ref->next;
+	}
+
+	return NULL;
+}
+
+static void
+free_link_refs(struct link_ref **references)
+{
+	size_t i;
+
+	for (i = 0; i < REF_TABLE_SIZE; ++i) {
+		struct link_ref *r = references[i];
+		struct link_ref *next;
+
+		while (r) {
+			next = r->next; free(r); r = next;
+		}
+	}
 }
 
 /****************************
@@ -304,10 +360,10 @@ parse_inline(struct buf *ob, struct render *rndr, char *data, size_t size)
 		end = markdown_char_ptrs[(int)action](ob, rndr, data + i, i, size - i);
 		if (!end) /* no action from the callback */
 			end = i + 1;
-		else { 
+		else {
 			i += end;
 			end = i;
-		} 
+		}
 	}
 }
 
@@ -451,7 +507,7 @@ parse_emph2(struct buf *ob, struct render *rndr, char *data, size_t size, char c
 
 	if (!render_method)
 		return 0;
-	
+
 	while (i < size) {
 		len = find_emph_char(data + i, size - i, c);
 		if (!len) return 0;
@@ -508,7 +564,7 @@ parse_emph3(struct buf *ob, struct render *rndr, char *data, size_t size, char c
 			else return len - 1;
 		}
 	}
-	return 0; 
+	return 0;
 }
 
 /* char_emphasis • single and double emphasis parsing */
@@ -541,7 +597,7 @@ char_emphasis(struct buf *ob, struct render *rndr, char *data, size_t offset, si
 		return ret + 3;
 	}
 
-	return 0; 
+	return 0;
 }
 
 
@@ -894,12 +950,14 @@ char_link(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t
 			id.size = link_e - link_b;
 		}
 
-		lr = arr_sorted_find(&rndr->refs, &id, cmp_link_ref);
-		if (!lr) goto cleanup;
+		lr = find_link_ref(rndr->refs, id.data, id.size);
+		if (!lr)
+			goto cleanup;
 
 		/* keeping link and title from link_ref */
-		link = lr->link;
-		title = lr->title;
+		link = &lr->link;
+		if (lr->title.size)
+			title = &lr->title;
 		i++;
 	}
 
@@ -928,12 +986,14 @@ char_link(struct buf *ob, struct render *rndr, char *data, size_t offset, size_t
 		}
 
 		/* finding the link_ref */
-		lr = arr_sorted_find(&rndr->refs, &id, cmp_link_ref);
-		if (!lr) goto cleanup;
+		lr = find_link_ref(rndr->refs, id.data, id.size);
+		if (!lr)
+			goto cleanup;
 
 		/* keeping link and title from link_ref */
-		link = lr->link;
-		title = lr->title;
+		link = &lr->link;
+		if (lr->title.size)
+			title = &lr->title;
 
 		/* rewinding the whitespace */
 		i = txt_e + 1;
@@ -1527,7 +1587,7 @@ parse_listitem(struct buf *ob, struct render *rndr, char *data, size_t size, int
 		/* intermediate render of block li */
 		if (sublist && sublist < work->size) {
 			parse_block(inter, rndr, work->data, sublist);
-			parse_block(inter, rndr, work->data + sublist, work->size - sublist); 
+			parse_block(inter, rndr, work->data + sublist, work->size - sublist);
 		}
 		else
 			parse_block(inter, rndr, work->data, work->size);
@@ -1676,7 +1736,7 @@ parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, in
 				if (do_render && rndr->cb.blockhtml)
 					rndr->cb.blockhtml(ob, &work, rndr->opaque);
 				return work.size;
-			} 
+			}
 		}
 
 		/* HR, which is the only self-closing block tag considered */
@@ -1694,7 +1754,7 @@ parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, in
 						rndr->cb.blockhtml(ob, &work, rndr->opaque);
 					return work.size;
 				}
-			} 
+			}
 		}
 
 		/* no special case recognised */
@@ -1726,7 +1786,7 @@ parse_htmlblock(struct buf *ob, struct render *rndr, char *data, size_t size, in
 				found = 1;
 				break;
 			}
-		} 
+		}
 	}
 
 	if (!found) return 0;
@@ -1979,7 +2039,7 @@ parse_block(struct buf *ob, struct render *rndr, char *data, size_t size)
 
 /* is_ref • returns whether a line is a reference or not */
 static int
-is_ref(char *data, size_t beg, size_t end, size_t *last, struct array *refs)
+is_ref(char *data, size_t beg, size_t end, size_t *last, struct link_ref **refs)
 {
 /*	int n; */
 	size_t i = 0;
@@ -1987,8 +2047,6 @@ is_ref(char *data, size_t beg, size_t end, size_t *last, struct array *refs)
 	size_t link_offset, link_end;
 	size_t title_offset, title_end;
 	size_t line_end;
-	struct link_ref *lr;
-/*	struct buf id = { 0, 0, 0, 0, 0 }; / * volatile buf for id search */
 
 	/* up to 3 optional leading spaces */
 	if (beg + 3 >= end) return 0;
@@ -2062,22 +2120,33 @@ is_ref(char *data, size_t beg, size_t end, size_t *last, struct array *refs)
 		&& (data[i] == '\'' || data[i] == '"' || data[i] == ')')) {
 			line_end = title_end;
 			title_end = i; } }
-	if (!line_end) return 0; /* garbage after the link */
+
+	if (!line_end)
+		return 0; /* garbage after the link */
 
 	/* a valid ref has been found, filling-in return structures */
-	if (last) *last = line_end;
-	if (!refs) return 1;
-	lr = arr_item(refs, arr_newitem(refs));
-	lr->id = bufnew(id_end - id_offset);
-	bufput(lr->id, data + id_offset, id_end - id_offset);
-	lr->link = bufnew(link_end - link_offset);
-	bufput(lr->link, data + link_offset, link_end - link_offset);
-	if (title_end > title_offset) {
-		lr->title = bufnew(title_end - title_offset);
-		bufput(lr->title, data + title_offset,
-					title_end - title_offset); }
-	else lr->title = 0;
-	return 1; 
+	if (last)
+		*last = line_end;
+
+	if (refs) {
+		char *title_str = NULL;
+		size_t title_size = 0;
+
+		if (title_end > title_offset) {
+			title_str = data + title_offset;
+			title_size = title_end - title_offset;
+		}
+
+		add_link_ref( refs,
+			data + id_offset, /* identifier */
+			id_end - id_offset,
+			data + link_offset, /* link url */
+			link_end - link_offset,
+			title_str, /* title (optional) */
+			title_size);
+	}
+
+	return 1;
 }
 
 static void expand_tabs(struct buf *ob, const char *line, size_t size)
@@ -2119,7 +2188,6 @@ sd_markdown(struct buf *ob,
 
 	static const float MARKDOWN_GROW_FACTOR = 1.4f;
 
-	struct link_ref *lr;
 	struct buf *text;
 	size_t i, beg, end;
 	struct render rndr;
@@ -2136,12 +2204,10 @@ sd_markdown(struct buf *ob,
 	bufgrow(text, ib->size);
 
 	memcpy(&rndr.cb, callbacks, sizeof(struct sd_callbacks));
-	arr_init(&rndr.refs, sizeof (struct link_ref));
-	parr_init(&rndr.work_bufs[BUFFER_BLOCK]);
-	parr_init(&rndr.work_bufs[BUFFER_SPAN]);
+	memset(&rndr.refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
 
-/*	for (i = 0; i < 256; i++)
-		rndr.active_char[i] = 0; */
+	stack_init(&rndr.work_bufs[BUFFER_BLOCK], 4);
+	stack_init(&rndr.work_bufs[BUFFER_SPAN], 8);
 
 	memset(rndr.active_char, 0x0, 256);
 
@@ -2182,7 +2248,7 @@ sd_markdown(struct buf *ob,
 	/* first pass: looking for references, copying everything else */
 	beg = 0;
 	while (beg < ib->size) /* iterating over lines */
-		if (is_ref(ib->data, beg, ib->size, &end, &rndr.refs))
+		if (is_ref(ib->data, beg, ib->size, &end, rndr.refs))
 			beg = end;
 		else { /* skipping to the next line */
 			end = beg;
@@ -2202,10 +2268,6 @@ sd_markdown(struct buf *ob,
 
 			beg = end;
 		}
-
-	/* sorting the reference array */
-	if (rndr.refs.size)
-		qsort(rndr.refs.base, rndr.refs.size, rndr.refs.unit, cmp_link_ref_sort);
 
 	/* pre-grow the output buffer to minimize allocations */
 	bufgrow(ob, text->size * MARKDOWN_GROW_FACTOR);
@@ -2227,14 +2289,7 @@ sd_markdown(struct buf *ob,
 
 	/* clean-up */
 	bufrelease(text);
-	lr = rndr.refs.base;
-	for (i = 0; i < (size_t)rndr.refs.size; i++) {
-		bufrelease(lr[i].id);
-		bufrelease(lr[i].link);
-		bufrelease(lr[i].title);
-	}
-
-	arr_free(&rndr.refs);
+	free_link_refs(rndr.refs);
 
 	assert(rndr.work_bufs[BUFFER_SPAN].size == 0);
 	assert(rndr.work_bufs[BUFFER_BLOCK].size == 0);
@@ -2245,8 +2300,8 @@ sd_markdown(struct buf *ob,
 	for (i = 0; i < (size_t)rndr.work_bufs[BUFFER_BLOCK].asize; ++i)
 		bufrelease(rndr.work_bufs[BUFFER_BLOCK].item[i]);
 
-	parr_free(&rndr.work_bufs[BUFFER_SPAN]);
-	parr_free(&rndr.work_bufs[BUFFER_BLOCK]);
+	stack_free(&rndr.work_bufs[BUFFER_SPAN]);
+	stack_free(&rndr.work_bufs[BUFFER_BLOCK]);
 }
 
 void

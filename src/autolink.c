@@ -154,7 +154,7 @@ sd_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, 
 	if (offset > 0 && !ispunct(data[-1]) && !isspace(data[-1]))
 		return 0;
 
-	if (size < 4 || memcmp(data, "www.", STRLEN("www.")) != 0)
+	if (size < 4 || memcmp(data, "www.", strlen("www.")) != 0)
 		return 0;
 
 	link_end = check_domain(data, size);
@@ -238,7 +238,7 @@ sd_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, 
 
 	if (!sd_autolink_issafe(data - rewind, size + rewind))
 		return 0;
-	link_end = STRLEN("://");
+	link_end = strlen("://");
 
 	domain_len = check_domain(data + link_end, size - link_end);
 	if (domain_len == 0)
