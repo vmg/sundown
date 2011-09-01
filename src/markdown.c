@@ -429,12 +429,20 @@ find_emph_char(char *data, size_t size, char c)
 			if (i >= size)
 				return tmp_i;
 
-			if (data[i] != '[' && data[i] != '(') { /* not a link*/
-				if (tmp_i) return tmp_i;
-				else continue;
+			switch (data[i]) {
+			case '[':
+				cc = ']'; break;
+
+			case '(':
+				cc = ')'; break;
+
+			default:
+				if (tmp_i)
+					return tmp_i;
+				else
+					continue;
 			}
 
-			cc = data[i];
 			i++;
 			while (i < size && data[i] != cc) {
 				if (!tmp_i && data[i] == c) tmp_i = i;
