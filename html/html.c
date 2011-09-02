@@ -174,51 +174,6 @@ rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, v
 	BUFPUTSL(ob, "</code></pre>\n");
 }
 
-/*
- * GitHub style code block:
- *
- *		<pre lang="LANG"><code>
- *		...
- *		</pre></code>
- *
- * Unlike other parsers, we store the language identifier in the <pre>,
- * and don't let the user generate custom classes.
- *
- * The language identifier in the <pre> block gets postprocessed and all
- * the code inside gets syntax highlighted with Pygments. This is much safer
- * than letting the user specify a CSS class for highlighting.
- *
- * Note that we only generate HTML for the first specifier.
- * E.g.
- *		~~~~ {.python .numbered}	=>	<pre lang="python"><code>
- */
-static void
-rndr_blockcode_github(struct buf *ob, const struct buf *text, const struct buf *lang, void *opaque)
-{
-	if (ob->size) bufputc(ob, '\n');
-
-	if (lang && lang->size) {
-		size_t i = 0;
-		BUFPUTSL(ob, "<pre lang=\"");
-
-		while (i < lang->size && !isspace(lang->data[i]))
-			i++;
-
-		if (lang->data[0] == '.')
-			sdhtml_escape(ob, lang->data + 1, i - 1);
-		else
-			sdhtml_escape(ob, lang->data, i);
-
-		BUFPUTSL(ob, "\"><code>");
-	} else
-		BUFPUTSL(ob, "<pre><code>");
-
-	if (text)
-		sdhtml_escape(ob, text->data, text->size);
-
-	BUFPUTSL(ob, "</code></pre>\n");
-}
-
 static void
 rndr_blockquote(struct buf *ob, const struct buf *text, void *opaque)
 {
@@ -672,7 +627,4 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 
 	if (render_flags & HTML_SKIP_HTML)
 		callbacks->blockhtml = NULL;
-
-	if (render_flags & HTML_GITHUB_BLOCKCODE)
-		callbacks->blockcode = rndr_blockcode_github;
 }
