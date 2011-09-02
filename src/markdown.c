@@ -423,7 +423,7 @@ find_emph_char(uint8_t *data, size_t size, uint8_t c)
 			}
 
 			i++;
-			while (i < size && (data[i] == ' ' || data[i] == '\t' || data[i] == '\n'))
+			while (i < size && (data[i] == ' ' || data[i] == '\n'))
 				i++;
 
 			if (i >= size)
@@ -641,11 +641,11 @@ char_codespan(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 
 	/* trimming outside whitespaces */
 	f_begin = nb;
-	while (f_begin < end && (data[f_begin] == ' ' || data[f_begin] == '\t'))
+	while (f_begin < end && data[f_begin] == ' ')
 		f_begin++;
 
 	f_end = end - nb;
-	while (f_end > nb && (data[f_end-1] == ' ' || data[f_end-1] == '\t'))
+	while (f_end > nb && data[f_end-1] == ' ')
 		f_end--;
 
 	/* real code span */
@@ -1077,8 +1077,11 @@ static size_t
 is_empty(uint8_t *data, size_t size)
 {
 	size_t i;
+
 	for (i = 0; i < size && data[i] != '\n'; i++)
-		if (data[i] != ' ' && data[i] != '\t') return 0;
+		if (data[i] != ' ')
+			return 0;
+
 	return i + 1;
 }
 
@@ -1101,12 +1104,14 @@ is_hrule(uint8_t *data, size_t size)
 		return 0;
 	c = data[i];
 
-	/* the whole line must be the uint8_t or whitespace */
+	/* the whole line must be the char or whitespace */
 	while (i < size && data[i] != '\n') {
 		if (data[i] == c) n++;
-		else if (data[i] != ' ' && data[i] != '\t')
+		else if (data[i] != ' ')
 			return 0;
-		i++; }
+
+		i++;
+	}
 
 	return n >= 3;
 }
@@ -1141,7 +1146,7 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 	if (syntax != NULL) {
 		size_t syn = 0;
 
-		while (i < size && (data[i] == ' ' || data[i] == '\t'))
+		while (i < size && data[i] == ' ')
 			i++;
 
 		syntax->data = data + i;
@@ -1198,7 +1203,7 @@ is_atxheader(struct sd_markdown *rndr, uint8_t *data, size_t size)
 		while (level < size && level < 6 && data[level] == '#')
 			level++;
 
-		if (level < size && data[level] != ' ' && data[level] != '\t')
+		if (level < size && data[level] != ' ')
 			return 0;
 	}
 
@@ -1214,13 +1219,13 @@ is_headerline(uint8_t *data, size_t size)
 	/* test of level 1 header */
 	if (data[i] == '=') {
 		for (i = 1; i < size && data[i] == '='; i++);
-		while (i < size && (data[i] == ' ' || data[i] == '\t')) i++;
+		while (i < size && data[i] == ' ') i++;
 		return (i >= size || data[i] == '\n') ? 1 : 0; }
 
 	/* test of level 2 header */
 	if (data[i] == '-') {
 		for (i = 1; i < size && data[i] == '-'; i++);
-		while (i < size && (data[i] == ' ' || data[i] == '\t')) i++;
+		while (i < size && data[i] == ' ') i++;
 		return (i >= size || data[i] == '\n') ? 2 : 0; }
 
 	return 0;
@@ -1248,20 +1253,24 @@ prefix_quote(uint8_t *data, size_t size)
 	if (i < size && data[i] == ' ') i++;
 	if (i < size && data[i] == ' ') i++;
 	if (i < size && data[i] == ' ') i++;
+
 	if (i < size && data[i] == '>') {
-		if (i + 1 < size && (data[i + 1] == ' ' || data[i+1] == '\t'))
+		if (i + 1 < size && data[i + 1] == ' ')
 			return i + 2;
-		else return i + 1; }
-	else return 0;
+
+		return i + 1;
+	}
+
+	return 0;
 }
 
 /* prefix_code • returns prefix length for block code*/
 static size_t
 prefix_code(uint8_t *data, size_t size)
 {
-	if (size > 0 && data[0] == '\t') return 1;
 	if (size > 3 && data[0] == ' ' && data[1] == ' '
-			&& data[2] == ' ' && data[3] == ' ') return 4;
+		&& data[2] == ' ' && data[3] == ' ') return 4;
+
 	return 0;
 }
 
@@ -1281,9 +1290,7 @@ prefix_oli(uint8_t *data, size_t size)
 	while (i < size && data[i] >= '0' && data[i] <= '9')
 		i++;
 
-	if (i + 1 >= size ||
-		data[i] != '.' ||
-		(data[i + 1] != ' ' && data[i + 1] != '\t'))
+	if (i + 1 >= size || data[i] != '.' || data[i + 1] != ' ')
 		return 0;
 
 	if (is_next_headerline(data + i, size - i))
@@ -1304,7 +1311,7 @@ prefix_uli(uint8_t *data, size_t size)
 
 	if (i + 1 >= size ||
 		(data[i] != '*' && data[i] != '+' && data[i] != '-') ||
-		(data[i + 1] != ' ' && data[i + 1] != '\t'))
+		data[i + 1] != ' ')
 		return 0;
 
 	if (is_next_headerline(data + i, size - i))
@@ -1582,7 +1589,6 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 			i++;
 
 		pre = i;
-		if (data[beg] == '\t') { i = 1; pre = 8; }
 
 		/* checking for a new item */
 		if ((prefix_uli(data + beg + i, end - beg - i) &&
@@ -1598,7 +1604,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 				sublist = work->size;
 		}
 		/* joining only indented stuff after empty lines */
-		else if (in_empty && i < 4 && data[beg] != '\t') {
+		else if (in_empty && i < 4) {
 				*flags |= MKD_LI_END;
 				break;
 		}
@@ -1679,7 +1685,7 @@ parse_atxheader(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 	while (level < size && level < 6 && data[level] == '#')
 		level++;
 
-	for (i = level; i < size && (data[i] == ' ' || data[i] == '\t'); i++);
+	for (i = level; i < size && data[i] == ' '; i++);
 
 	for (end = i; end < size && data[end] != '\n'; end++);
 	skip = end;
@@ -1687,7 +1693,7 @@ parse_atxheader(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 	while (end && data[end - 1] == '#')
 		end--;
 
-	while (end && (data[end - 1] == ' ' || data[end - 1] == '\t'))
+	while (end && data[end - 1] == ' ')
 		end--;
 
 	if (end > i) {
@@ -1925,7 +1931,7 @@ parse_table_header(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size
 
 		(*column_data)[col] |= MKD_TABLE_HEADER;
 
-		while (i < under_end && (data[i] == ' ' || data[i] == '\t'))
+		while (i < under_end && data[i] == ' ')
 			i++;
 
 		if (data[i] == ':') {
@@ -1942,7 +1948,7 @@ parse_table_header(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size
 			dashes++;
 		}
 
-		while (i < under_end && (data[i] == ' ' || data[i] == '\t'))
+		while (i < under_end && data[i] == ' ')
 			i++;
 
 		if (i < under_end && data[i] != '|')
@@ -2106,23 +2112,27 @@ is_ref(uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **re
 	i++;
 	if (i >= end || data[i] != ':') return 0;
 	i++;
-	while (i < end && (data[i] == ' ' || data[i] == '\t')) i++;
+	while (i < end && data[i] == ' ') i++;
 	if (i < end && (data[i] == '\n' || data[i] == '\r')) {
 		i++;
 		if (i < end && data[i] == '\r' && data[i - 1] == '\n') i++; }
-	while (i < end && (data[i] == ' ' || data[i] == '\t')) i++;
+	while (i < end && data[i] == ' ') i++;
 	if (i >= end) return 0;
 
 	/* link: whitespace-free sequence, optionally between angle brackets */
-	if (data[i] == '<') i++;
+	if (data[i] == '<')
+		i++;
+
 	link_offset = i;
-	while (i < end && data[i] != ' ' && data[i] != '\t'
-			&& data[i] != '\n' && data[i] != '\r') i++;
+
+	while (i < end && data[i] != ' ' && data[i] != '\n' && data[i] != '\r')
+		i++;
+
 	if (data[i - 1] == '>') link_end = i - 1;
 	else link_end = i;
 
 	/* optional spacer: (space | tab)* (newline | '\'' | '"' | '(' ) */
-	while (i < end && (data[i] == ' ' || data[i] == '\t')) i++;
+	while (i < end && data[i] == ' ') i++;
 	if (i < end && data[i] != '\n' && data[i] != '\r'
 			&& data[i] != '\'' && data[i] != '"' && data[i] != '(')
 		return 0;
@@ -2135,7 +2145,7 @@ is_ref(uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **re
 	/* optional (space|tab)* spacer after a newline */
 	if (line_end) {
 		i = line_end + 1;
-		while (i < end && (data[i] == ' ' || data[i] == '\t')) i++; }
+		while (i < end && data[i] == ' ') i++; }
 
 	/* optional title: any non-newline sequence enclosed in '"()
 					alone on its line */
@@ -2151,7 +2161,7 @@ is_ref(uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **re
 		else	title_end = i;
 		/* stepping back */
 		i -= 1;
-		while (i > title_offset && (data[i] == ' ' || data[i] == '\t'))
+		while (i > title_offset && data[i] == ' ')
 			i -= 1;
 		if (i > title_offset
 		&& (data[i] == '\'' || data[i] == '"' || data[i] == ')')) {
