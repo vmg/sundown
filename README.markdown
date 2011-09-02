@@ -19,6 +19,11 @@ Features
 	such as non-strict emphasis, fenced code blocks, tables, autolinks,
 	strikethrough and more.
 
+*	**UTF-8 aware**
+
+	`Sundown` is fully UTF-8 aware, both when parsing the source document and when
+	generating the resulting (X)HTML code.
+
 *	**Tested & Ready to be used on production**
 
 	`Sundown` has been extensively security audited, and includes protection against
@@ -79,6 +84,19 @@ Help us
 library, or a way to make it crash through malicious input, please report it to us,
 either directly via email or by opening an Issue on GitHub, and help make the web safer
 for everybody.
+
+Unicode character handling
+--------------------------
+
+Given that the Markdown spec makes no provision for Unicode character handling, `Sundown`
+takes a conservative approach towards deciding which extended characters trigger Markdown
+features:
+
+*	Punctuation characters outside of the U+007F codepoint are not handled as punctuation.
+	They are considered as normal, in-word characters for word-boundary checks.
+
+*	Whitespace characters outside of the U+007F codepoint are not considered as
+	whitespace. They are considered as normal, in-word characters for word-boundary checks.
 
 Install
 -------
