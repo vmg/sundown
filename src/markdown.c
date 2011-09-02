@@ -45,8 +45,8 @@
 struct link_ref {
 	unsigned int id;
 
-	struct buf link;
-	struct buf title;
+	struct buf *link;
+	struct buf *title;
 
 	struct link_ref *next;
 };
@@ -163,7 +163,7 @@ unscape_text(struct buf *ob, struct buf *src)
 }
 
 static unsigned int
-hash_link_ref(uint8_t *link_ref, size_t length)
+hash_link_ref(const uint8_t *link_ref, size_t length)
 {
 	size_t i;
 	unsigned int hash = 0;
@@ -174,27 +174,21 @@ hash_link_ref(uint8_t *link_ref, size_t length)
 	return hash;
 }
 
-static void add_link_ref(
+static struct link_ref *
+add_link_ref(
 	struct link_ref **references,
-	uint8_t *name, size_t name_size,
-	uint8_t *link, size_t link_size,
-	uint8_t *title, size_t title_size)
+	const uint8_t *name, size_t name_size)
 {
 	struct link_ref *ref = calloc(1, sizeof(struct link_ref));
 
 	if (!ref)
-		return;
+		return NULL;
 
 	ref->id = hash_link_ref(name, name_size);
 	ref->next = references[ref->id % REF_TABLE_SIZE];
 
-	ref->link.data = link;
-	ref->link.size = link_size;
-
-	ref->title.data = title;
-	ref->title.size = title_size;
-
 	references[ref->id % REF_TABLE_SIZE] = ref;
+	return ref;
 }
 
 static struct link_ref *
@@ -225,7 +219,11 @@ free_link_refs(struct link_ref **references)
 		struct link_ref *next;
 
 		while (r) {
-			next = r->next; free(r); r = next;
+			next = r->next;
+			bufrelease(r->link);
+			bufrelease(r->title);
+			free(r);
+			r = next;
 		}
 	}
 }
@@ -976,9 +974,8 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 			goto cleanup;
 
 		/* keeping link and title from link_ref */
-		link = &lr->link;
-		if (lr->title.size)
-			title = &lr->title;
+		link = lr->link;
+		title = lr->title;
 		i++;
 	}
 
@@ -1012,9 +1009,8 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 			goto cleanup;
 
 		/* keeping link and title from link_ref */
-		link = &lr->link;
-		if (lr->title.size)
-			title = &lr->title;
+		link = lr->link;
+		title = lr->title;
 
 		/* rewinding the whitespace */
 		i = txt_e + 1;
@@ -2100,7 +2096,7 @@ parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 
 /* is_ref • returns whether a line is a reference or not */
 static int
-is_ref(uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **refs)
+is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **refs)
 {
 /*	int n; */
 	size_t i = 0;
@@ -2194,21 +2190,17 @@ is_ref(uint8_t *data, size_t beg, size_t end, size_t *last, struct link_ref **re
 		*last = line_end;
 
 	if (refs) {
-		uint8_t *title_str = NULL;
-		size_t title_size = 0;
+		struct link_ref *ref;
+
+		ref = add_link_ref(refs, data + id_offset, id_end - id_offset);
+
+		ref->link = bufnew(link_end - link_offset);
+		bufput(ref->link, data + link_offset, link_end - link_offset);
 
 		if (title_end > title_offset) {
-			title_str = data + title_offset;
-			title_size = title_end - title_offset;
+			ref->title = bufnew(title_end - title_offset);
+			bufput(ref->title, data + title_offset, title_end - title_offset);
 		}
-
-		add_link_ref( refs,
-			data + id_offset, /* identifier */
-			id_end - id_offset,
-			data + link_offset, /* link url */
-			link_end - link_offset,
-			title_str, /* title (optional) */
-			title_size);
 	}
 
 	return 1;
@@ -2303,7 +2295,7 @@ sd_markdown_new(
 }
 
 void
-sd_markdown_render(struct buf *ob, const struct buf *ib, struct sd_markdown *md)
+sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, struct sd_markdown *md)
 {
 	static const float MARKDOWN_GROW_FACTOR = 1.4f;
 
@@ -2315,28 +2307,28 @@ sd_markdown_render(struct buf *ob, const struct buf *ib, struct sd_markdown *md)
 		return;
 
 	/* Preallocate enough space for our buffer to avoid expanding while copying */
-	bufgrow(text, ib->size);
+	bufgrow(text, doc_size);
 
 	/* reset the references table */
 	memset(&md->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
 
 	/* first pass: looking for references, copying everything else */
 	beg = 0;
-	while (beg < ib->size) /* iterating over lines */
-		if (is_ref(ib->data, beg, ib->size, &end, md->refs))
+	while (beg < doc_size) /* iterating over lines */
+		if (is_ref(document, beg, doc_size, &end, md->refs))
 			beg = end;
 		else { /* skipping to the next line */
 			end = beg;
-			while (end < ib->size && ib->data[end] != '\n' && ib->data[end] != '\r')
+			while (end < doc_size && document[end] != '\n' && document[end] != '\r')
 				end++;
 
 			/* adding the line body if present */
 			if (end > beg)
-				expand_tabs(text, ib->data + beg, end - beg);
+				expand_tabs(text, document + beg, end - beg);
 
-			while (end < ib->size && (ib->data[end] == '\n' || ib->data[end] == '\r')) {
+			while (end < doc_size && (document[end] == '\n' || document[end] == '\r')) {
 				/* add one \n per newline */
-				if (ib->data[end] == '\n' || (end + 1 < ib->size && ib->data[end + 1] != '\n'))
+				if (document[end] == '\n' || (end + 1 < doc_size && document[end + 1] != '\n'))
 					bufputc(text, '\n');
 				end++;
 			}

@@ -64,7 +64,7 @@ main(int argc, char **argv)
 	sdhtml_renderer(&callbacks, &options, 0);
 	markdown = sd_markdown_new(0, 16, &callbacks, &options);
 
-	sd_markdown_render(ob, ib, markdown);
+	sd_markdown_render(ob, ib->data, ib->size, markdown);
 	sd_markdown_free(markdown);
 
 	/* writing the result to stdout */
