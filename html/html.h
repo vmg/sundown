@@ -30,7 +30,7 @@ struct html_renderopt {
 	unsigned int flags;
 
 	/* extra callbacks */
-	void (*link_attributes)(struct buf *ob, struct buf *url, void *self);
+	void (*link_attributes)(struct buf *ob, const struct buf *url, void *self);
 };
 
 typedef enum {
