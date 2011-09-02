@@ -349,7 +349,7 @@ parse_inline(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t siz
 {
 	size_t i = 0, end = 0;
 	uint8_t action = 0;
-	struct buf work = { 0, 0, 0, 0, 0 };
+	struct buf work = { 0, 0, 0, 0 };
 
 	if (rndr->work_bufs[BUFFER_SPAN].size +
 		rndr->work_bufs[BUFFER_BLOCK].size > rndr->max_nesting)
@@ -666,7 +666,7 @@ char_codespan(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 
 	/* real code span */
 	if (f_begin < f_end) {
-		struct buf work = { data + f_begin, f_end - f_begin, 0, 0, 0 };
+		struct buf work = { data + f_begin, f_end - f_begin, 0, 0 };
 		if (!rndr->cb.codespan(ob, &work, rndr->opaque))
 			end = 0;
 	} else {
@@ -683,7 +683,7 @@ static size_t
 char_escape(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset, size_t size)
 {
 	static const char *escape_chars = "\\`*_{}[]()#+-.!:|&<>";
-	struct buf work = { 0, 0, 0, 0, 0 };
+	struct buf work = { 0, 0, 0, 0 };
 
 	if (size > 1) {
 		if (strchr(escape_chars, data[1]) == NULL)
@@ -706,7 +706,7 @@ static size_t
 char_entity(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset, size_t size)
 {
 	size_t end = 1;
-	struct buf work;
+	struct buf work = { 0, 0, 0, 0 };
 
 	if (end < size && data[end] == '#')
 		end++;
@@ -735,7 +735,7 @@ char_langle_tag(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 {
 	enum mkd_autolink altype = MKDA_NOT_AUTOLINK;
 	size_t end = tag_length(data, size, &altype);
-	struct buf work = { data, end, 0, 0, 0 };
+	struct buf work = { data, end, 0, 0 };
 	int ret = 0;
 
 	if (end > 2) {
@@ -935,7 +935,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 
 	/* reference style link */
 	else if (i < size && data[i] == '[') {
-		struct buf id = { 0, 0, 0, 0, 0 };
+		struct buf id = { 0, 0, 0, 0 };
 		struct link_ref *lr;
 
 		/* looking for the id */
@@ -981,7 +981,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 
 	/* shortcut reference style link */
 	else {
-		struct buf id = { 0, 0, 0, 0, 0 };
+		struct buf id = { 0, 0, 0, 0 };
 		struct link_ref *lr;
 
 		/* crafting the id */
@@ -1391,7 +1391,7 @@ parse_paragraph(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 {
 	size_t i = 0, end = 0;
 	int level = 0;
-	struct buf work = { data, 0, 0, 0, 0 }; /* volatile working buffer */
+	struct buf work = { data, 0, 0, 0 };
 
 	while (i < size) {
 		for (end = i + 1; end < size && data[end - 1] != '\n'; end++) /* empty */;
@@ -1471,7 +1471,7 @@ parse_fencedcode(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 {
 	size_t beg, end;
 	struct buf *work = 0;
-	struct buf lang = { 0, 0, 0, 0, 0 };
+	struct buf lang = { 0, 0, 0, 0 };
 
 	beg = is_codefence(data, size, &lang);
 	if (beg == 0) return 0;
@@ -1765,7 +1765,7 @@ parse_htmlblock(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 	size_t i, j = 0;
 	const char *curtag;
 	int found;
-	struct buf work = { data, 0, 0, 0, 0 };
+	struct buf work = { data, 0, 0, 0 };
 
 	/* identification of the opening tag */
 	if (size < 2 || data[0] != '<')
@@ -1897,7 +1897,7 @@ parse_table_row(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 	}
 
 	for (; col < columns; ++col) {
-		struct buf empty_cell = {0, 0, 0, 0, 0};
+		struct buf empty_cell = { 0, 0, 0, 0 };
 		rndr->cb.table_cell(row_work, &empty_cell, col_data[col], rndr->opaque);
 	}
 

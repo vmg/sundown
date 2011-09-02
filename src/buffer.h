@@ -38,7 +38,6 @@ struct buf {
 	size_t size;	/* size of the string */
 	size_t asize;	/* allocated size (0 = volatile buffer) */
 	size_t unit;	/* reallocation unit size (0 = read-only buffer) */
-	int ref;
 };
 
 /* CONST_BUF: global buffer from a string litteral */
