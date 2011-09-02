@@ -53,10 +53,10 @@ typedef enum {
 } html_tag;
 
 void
-sdhtml_escape(struct buf *ob, const char *src, size_t size);
+sdhtml_escape(struct buf *ob, const uint8_t *src, size_t size);
 
 int
-sdhtml_tag(const char *tag_data, size_t tag_size, const char *tagname);
+sdhtml_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname);
 
 extern void
 sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options_ptr, unsigned int render_flags);

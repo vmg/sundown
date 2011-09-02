@@ -30,58 +30,6 @@
 #	define _buf_vsnprintf vsnprintf
 #endif
 
-/* bufcmp: buffer comparison */
-int
-bufcmp(const struct buf *a, const struct buf *b)
-{
-	size_t i = 0;
-	size_t cmplen;
-
-	if (a == b)
-		return 0;
-
-	if (!a)
-		return -1;
-
-	if (!b)
-		return 1;
-
-	cmplen = (a->size < b->size) ? a->size : b->size;
-
-	while (i < cmplen && a->data[i] == b->data[i])
-		++i;
-
-	if (i < a->size) {
-		if (i < b->size) return a->data[i] - b->data[i];
-		return 1;
-	} else {
-		if (i < b->size) return -1;
-		return 0;
-	}
-}
-
-/* bufcmps: comparison of a string to a buffer */
-int
-bufcmps(const struct buf *a, const char *b)
-{
-	const size_t len = strlen(b);
-	size_t cmplen = len;
-	int r;
-
-	if (!a || !a->size)
-		return b ? 0 : -1;
-
-	if (len < a->size)
-		cmplen = a->size;
-
-	r = strncmp(a->data, b, cmplen);
-
-	if (r) return r;
-	else if (a->size == len) return 0;
-	else if (a->size < len) return -1;
-	else return 1;
-}
-
 int
 bufprefix(const struct buf *buf, const char *prefix)
 {
@@ -96,42 +44,6 @@ bufprefix(const struct buf *buf, const char *prefix)
 	}
 
 	return 0;
-}
-
-
-/* bufdup: buffer duplication */
-struct buf *
-bufdup(const struct buf *src, size_t dupunit)
-{
-	size_t blocks;
-	struct buf *ret;
-	if (src == 0)
-		return 0;
-
-	ret = malloc(sizeof (struct buf));
-	if (ret == 0)
-		return 0;
-
-	ret->unit = dupunit;
-	ret->size = src->size;
-	ret->ref = 1;
-	if (!src->size) {
-		ret->asize = 0;
-		ret->data = 0;
-		return ret;
-	}
-
-	blocks = (src->size + dupunit - 1) / dupunit;
-	ret->asize = blocks * dupunit;
-	ret->data = malloc(ret->asize);
-
-	if (ret->data == 0) {
-		free(ret);
-		return 0;
-	}
-
-	memcpy(ret->data, src->data, src->size);
-	return ret;
 }
 
 /* bufgrow: increasing the allocated size to the given value */
@@ -170,7 +82,6 @@ bufnew(size_t unit)
 	if (ret) {
 		ret->data = 0;
 		ret->size = ret->asize = 0;
-		ret->ref = 1;
 		ret->unit = unit;
 	}
 	return ret;
@@ -184,11 +95,11 @@ bufcstr(struct buf *buf)
 		return NULL;
 
 	if (buf->size < buf->asize && buf->data[buf->size] == 0)
-		return buf->data;
+		return (char *)buf->data;
 
 	if (buf->size + 1 <= buf->asize || bufgrow(buf, buf->size + 1) == 0) {
 		buf->data[buf->size] = 0;
-		return buf->data;
+		return (char *)buf->data;
 	}
 
 	return NULL;
@@ -229,9 +140,9 @@ bufputs(struct buf *buf, const char *str)
 }
 
 
-/* bufputc: appends a single char to a buffer */
+/* bufputc: appends a single uint8_t to a buffer */
 void
-bufputc(struct buf *buf, char c)
+bufputc(struct buf *buf, int c)
 {
 	if (!buf)
 		return;
@@ -250,10 +161,8 @@ bufrelease(struct buf *buf)
 	if (!buf)
 		return;
 
-	if (--buf->ref == 0) {
-		free(buf->data);
-		free(buf);
-	}
+	free(buf->data);
+	free(buf);
 }
 
 
@@ -267,20 +176,6 @@ bufreset(struct buf *buf)
 	free(buf->data);
 	buf->data = NULL;
 	buf->size = buf->asize = 0;
-}
-
-
-/* bufset: safely assigns a buffer to another */
-void
-bufset(struct buf **dest, struct buf *src)
-{
-	if (src) {
-		if (!src->asize) src = bufdup(src, 1);
-		else src->ref += 1;
-	}
-
-	bufrelease(*dest);
-	*dest = src;
 }
 
 /* bufslurp: removes a given number of bytes from the head of the array */
@@ -308,7 +203,7 @@ vbufprintf(struct buf *buf, const char *fmt, va_list ap)
 	if (buf == 0 || (buf->size >= buf->asize && bufgrow(buf, buf->size + 1)) < 0)
 		return;
 
-	n = _buf_vsnprintf(buf->data + buf->size, buf->asize - buf->size, fmt, ap);
+	n = _buf_vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
 
 	if (n < 0) {
 #ifdef _MSC_VER
@@ -322,7 +217,7 @@ vbufprintf(struct buf *buf, const char *fmt, va_list ap)
 		if (bufgrow(buf, buf->size + n + 1) < 0)
 			return;
 
-		n = _buf_vsnprintf(buf->data + buf->size, buf->asize - buf->size, fmt, ap);
+		n = _buf_vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
 	}
 
 	if (n < 0)

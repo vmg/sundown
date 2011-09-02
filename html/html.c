@@ -26,7 +26,7 @@
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
 static inline void
-put_scaped_char(struct buf *ob, char c)
+put_escaped_char(struct buf *ob, int c)
 {
 	switch (c) {
 		case '<': BUFPUTSL(ob, "&lt;"); break;
@@ -39,27 +39,29 @@ put_scaped_char(struct buf *ob, char c)
 
 /* sdhtml_escape • copy the buffer entity-escaping '<', '>', '&' and '"' */
 void
-sdhtml_escape(struct buf *ob, const char *src, size_t size)
+sdhtml_escape(struct buf *ob, const uint8_t *src, size_t size)
 {
 	size_t  i = 0, org;
 	while (i < size) {
 		/* copying directly unescaped characters */
 		org = i;
+
 		while (i < size && src[i] != '<' && src[i] != '>'
-		&& src[i] != '&' && src[i] != '"')
+			&& src[i] != '&' && src[i] != '"')
 			i += 1;
+
 		if (i > org) bufput(ob, src + org, i - org);
 
 		/* escaping */
 		if (i >= size) break;
 
-		put_scaped_char(ob, src[i]);
+		put_escaped_char(ob, src[i]);
 		i++;
 	}
 }
 
 int
-sdhtml_tag(const char *tag_data, size_t tag_size, const char *tagname)
+sdhtml_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 {
 	size_t i;
 	int closed = 0;
@@ -273,7 +275,7 @@ rndr_emphasis(struct buf *ob, struct buf *text, void *opaque)
 static int
 rndr_linebreak(struct buf *ob, void *opaque)
 {
-	struct html_renderopt *options = opaque;	
+	struct html_renderopt *options = opaque;
 	bufputs(ob, USE_XHTML(options) ? "<br/>\n" : "<br>\n");
 	return 1;
 }
@@ -282,7 +284,7 @@ static void
 rndr_header(struct buf *ob, struct buf *text, int level, void *opaque)
 {
 	struct html_renderopt *options = opaque;
-	
+
 	if (ob->size)
 		bufputc(ob, '\n');
 
@@ -299,7 +301,7 @@ static int
 rndr_link(struct buf *ob, struct buf *link, struct buf *title, struct buf *content, void *opaque)
 {
 	struct html_renderopt *options = opaque;
-	
+
 	if (link != NULL && (options->flags & HTML_SAFELINK) != 0 && !sd_autolink_issafe(link->data, link->size))
 		return 0;
 
@@ -379,7 +381,7 @@ rndr_paragraph(struct buf *ob, struct buf *text, void *opaque)
 			 */
 			if (i >= text->size - 1)
 				break;
-			
+
 			rndr_linebreak(ob, opaque);
 			i++;
 		}
@@ -417,7 +419,7 @@ rndr_triple_emphasis(struct buf *ob, struct buf *text, void *opaque)
 static void
 rndr_hrule(struct buf *ob, void *opaque)
 {
-	struct html_renderopt *options = opaque;	
+	struct html_renderopt *options = opaque;
 	if (ob->size) bufputc(ob, '\n');
 	bufputs(ob, USE_XHTML(options) ? "<hr/>\n" : "<hr>\n");
 }
@@ -425,7 +427,7 @@ rndr_hrule(struct buf *ob, void *opaque)
 static int
 rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt, void *opaque)
 {
-	struct html_renderopt *options = opaque;	
+	struct html_renderopt *options = opaque;
 	if (!link || !link->size) return 0;
 	BUFPUTSL(ob, "<img src=\"");
 	sdhtml_escape(ob, link->data, link->size);
@@ -443,7 +445,7 @@ rndr_image(struct buf *ob, struct buf *link, struct buf *title, struct buf *alt,
 static int
 rndr_raw_html(struct buf *ob, struct buf *text, void *opaque)
 {
-	struct html_renderopt *options = opaque;	
+	struct html_renderopt *options = opaque;
 
 	if ((options->flags & HTML_SKIP_HTML) != 0)
 		return 1;
