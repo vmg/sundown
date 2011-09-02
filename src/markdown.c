@@ -230,6 +230,23 @@ free_link_refs(struct link_ref **references)
 	}
 }
 
+/*
+ * Check whether a char is a Markdown space.
+
+ * Right now we only consider spaces the actual
+ * space and a newline: tabs and carriage returns
+ * are filtered out during the preprocessing phase.
+ *
+ * If we wanted to actually be UTF-8 compliant, we
+ * should instead extract an Unicode codepoint from
+ * this character and check for space properties.
+ */
+static inline int
+_isspace(int c)
+{
+	return c == ' ' || c == '\n';
+}
+
 /****************************
  * INLINE PARSING FUNCTIONS *
  ****************************/
@@ -311,7 +328,8 @@ tag_length(uint8_t *data, size_t size, enum mkd_autolink *autolink)
 		while (i < size) {
 			if (data[i] == '\\') i += 2;
 			else if (data[i] == '>' || data[i] == '\'' ||
-					data[i] == '"' || isspace(data[i])) break;
+					data[i] == '"' || data[i] == ' ' || data[i] == '\n')
+					break;
 			else i++;
 		}
 
@@ -479,10 +497,10 @@ parse_emph1(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 		i += len;
 		if (i >= size) return 0;
 
-		if (data[i] == c && !isspace(data[i - 1])) {
+		if (data[i] == c && !_isspace(data[i - 1])) {
 
 			if (rndr->ext_flags & MKDEXT_NO_INTRA_EMPHASIS) {
-				if (!(i + 1 == size || isspace(data[i + 1]) || ispunct(data[i + 1])))
+				if (!(i + 1 == size || _isspace(data[i + 1]) || ispunct(data[i + 1])))
 					continue;
 			}
 
@@ -516,7 +534,7 @@ parse_emph2(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 		if (!len) return 0;
 		i += len;
 
-		if (i + 1 < size && data[i] == c && data[i + 1] == c && i && !isspace(data[i - 1])) {
+		if (i + 1 < size && data[i] == c && data[i + 1] == c && i && !_isspace(data[i - 1])) {
 			work = rndr_newbuf(rndr, BUFFER_SPAN);
 			parse_inline(work, rndr, data, i);
 			r = render_method(ob, work, rndr->opaque);
@@ -542,7 +560,7 @@ parse_emph3(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 		i += len;
 
 		/* skip whitespace preceded symbols */
-		if (data[i] != c || isspace(data[i - 1]))
+		if (data[i] != c || _isspace(data[i - 1]))
 			continue;
 
 		if (i + 2 < size && data[i + 1] == c && data[i + 2] == c && rndr->cb.triple_emphasis) {
@@ -580,21 +598,21 @@ char_emphasis(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 	if (size > 2 && data[1] != c) {
 		/* whitespace cannot follow an opening emphasis;
 		 * strikethrough only takes two characters '~~' */
-		if (c == '~' || isspace(data[1]) || (ret = parse_emph1(ob, rndr, data + 1, size - 1, c)) == 0)
+		if (c == '~' || _isspace(data[1]) || (ret = parse_emph1(ob, rndr, data + 1, size - 1, c)) == 0)
 			return 0;
 
 		return ret + 1;
 	}
 
 	if (size > 3 && data[1] == c && data[2] != c) {
-		if (isspace(data[2]) || (ret = parse_emph2(ob, rndr, data + 2, size - 2, c)) == 0)
+		if (_isspace(data[2]) || (ret = parse_emph2(ob, rndr, data + 2, size - 2, c)) == 0)
 			return 0;
 
 		return ret + 2;
 	}
 
 	if (size > 4 && data[1] == c && data[2] == c && data[3] != c) {
-		if (c == '~' || isspace(data[3]) || (ret = parse_emph3(ob, rndr, data + 3, size - 3, c)) == 0)
+		if (c == '~' || _isspace(data[3]) || (ret = parse_emph3(ob, rndr, data + 3, size - 3, c)) == 0)
 			return 0;
 
 		return ret + 3;
@@ -847,7 +865,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 
 	/* skip any amount of whitespace or newline */
 	/* (this is much more laxist than original markdown syntax) */
-	while (i < size && isspace(data[i]))
+	while (i < size && _isspace(data[i]))
 		i++;
 
 	/* inline style link */
@@ -855,7 +873,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 		/* skipping initial whitespace */
 		i++;
 
-		while (i < size && isspace(data[i]))
+		while (i < size && _isspace(data[i]))
 			i++;
 
 		link_b = i;
@@ -885,7 +903,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 
 			/* skipping whitespaces after title */
 			title_e = i - 1;
-			while (title_e > title_b && isspace(data[title_e]))
+			while (title_e > title_b && _isspace(data[title_e]))
 				title_e--;
 
 			/* checking for closing quote presence */
@@ -896,7 +914,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 		}
 
 		/* remove whitespace at the end of the link */
-		while (link_e > link_b && isspace(data[link_e - 1]))
+		while (link_e > link_b && _isspace(data[link_e - 1]))
 			link_e--;
 
 		/* remove optional angle brackets around the link */
@@ -1053,7 +1071,7 @@ char_superscript(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 	} else {
 		sup_start = sup_len = 1;
 
-		while (sup_len < size && !isspace(data[sup_len]))
+		while (sup_len < size && !_isspace(data[sup_len]))
 			sup_len++;
 	}
 
@@ -1163,16 +1181,16 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 
 			/* strip all whitespace at the beginning and the end
 			 * of the {} block */
-			while (syn > 0 && isspace(syntax->data[0])) {
+			while (syn > 0 && _isspace(syntax->data[0])) {
 				syntax->data++; syn--;
 			}
 
-			while (syn > 0 && isspace(syntax->data[syn - 1]))
+			while (syn > 0 && _isspace(syntax->data[syn - 1]))
 				syn--;
 
 			i++;
 		} else {
-			while (i < size && !isspace(data[i])) {
+			while (i < size && !_isspace(data[i])) {
 				syn++; i++;
 			}
 		}
@@ -1181,7 +1199,7 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 	}
 
 	while (i < size && data[i] != '\n') {
-		if (!isspace(data[i]))
+		if (!_isspace(data[i]))
 			return 0;
 
 		i++;
@@ -1862,7 +1880,7 @@ parse_table_row(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 
 		cell_work = rndr_newbuf(rndr, BUFFER_SPAN);
 
-		while (i < size && isspace(data[i]))
+		while (i < size && _isspace(data[i]))
 			i++;
 
 		cell_start = i;
@@ -1872,7 +1890,7 @@ parse_table_row(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 
 		cell_end = i - 1;
 
-		while (cell_end > cell_start && isspace(data[cell_end]))
+		while (cell_end > cell_start && _isspace(data[cell_end]))
 			cell_end--;
 
 		parse_inline(cell_work, rndr, data + cell_start, 1 + cell_end - cell_start);
