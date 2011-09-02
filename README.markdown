@@ -20,14 +20,14 @@ Features
 	strikethrough and more.
 
 *	**Tested & Ready to be used on production**
-	
+
 	`Sundown` has been extensively security audited, and includes protection against
 	all possible DOS attacks (stack overflows, out of memory situations, malformed
 	Markdown syntax...) and against client attacks through malicious embedded HTML.
 
 	We've worked very hard to make `Sundown` never crash or run out of memory
 	under *any* input. `Sundown` renders all the Markdown content in GitHub and so
-	far hasn't crashed a single time. 
+	far hasn't crashed a single time.
 
 *	**Customizable renderers**
 
@@ -65,7 +65,7 @@ by our awesome contributors.
 - [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
 - [Misaka](https://github.com/FSX/misaka) (Python)
 - [ffi-sundown](https://github.com/postmodern/ffi-sundown) (Ruby FFI)
-- [Upskirt HS](https://github.com/rostayob/upskirt) (Haskell)
+- [Sundown HS](https://github.com/rostayob/sundown) (Haskell)
 - [Goskirt](https://github.com/madari/goskirt) (Go)
 - [Upskirt.go](https://github.com/buu700/upskirt.go) (Go)
 - [MoonShine](https://github.com/brandonc/moonshine) (.NET)
