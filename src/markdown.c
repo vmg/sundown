@@ -517,7 +517,7 @@ parse_emph1(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 static size_t
 parse_emph2(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, uint8_t c)
 {
-	int (*render_method)(struct buf *ob, struct buf *text, void *opaque);
+	int (*render_method)(struct buf *ob, const struct buf *text, void *opaque);
 	size_t i = 0, len;
 	struct buf *work = 0;
 	int r;
