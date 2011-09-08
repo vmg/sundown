@@ -1763,7 +1763,7 @@ static size_t
 parse_htmlblock(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, int do_render)
 {
 	size_t i, j = 0;
-	const char *curtag;
+	const char *curtag = NULL;
 	int found;
 	struct buf work = { data, 0, 0, 0 };
 
@@ -1771,7 +1771,12 @@ parse_htmlblock(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 	if (size < 2 || data[0] != '<')
 		return 0;
 
-	curtag = find_block_tag((char *)data + 1, size - 1);
+	i = 1;
+	while (i < size && data[i] != '>' && data[i] != ' ')
+		i++;
+
+	if (i < size && data[i] == '>')
+		curtag = find_block_tag((char *)data + 1, i - 1);
 
 	/* handling of special cases */
 	if (!curtag) {
