@@ -23,6 +23,17 @@ CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml $(MFLAGS)
 LDFLAGS=-g -O3 -Wall -Werror $(MFLAGS)
 CC=gcc
 
+
+SUNDOWN_SRC=\
+	src/markdown.o \
+	src/stack.o \
+	src/buffer.o \
+	src/autolink.o \
+	html/html.o \
+	html/html_smartypants.o \
+	html/houdini_html_e.o \
+	html/houdini_uri_e.o
+
 all:		libsundown.so sundown smartypants html_blocks
 
 .PHONY:		all clean
@@ -32,15 +43,15 @@ all:		libsundown.so sundown smartypants html_blocks
 libsundown.so:	libsundown.so.1
 	ln -f -s $^ $@
 
-libsundown.so.1: src/markdown.o src/stack.o src/buffer.o src/autolink.o html/html.o html/html_smartypants.o
+libsundown.so.1: $(SUNDOWN_SRC)
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
 
 # executables
 
-sundown:	examples/sundown.o src/markdown.o src/stack.o src/autolink.o src/buffer.o html/html.o html/html_smartypants.o
+sundown:	examples/sundown.o $(SUNDOWN_SRC)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-smartypants: examples/smartypants.o src/buffer.o html/html_smartypants.o html/html.o src/autolink.o
+smartypants: examples/smartypants.o $(SUNDOWN_SRC)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # perfect hashing
