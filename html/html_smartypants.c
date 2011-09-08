@@ -352,7 +352,7 @@ static struct {
 #endif
 
 void
-sdhtml_smartypants(struct buf *ob, struct buf *text)
+sdhtml_smartypants(struct buf *ob, const uint8_t *text, size_t size)
 {
 	size_t i;
 	struct smartypants_data smrt = {0, 0};
@@ -360,22 +360,22 @@ sdhtml_smartypants(struct buf *ob, struct buf *text)
 	if (!text)
 		return;
 
-	bufgrow(ob, text->size);
+	bufgrow(ob, size);
 
-	for (i = 0; i < text->size; ++i) {
+	for (i = 0; i < size; ++i) {
 		size_t org;
 		uint8_t action = 0;
 
 		org = i;
-		while (i < text->size && (action = smartypants_cb_chars[text->data[i]]) == 0)
+		while (i < size && (action = smartypants_cb_chars[text[i]]) == 0)
 			i++;
 
 		if (i > org)
-			bufput(ob, text->data + org, i - org);
+			bufput(ob, text + org, i - org);
 
-		if (i < text->size) {
+		if (i < size) {
 			i += smartypants_cb_ptrs[(int)action]
-				(ob, &smrt, i ? text->data[i - 1] : 0, text->data + i, text->size - i);
+				(ob, &smrt, i ? text[i - 1] : 0, text + i, size - i);
 		}
 	}
 }
