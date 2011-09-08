@@ -60,6 +60,60 @@ sdhtml_escape(struct buf *ob, const uint8_t *src, size_t size)
 	}
 }
 
+static inline int
+is_allowed_in_url(uint8_t c)
+{
+	/* checks if the character is within the allowed (restricted + unrestricted)
+	 * set of characters as specified in RFC 3968; & is special cased so it can
+	 * be entity-escaped */
+	if (c < 0x3F) {
+		if (c < 0x23) {
+			return c == 0x21;
+		} else if (c > 0x3B) {
+			return c == 0x3D;
+		} else {
+			return c != '&';
+		}
+	} else if (c > 0x5B) {
+		if (c < 0x61) {
+			return c == 0x5D || c == 0x5F;
+		} else if (c > 0x7A) {
+			return c == 0x7E;
+		}
+	}
+
+	return 1;
+}
+
+/* sdhtml_urlencode • copy the buffer percent-encoding characters outside the allowed set */
+void
+sdhtml_urlencode(struct buf *ob, const uint8_t *src, size_t size)
+{
+	size_t i = 0, org, formatted;
+	char temp[4];
+
+	while (i < size) {
+		/* copying directly allowed characters */
+		org = i;
+
+		while (i < size && is_allowed_in_url(src[i]))
+			i += 1;
+
+		if (i > org) bufput(ob, src + org, i - org);
+
+		/* escaping */
+		if (i >= size) break;
+
+		if (src[i] == '&') {
+			put_escaped_char(ob, src[i]);
+		} else {
+			formatted = snprintf(temp, sizeof(temp), "%%%02X", src[i]);
+			bufput(ob, temp, formatted);
+		}
+		i++;
+	}
+}
+
 int
 sdhtml_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 {
@@ -112,7 +166,7 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 	BUFPUTSL(ob, "<a href=\"");
 	if (type == MKDA_EMAIL)
 		BUFPUTSL(ob, "mailto:");
-	sdhtml_escape(ob, link->data, link->size);
+	sdhtml_urlencode(ob, link->data, link->size);
 
 	if (options->link_attributes) {
 		bufputc(ob, '\"');
@@ -263,7 +317,7 @@ rndr_link(struct buf *ob, const struct buf *link, const struct buf *title, const
 	BUFPUTSL(ob, "<a href=\"");
 
 	if (link && link->size)
-		sdhtml_escape(ob, link->data, link->size);
+		sdhtml_urlencode(ob, link->data, link->size);
 
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
@@ -388,7 +442,7 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 	struct html_renderopt *options = opaque;
 	if (!link || !link->size) return 0;
 	BUFPUTSL(ob, "<img src=\"");
-	sdhtml_escape(ob, link->data, link->size);
+	sdhtml_urlencode(ob, link->data, link->size);
 	BUFPUTSL(ob, "\" alt=\"");
 	if (alt && alt->size)
 		sdhtml_escape(ob, alt->data, alt->size);
