@@ -79,7 +79,7 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 	BUFPUTSL(ob, "<a href=\"");
 	if (type == MKDA_EMAIL)
 		BUFPUTSL(ob, "mailto:");
-	houdini_escape_uri(ob, link->data, link->size);
+	houdini_escape_href(ob, link->data, link->size);
 
 	if (options->link_attributes) {
 		bufputc(ob, '\"');
@@ -230,7 +230,7 @@ rndr_link(struct buf *ob, const struct buf *link, const struct buf *title, const
 	BUFPUTSL(ob, "<a href=\"");
 
 	if (link && link->size)
-		houdini_escape_uri(ob, link->data, link->size);
+		houdini_escape_href(ob, link->data, link->size);
 
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
@@ -356,7 +356,7 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 	if (!link || !link->size) return 0;
 
 	BUFPUTSL(ob, "<img src=\"");
-	houdini_escape_uri(ob, link->data, link->size);
+	houdini_escape_href(ob, link->data, link->size);
 	BUFPUTSL(ob, "\" alt=\"");
 
 	if (alt && alt->size)
