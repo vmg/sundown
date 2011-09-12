@@ -57,7 +57,7 @@ main(int argc, char **argv)
 	/* performing markdown parsing */
 	ob = bufnew(OUTPUT_UNIT);
 
-	sdhtml_smartypants(ob, ib);
+	sdhtml_smartypants(ob, ib->data, ib->size);
 
 	/* writing the result to stdout */
 	fwrite(ob->data, 1, ob->size, stdout);
