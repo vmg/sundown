@@ -758,7 +758,7 @@ char_langle_tag(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 static size_t
 char_autolink_www(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset, size_t size)
 {
-	struct buf *link, *link_url;
+	struct buf *link, *link_url, *link_text;
 	size_t link_len, rewind;
 
 	if (!rndr->cb.link)
@@ -772,7 +772,14 @@ char_autolink_www(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 		bufput(link_url, link->data, link->size);
 
 		ob->size -= rewind;
-		rndr->cb.link(ob, link_url, NULL, link, rndr->opaque);
+		if (rndr->cb.normal_text) {
+			link_text = rndr_newbuf(rndr, BUFFER_SPAN);
+			rndr->cb.normal_text(link_text, link, rndr->opaque);
+			rndr->cb.link(ob, link_url, NULL, link_text, rndr->opaque);
+			rndr_popbuf(rndr, BUFFER_SPAN);
+		} else {
+			rndr->cb.link(ob, link_url, NULL, link, rndr->opaque);
+		}
 		rndr_popbuf(rndr, BUFFER_SPAN);
 	}
 
