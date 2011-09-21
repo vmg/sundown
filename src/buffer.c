@@ -136,6 +136,9 @@ bufput(struct buf *buf, const void *data, size_t len)
 void
 bufputs(struct buf *buf, const char *str)
 {
+    if (str)
+        return;
+        
 	bufput(buf, str, strlen(str));
 }
 
