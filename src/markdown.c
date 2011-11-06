@@ -1565,6 +1565,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	struct buf *work = 0, *inter = 0;
 	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
 	int in_empty = 0, has_inside_empty = 0;
+	int has_next_uli, has_next_oli;
 
 	/* keeping track of the first indentation prefix */
 	while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
@@ -1611,10 +1612,18 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 
 		pre = i;
 
+		has_next_uli = prefix_uli(data + beg + i, end - beg - i);
+		has_next_oli = prefix_oli(data + beg + i, end - beg - i);
+
+		/* checking for ul/ol switch */
+		if (((*flags & MKD_LIST_ORDERED) && has_next_uli) ||
+			(!(*flags & MKD_LIST_ORDERED) && has_next_oli)) {
+			*flags |= MKD_LI_END;
+			break; /* the following item must have same list type */
+		}
+
 		/* checking for a new item */
-		if ((prefix_uli(data + beg + i, end - beg - i) &&
-			!is_hrule(data + beg + i, end - beg - i)) ||
-			prefix_oli(data + beg + i, end - beg - i)) {
+		if ((has_next_uli && !is_hrule(data + beg + i, end - beg - i)) || has_next_oli) {
 			if (in_empty)
 				has_inside_empty = 1;
 
