@@ -32,7 +32,6 @@ main(int argc, char **argv)
 {
 	struct buf *ib, *ob;
 	size_t ret;
-        int fwrite_ret;
 	FILE *in = stdin;
 
 	/* opening the file if given from the command line */
@@ -61,7 +60,7 @@ main(int argc, char **argv)
 	sdhtml_smartypants(ob, ib->data, ib->size);
 
 	/* writing the result to stdout */
-	fwrite_ret = fwrite(ob->data, 1, ob->size, stdout);
+	(void)fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
 	bufrelease(ib);
