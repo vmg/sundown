@@ -111,6 +111,7 @@ struct sd_markdown {
 	struct stack work_bufs[2];
 	unsigned int ext_flags;
 	size_t max_nesting;
+	int in_link_body;
 };
 
 /***************************
@@ -372,7 +373,6 @@ parse_inline(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t siz
 		if (end >= size) break;
 		i = end;
 
-		/* calling the trigger */
 		end = markdown_char_ptrs[(int)action](ob, rndr, data + i, i, size - i);
 		if (!end) /* no action from the callback */
 			end = i + 1;
@@ -682,7 +682,7 @@ char_codespan(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 static size_t
 char_escape(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset, size_t size)
 {
-	static const char *escape_chars = "\\`*_{}[]()#+-.!:|&<>";
+	static const char *escape_chars = "\\`*_{}[]()#+-.!:|&<>^~";
 	struct buf work = { 0, 0, 0, 0 };
 
 	if (size > 1) {
@@ -761,7 +761,7 @@ char_autolink_www(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 	struct buf *link, *link_url, *link_text;
 	size_t link_len, rewind;
 
-	if (!rndr->cb.link)
+	if (!rndr->cb.link || rndr->in_link_body)
 		return 0;
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
@@ -793,7 +793,7 @@ char_autolink_email(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, siz
 	struct buf *link;
 	size_t link_len, rewind;
 
-	if (!rndr->cb.autolink)
+	if (!rndr->cb.autolink || rndr->in_link_body)
 		return 0;
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
@@ -813,7 +813,7 @@ char_autolink_url(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 	struct buf *link;
 	size_t link_len, rewind;
 
-	if (!rndr->cb.autolink)
+	if (!rndr->cb.autolink || rndr->in_link_body)
 		return 0;
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
@@ -1026,8 +1026,15 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 	/* building content: img alt is escaped, link content is parsed */
 	if (txt_e > 1) {
 		content = rndr_newbuf(rndr, BUFFER_SPAN);
-		if (is_img) bufput(content, data + 1, txt_e - 1);
-		else parse_inline(content, rndr, data + 1, txt_e - 1);
+		if (is_img) {
+			bufput(content, data + 1, txt_e - 1);
+		} else {
+			/* disable autolinking when parsing inline the
+			 * content of a link */
+			rndr->in_link_body = 1;
+			parse_inline(content, rndr, data + 1, txt_e - 1);
+			rndr->in_link_body = 0;
+		}
 	}
 
 	if (link) {
