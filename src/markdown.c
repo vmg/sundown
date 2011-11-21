@@ -1623,8 +1623,10 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		has_next_oli = prefix_oli(data + beg + i, end - beg - i);
 
 		/* checking for ul/ol switch */
-		if (((*flags & MKD_LIST_ORDERED) && has_next_uli) ||
-			(!(*flags & MKD_LIST_ORDERED) && has_next_oli)) {
+		if (in_empty && (
+					((*flags & MKD_LIST_ORDERED) && has_next_uli) ||
+					(!(*flags & MKD_LIST_ORDERED) && has_next_oli)
+			)){
 			*flags |= MKD_LI_END;
 			break; /* the following item must have same list type */
 		}
