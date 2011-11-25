@@ -19,6 +19,7 @@ table
 figure
 iframe
 script
+style
 fieldset
 noscript
 blockquote
