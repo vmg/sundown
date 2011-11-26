@@ -2350,6 +2350,7 @@ sd_markdown_new(
 	md->ext_flags = extensions;
 	md->opaque = opaque;
 	md->max_nesting = max_nesting;
+	md->in_link_body = 0;
 
 	return md;
 }
