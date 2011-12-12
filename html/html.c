@@ -60,6 +60,16 @@ sdhtml_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 	return HTML_TAG_NONE;
 }
 
+static inline void escape_html(struct buf *ob, const uint8_t *source, size_t length)
+{
+	houdini_escape_html0(ob, source, length, 0);
+}
+
+static inline void escape_href(struct buf *ob, const uint8_t *source, size_t length)
+{
+	houdini_escape_href(ob, source, length);
+}
+
 /********************
  * GENERIC RENDERER *
  ********************/
@@ -79,7 +89,7 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 	BUFPUTSL(ob, "<a href=\"");
 	if (type == MKDA_EMAIL)
 		BUFPUTSL(ob, "mailto:");
-	houdini_escape_href(ob, link->data, link->size);
+	escape_href(ob, link->data, link->size);
 
 	if (options->link_attributes) {
 		bufputc(ob, '\"');
@@ -95,9 +105,9 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 	 * want to print the `mailto:` prefix
 	 */
 	if (bufprefix(link, "mailto:") == 0) {
-		houdini_escape_html(ob, link->data + 7, link->size - 7);
+		escape_html(ob, link->data + 7, link->size - 7);
 	} else {
-		houdini_escape_html(ob, link->data, link->size);
+		escape_html(ob, link->data, link->size);
 	}
 
 	BUFPUTSL(ob, "</a>");
@@ -127,7 +137,7 @@ rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, v
 					org++;
 
 				if (cls) bufputc(ob, ' ');
-				houdini_escape_html(ob, lang->data + org, i - org);
+				escape_html(ob, lang->data + org, i - org);
 			}
 		}
 
@@ -136,7 +146,7 @@ rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, v
 		BUFPUTSL(ob, "<pre><code>");
 
 	if (text)
-		houdini_escape_html(ob, text->data, text->size);
+		escape_html(ob, text->data, text->size);
 
 	BUFPUTSL(ob, "</code></pre>\n");
 }
@@ -154,7 +164,7 @@ static int
 rndr_codespan(struct buf *ob, const struct buf *text, void *opaque)
 {
 	BUFPUTSL(ob, "<code>");
-	if (text) houdini_escape_html(ob, text->data, text->size);
+	if (text) escape_html(ob, text->data, text->size);
 	BUFPUTSL(ob, "</code>");
 	return 1;
 }
@@ -230,11 +240,11 @@ rndr_link(struct buf *ob, const struct buf *link, const struct buf *title, const
 	BUFPUTSL(ob, "<a href=\"");
 
 	if (link && link->size)
-		houdini_escape_href(ob, link->data, link->size);
+		escape_href(ob, link->data, link->size);
 
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
-		houdini_escape_html(ob, title->data, title->size);
+		escape_html(ob, title->data, title->size);
 	}
 
 	if (options->link_attributes) {
@@ -356,15 +366,15 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 	if (!link || !link->size) return 0;
 
 	BUFPUTSL(ob, "<img src=\"");
-	houdini_escape_href(ob, link->data, link->size);
+	escape_href(ob, link->data, link->size);
 	BUFPUTSL(ob, "\" alt=\"");
 
 	if (alt && alt->size)
-		houdini_escape_html(ob, alt->data, alt->size);
+		escape_html(ob, alt->data, alt->size);
 
 	if (title && title->size) {
 		BUFPUTSL(ob, "\" title=\"");
-		houdini_escape_html(ob, title->data, title->size); }
+		escape_html(ob, title->data, title->size); }
 
 	bufputs(ob, USE_XHTML(options) ? "\"/>" : "\">");
 	return 1;
@@ -466,7 +476,7 @@ static void
 rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
 {
 	if (text)
-		houdini_escape_html(ob, text->data, text->size);
+		escape_html(ob, text->data, text->size);
 }
 
 static void
