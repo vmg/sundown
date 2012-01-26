@@ -694,6 +694,8 @@ char_escape(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offs
 			rndr->cb.normal_text(ob, &work, rndr->opaque);
 		}
 		else bufputc(ob, data[1]);
+	} else if (size == 1) {
+		bufputc(ob, data[0]);
 	}
 
 	return 2;
