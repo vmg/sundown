@@ -2247,8 +2247,8 @@ is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_re
 			line_end = title_end;
 			title_end = i; } }
 
-	if (!line_end)
-		return 0; /* garbage after the link */
+	if (!line_end || link_end == link_offset)
+		return 0; /* garbage after the link empty link */
 
 	/* a valid ref has been found, filling-in return structures */
 	if (last)
@@ -2258,6 +2258,8 @@ is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_re
 		struct link_ref *ref;
 
 		ref = add_link_ref(refs, data + id_offset, id_end - id_offset);
+		if (!ref)
+			return 0;
 
 		ref->link = bufnew(link_end - link_offset);
 		bufput(ref->link, data + link_offset, link_end - link_offset);
