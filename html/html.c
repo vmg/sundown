@@ -509,7 +509,7 @@ toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 
 	bufprintf(ob, "<a href=\"#toc_%d\">", options->toc_data.header_count++);
 	if (text)
-		bufput(ob, text->data, text->size);
+		escape_html(ob, text->data, text->size);
 	BUFPUTSL(ob, "</a>\n");
 }
 
