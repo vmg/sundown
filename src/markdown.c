@@ -1970,10 +1970,13 @@ parse_table_header(
 
 	header_end = i;
 
+	while (header_end > 0 && _isspace(data[header_end - 1]))
+		header_end--;
+
 	if (data[0] == '|')
 		pipes--;
 
-	if (i > 2 && data[i - 1] == '|')
+	if (header_end && data[header_end - 1] == '|')
 		pipes--;
 
 	*columns = pipes + 1;
