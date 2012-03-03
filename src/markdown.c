@@ -25,6 +25,8 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#include "winfix.h"
+
 #define REF_TABLE_SIZE 8
 
 #define BUFFER_BLOCK 0

@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#include "winfix.h"
+
 int
 sd_autolink_issafe(const uint8_t *link, size_t link_len)
 {
