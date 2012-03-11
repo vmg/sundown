@@ -103,6 +103,7 @@ static char_trigger markdown_char_ptrs[] = {
 
 /* render • structure containing one particular render */
 struct sd_markdown {
+	struct sd_parser prsr;
 	struct sd_callbacks	cb;
 	void *opaque;
 
@@ -111,7 +112,6 @@ struct sd_markdown {
 	struct stack work_bufs[2];
 	unsigned int ext_flags;
 	size_t max_nesting;
-	int in_link_body;
 };
 
 /***************************
@@ -762,7 +762,7 @@ char_autolink_www(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 	struct buf *link, *link_url, *link_text;
 	size_t link_len, rewind;
 
-	if (!rndr->cb.link || rndr->in_link_body)
+	if (!rndr->cb.link || rndr->prsr.in_link_body)
 		return 0;
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
@@ -794,7 +794,7 @@ char_autolink_email(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, siz
 	struct buf *link;
 	size_t link_len, rewind;
 
-	if (!rndr->cb.autolink || rndr->in_link_body)
+	if (!rndr->cb.autolink || rndr->prsr.in_link_body)
 		return 0;
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
@@ -814,7 +814,7 @@ char_autolink_url(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 	struct buf *link;
 	size_t link_len, rewind;
 
-	if (!rndr->cb.autolink || rndr->in_link_body)
+	if (!rndr->cb.autolink || rndr->prsr.in_link_body)
 		return 0;
 
 	link = rndr_newbuf(rndr, BUFFER_SPAN);
@@ -1037,9 +1037,9 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 		} else {
 			/* disable autolinking when parsing inline the
 			 * content of a link */
-			rndr->in_link_body = 1;
+			rndr->prsr.in_link_body = 1;
 			parse_inline(content, rndr, data + 1, txt_e - 1);
-			rndr->in_link_body = 0;
+			rndr->prsr.in_link_body = 0;
 		}
 	}
 
@@ -2305,7 +2305,7 @@ static void expand_tabs(struct buf *ob, const uint8_t *line, size_t size)
  * EXPORTED FUNCTIONS *
  **********************/
 
-struct sd_markdown *
+struct sd_parser *
 sd_markdown_new(
 	unsigned int extensions,
 	size_t max_nesting,
@@ -2360,17 +2360,18 @@ sd_markdown_new(
 	md->ext_flags = extensions;
 	md->opaque = opaque;
 	md->max_nesting = max_nesting;
-	md->in_link_body = 0;
+	md->prsr.in_link_body = 0;
 
-	return md;
+	return (struct sd_parser *)md;
 }
 
 void
-sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, struct sd_markdown *md)
+sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, struct sd_parser *p)
 {
 #define MARKDOWN_GROW(x) ((x) + ((x) >> 1))
 	static const char UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
 
+	struct sd_markdown *md = (struct sd_markdown *)p;
 	struct buf *text;
 	size_t beg, end;
 
@@ -2441,9 +2442,10 @@ sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, str
 }
 
 void
-sd_markdown_free(struct sd_markdown *md)
+sd_markdown_free(struct sd_parser *p)
 {
 	size_t i;
+	struct sd_markdown *md = (struct sd_markdown *)p;
 
 	for (i = 0; i < (size_t)md->work_bufs[BUFFER_SPAN].asize; ++i)
 		bufrelease(md->work_bufs[BUFFER_SPAN].item[i]);
