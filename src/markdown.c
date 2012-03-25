@@ -25,6 +25,10 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#if defined(_WIN32)
+#define strncasecmp	_strnicmp
+#endif
+
 #define REF_TABLE_SIZE 8
 
 #define BUFFER_BLOCK 0
