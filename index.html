@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Sundown by tanoku</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Sundown</h1>
+        <p>Standards compliant, fast, secure markdown processing library in C</p>
+        <p class="view"><a href="https://github.com/tanoku/sundown">View the Project on GitHub <small>tanoku/sundown</small></a></p>
+        <ul>
+          <li><a href="https://github.com/tanoku/sundown/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/tanoku/sundown/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/tanoku/sundown">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><code>Sundown</code> is a minimal, self-contained library to parse Markdown files, written from the ground up with a focus on security. It has been extensively tested in production, and it handles all the Markdown rendering in <a href="https://github.com">GitHub</a> and <a href="http://www.reddit.com">Reddit</a>, among other websites.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>
+<p><strong>Fully standards compliant</strong></p>
+
+<p><code>Sundown</code> passes out of the box the official Markdown v1.0.0 and v1.0.3
+test suites, and has been extensively tested with additional corner cases
+to make sure its output is as sane as possible at all times.</p>
+</li>
+<li>
+<p><strong>Massive extension support</strong></p>
+
+<p><code>Sundown</code> has optional support for several (unofficial) Markdown extensions,
+such as non-strict emphasis, fenced code blocks, tables, autolinks,
+strikethrough and more.</p>
+</li>
+<li>
+<p><strong>UTF-8 aware</strong></p>
+
+<p><code>Sundown</code> is fully UTF-8 aware, both when parsing the source document and when
+generating the resulting (X)HTML code.</p>
+</li>
+<li>
+<p><strong>Tested &amp; Ready to be used on production</strong></p>
+
+<p><code>Sundown</code> has been extensively security audited, and includes protection against
+all possible DOS attacks (stack overflows, out of memory situations, malformed
+Markdown syntax...) and against client attacks through malicious embedded HTML.</p>
+
+<p>We've worked very hard to make <code>Sundown</code> never crash or run out of memory
+under <em>any</em> input. <code>Sundown</code> renders all the Markdown content in GitHub and so
+far hasn't crashed a single time.</p>
+</li>
+<li>
+<p><strong>Customizable renderers</strong></p>
+
+<p><code>Sundown</code> is not stuck with XHTML output: the Markdown parser of the library
+is decoupled from the renderer, so it's trivial to extend the library with
+custom renderers. A fully functional (X)HTML renderer is included.</p>
+</li>
+<li>
+<p><strong>Optimized for speed</strong></p>
+
+<p><code>Sundown</code> is written in C, with a special emphasis on performance. When wrapped
+on a dynamic language such as Python or Ruby, it has shown to be up to 40
+times faster than other native alternatives.</p>
+</li>
+<li>
+<p><strong>Zero-dependency</strong></p>
+
+<p><code>Sundown</code> is a zero-dependency library composed of 3 <code>.c</code> files and their headers.
+No dependencies, no bullshit. Only standard C99 that builds everywhere.</p>
+</li>
+</ul><h2>Credits</h2>
+
+<p><code>Sundown</code> is based on the original Upskirt parser by Natacha Porté, with many additions
+by Vicent Marti (<a href="/tanoku" class="user-mention">@tanoku</a>) and contributions from the following authors: Ben Noordhuis, Bruno Michel, Joseph Koshy, Krzysztof Kowalczyk, Samuel Bronson, Shuhei Tanuma</p>
+
+<h2>Bindings</h2>
+
+<p><code>Sundown</code> is available from other programming languages thanks to these bindings developed
+by our awesome contributors.</p>
+
+<ul>
+<li>
+<a href="https://github.com/tanoku/redcarpet">Redcarpet</a> (Ruby)</li>
+<li>
+<a href="https://github.com/benmills/robotskirt">RobotSkirt</a> (Node.js)</li>
+<li>
+<a href="https://github.com/FSX/misaka">Misaka</a> (Python)</li>
+<li>
+<a href="https://github.com/postmodern/ffi-sundown">ffi-sundown</a> (Ruby FFI)</li>
+<li>
+<a href="https://github.com/rostayob/sundown">Sundown HS</a> (Haskell)</li>
+<li>
+<a href="https://github.com/madari/goskirt">Goskirt</a> (Go)</li>
+<li>
+<a href="https://github.com/buu700/upskirt.go">Upskirt.go</a> (Go)</li>
+<li>
+<a href="https://github.com/brandonc/moonshine">MoonShine</a> (.NET)</li>
+<li>
+<a href="https://github.com/chobie/php-sundown">PHP-Sundown</a> (PHP)</li>
+<li>
+<a href="https://github.com/txdv/sundown.net">Sundown.net</a> (.NET)</li>
+</ul><h2>Help us</h2>
+
+<p><code>Sundown</code> is all about security. If you find a (potential) security vulnerability in the
+library, or a way to make it crash through malicious input, please report it to us,
+either directly via email or by opening an Issue on GitHub, and help make the web safer
+for everybody.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/tanoku">tanoku</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
