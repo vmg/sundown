@@ -491,7 +491,9 @@ toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 {
 	struct html_renderopt *options = opaque;
 
-	if (options->toc_data.header_count == 0) {
+	/* set the level offset if this is the first header
+	 * we're parsing for the document */
+	if (options->toc_data.current_level == 0) {
 		options->toc_data.level_offset = level - 1;
 	}
 	level -= options->toc_data.level_offset;
