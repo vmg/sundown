@@ -70,7 +70,7 @@ by our awesome contributors.
 - [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
 - [Misaka](https://github.com/FSX/misaka) (Python)
 - [ffi-sundown](https://github.com/postmodern/ffi-sundown) (Ruby FFI)
-- [Sundown HS](https://github.com/rostayob/sundown) (Haskell)
+- [Sundown HS](https://github.com/bitonic/sundown) (Haskell)
 - [Goskirt](https://github.com/madari/goskirt) (Go)
 - [Upskirt.go](https://github.com/buu700/upskirt.go) (Go)
 - [MoonShine](https://github.com/brandonc/moonshine) (.NET)
