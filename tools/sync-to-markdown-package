@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+# verify arguments
+MARKDOWN_DIR=$1
+if [ -z "$MARKDOWN_DIR" ] || [ ! -d "$MARKDOWN_DIR" ]
+then
+   echo "Usage: sync-to-markdown-package <package-dir>"
+   exit 1
+fi
+
+# sync to markdown package
+./sync-to $MARKDOWN_DIR/inst/include $MARKDOWN_DIR/src
+
