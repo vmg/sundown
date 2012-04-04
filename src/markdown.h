@@ -22,6 +22,10 @@
 #include "buffer.h"
 #include "autolink.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define UPSKIRT_VERSION "1.15.2"
 #define UPSKIRT_VER_MAJOR 1
 #define UPSKIRT_VER_MINOR 15
@@ -124,6 +128,10 @@ sd_markdown_free(struct sd_markdown *md);
 
 extern void
 sd_version(int *major, int *minor, int *revision);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
