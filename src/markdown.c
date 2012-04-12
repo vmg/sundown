@@ -1586,8 +1586,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 {
 	struct buf *work = 0, *inter = 0;
 	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
-	int in_empty = 0, has_inside_empty = 0;
-	size_t has_next_uli, has_next_oli;
+	int in_empty = 0, has_inside_empty = 0, in_fence = 0;
 
 	/* keeping track of the first indentation prefix */
 	while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
@@ -1615,6 +1614,8 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 
 	/* process the following lines */
 	while (beg < size) {
+		size_t has_next_uli = 0, has_next_oli = 0;
+
 		end++;
 
 		while (end < size && data[end - 1] != '\n')
@@ -1634,8 +1635,17 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 
 		pre = i;
 
-		has_next_uli = prefix_uli(data + beg + i, end - beg - i);
-		has_next_oli = prefix_oli(data + beg + i, end - beg - i);
+		if (rndr->ext_flags & MKDEXT_FENCED_CODE) {
+			if (is_codefence(data + beg + i, end - beg - i, NULL) != 0)
+				in_fence = !in_fence;
+		}
+
+		/* Only check for new list items if we are **not** inside
+		 * a fenced code block */
+		if (!in_fence) {
+			has_next_uli = prefix_uli(data + beg + i, end - beg - i);
+			has_next_oli = prefix_oli(data + beg + i, end - beg - i);
+		}
 
 		/* checking for ul/ol switch */
 		if (in_empty && (
@@ -1656,10 +1666,12 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 			if (!sublist)
 				sublist = work->size;
 		}
-		/* joining only indented stuff after empty lines */
-		else if (in_empty && i < 4) {
-				*flags |= MKD_LI_END;
-				break;
+		/* joining only indented stuff after empty lines;
+		 * note that now we only require 1 space of indentation
+		 * to continue a list */
+		else if (in_empty && pre == 0) {
+			*flags |= MKD_LI_END;
+			break;
 		}
 		else if (in_empty) {
 			bufputc(work, '\n');
