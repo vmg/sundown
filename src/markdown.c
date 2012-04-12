@@ -2524,9 +2524,9 @@ sd_markdown_free(struct sd_markdown *md)
 void
 sd_version(int *ver_major, int *ver_minor, int *ver_revision)
 {
-	*ver_major = UPSKIRT_VER_MAJOR;
-	*ver_minor = UPSKIRT_VER_MINOR;
-	*ver_revision = UPSKIRT_VER_REVISION;
+	*ver_major = SUNDOWN_VER_MAJOR;
+	*ver_minor = SUNDOWN_VER_MINOR;
+	*ver_revision = SUNDOWN_VER_REVISION;
 }
 
 /* vim: set filetype=c: */
