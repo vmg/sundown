@@ -1189,48 +1189,46 @@ prefix_codefence(uint8_t *data, size_t size)
 static size_t
 is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 {
-	size_t i = 0;
+	size_t i = 0, syn = 0;
 
 	i = prefix_codefence(data, size);
 	if (i == 0)
 		return 0;
 
-	if (syntax != NULL) {
-		size_t syn = 0;
+	while (i < size && data[i] == ' ')
+		i++;
 
-		while (i < size && data[i] == ' ')
-			i++;
-
+	if (syntax)
 		syntax->data = data + i;
 
-		if (i < size && data[i] == '{') {
-			i++; syntax->data++;
+	if (i < size && data[i] == '{') {
+		i++; syntax->data++;
 
-			while (i < size && data[i] != '}' && data[i] != '\n') {
-				syn++; i++;
-			}
-
-			if (i == size || data[i] != '}')
-				return 0;
-
-			/* strip all whitespace at the beginning and the end
-			 * of the {} block */
-			while (syn > 0 && _isspace(syntax->data[0])) {
-				syntax->data++; syn--;
-			}
-
-			while (syn > 0 && _isspace(syntax->data[syn - 1]))
-				syn--;
-
-			i++;
-		} else {
-			while (i < size && !_isspace(data[i])) {
-				syn++; i++;
-			}
+		while (i < size && data[i] != '}' && data[i] != '\n') {
+			syn++; i++;
 		}
 
-		syntax->size = syn;
+		if (i == size || data[i] != '}')
+			return 0;
+
+		/* strip all whitespace at the beginning and the end
+		 * of the {} block */
+		while (syn > 0 && _isspace(syntax->data[0])) {
+			syntax->data++; syn--;
+		}
+
+		while (syn > 0 && _isspace(syntax->data[syn - 1]))
+			syn--;
+
+		i++;
+	} else {
+		while (i < size && !_isspace(data[i])) {
+			syn++; i++;
+		}
 	}
+
+	if (syntax)
+		syntax->size = syn;
 
 	while (i < size && data[i] != '\n') {
 		if (!_isspace(data[i]))
@@ -1440,6 +1438,13 @@ parse_paragraph(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 		if ((level = is_headerline(data + i, size - i)) != 0)
 			break;
 
+		if (is_atxheader(rndr, data + i, size - i) ||
+			is_hrule(data + i, size - i) ||
+			prefix_quote(data + i, size - i)) {
+			end = i;
+			break;
+		}
+
 		/*
 		 * Early termination of a paragraph with the same logic
 		 * as Markdown 1.0.0. If this logic is applied, the
@@ -1450,10 +1455,7 @@ parse_paragraph(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 		 * here
 		 */
 		if ((rndr->ext_flags & MKDEXT_LAX_SPACING) && !isalnum(data[i])) {
-			if (is_atxheader(rndr, data + i, size - i) ||
-				is_hrule(data + i, size - i) ||
-				prefix_quote(data + i, size - i) ||
-				prefix_oli(data + i, size - i) ||
+			if (prefix_oli(data + i, size - i) ||
 				prefix_uli(data + i, size - i)) {
 				end = i;
 				break;
@@ -1468,7 +1470,7 @@ parse_paragraph(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 
 			/* see if a code fence starts here */
 			if ((rndr->ext_flags & MKDEXT_FENCED_CODE) != 0 &&
-				prefix_codefence(data + i, size - i) != 0) {
+				is_codefence(data + i, size - i, NULL) != 0) {
 				end = i;
 				break;
 			}
@@ -1543,9 +1545,10 @@ parse_fencedcode(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 
 	while (beg < size) {
 		size_t fence_end;
+		struct buf fence_trail = { 0, 0, 0, 0 };
 
-		fence_end = is_codefence(data + beg, size - beg, NULL);
-		if (fence_end != 0) {
+		fence_end = is_codefence(data + beg, size - beg, &fence_trail);
+		if (fence_end != 0 && fence_trail.size == 0) {
 			beg += fence_end;
 			break;
 		}
@@ -1670,7 +1673,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		pre = i;
 
 		if (rndr->ext_flags & MKDEXT_FENCED_CODE) {
-			if (prefix_codefence(data + beg + i, end - beg - i) != 0)
+			if (is_codefence(data + beg + i, end - beg - i, NULL) != 0)
 				in_fence = !in_fence;
 		}
 
