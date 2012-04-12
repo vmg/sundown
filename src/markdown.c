@@ -1154,9 +1154,10 @@ is_hrule(uint8_t *data, size_t size)
 	return n >= 3;
 }
 
-/* check if a line is a code fence; return its size if it is */
+/* check if a line begins with a code fence; return the
+ * width of the code fence */
 static size_t
-is_codefence(uint8_t *data, size_t size, struct buf *syntax)
+prefix_codefence(uint8_t *data, size_t size)
 {
 	size_t i = 0, n = 0;
 	uint8_t c;
@@ -1179,6 +1180,19 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 	}
 
 	if (n < 3)
+		return 0;
+
+	return i;
+}
+
+/* check if a line is a code fence; return its size if it is */
+static size_t
+is_codefence(uint8_t *data, size_t size, struct buf *syntax)
+{
+	size_t i = 0;
+
+	i = prefix_codefence(data, size);
+	if (i == 0)
 		return 0;
 
 	if (syntax != NULL) {
@@ -1454,7 +1468,7 @@ parse_paragraph(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 
 			/* see if a code fence starts here */
 			if ((rndr->ext_flags & MKDEXT_FENCED_CODE) != 0 &&
-				is_codefence(data + i, size - i, NULL) != 0) {
+				prefix_codefence(data + i, size - i) != 0) {
 				end = i;
 				break;
 			}
@@ -1656,7 +1670,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		pre = i;
 
 		if (rndr->ext_flags & MKDEXT_FENCED_CODE) {
-			if (is_codefence(data + beg + i, end - beg - i, NULL) != 0)
+			if (prefix_codefence(data + beg + i, end - beg - i) != 0)
 				in_fence = !in_fence;
 		}
 
