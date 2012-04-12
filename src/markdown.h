@@ -58,7 +58,7 @@ enum mkd_extensions {
 	MKDEXT_STRIKETHROUGH = (1 << 4),
 	MKDEXT_SPACE_HEADERS = (1 << 6),
 	MKDEXT_SUPERSCRIPT = (1 << 7),
-	MKDEXT_LAX_SPACING = (1 << 7),
+	MKDEXT_LAX_SPACING = (1 << 8),
 };
 
 /* sd_callbacks - functions for rendering parsed data */
