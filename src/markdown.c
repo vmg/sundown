@@ -1426,18 +1426,38 @@ parse_paragraph(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 		if ((level = is_headerline(data + i, size - i)) != 0)
 			break;
 
-		if (rndr->ext_flags & MKDEXT_LAX_HTML_BLOCKS) {
-			if (data[i] == '<' && rndr->cb.blockhtml && parse_htmlblock(ob, rndr, data + i, size - i, 0)) {
+		/*
+		 * Early termination of a paragraph with the same logic
+		 * as Markdown 1.0.0. If this logic is applied, the
+		 * Markdown 1.0.3 test suite won't pass cleanly
+		 *
+		 * :: If the first character in a new line is not a letter,
+		 * let's check to see if there's some kind of block starting
+		 * here
+		 */
+		if ((rndr->ext_flags & MKDEXT_LAX_SPACING) && !isalnum(data[i])) {
+			if (is_atxheader(rndr, data + i, size - i) ||
+				is_hrule(data + i, size - i) ||
+				prefix_quote(data + i, size - i) ||
+				prefix_oli(data + i, size - i) ||
+				prefix_uli(data + i, size - i)) {
 				end = i;
 				break;
 			}
-		}
 
-		if (is_atxheader(rndr, data + i, size - i) ||
-			is_hrule(data + i, size - i) ||
-			prefix_quote(data + i, size - i)) {
-			end = i;
-			break;
+			/* see if an html block starts here */
+			if (data[i] == '<' && rndr->cb.blockhtml &&
+				parse_htmlblock(ob, rndr, data + i, size - i, 0)) {
+				end = i;
+				break;
+			}
+
+			/* see if a code fence starts here */
+			if ((rndr->ext_flags & MKDEXT_FENCED_CODE) != 0 &&
+				is_codefence(data + i, size - i, NULL) != 0) {
+				end = i;
+				break;
+			}
 		}
 
 		i = end;
@@ -1802,13 +1822,8 @@ htmlblock_end_tag(
 	i += w;
 	w = 0;
 
-	if (rndr->ext_flags & MKDEXT_LAX_HTML_BLOCKS) {
-		if (i < size)
-			w = is_empty(data + i, size - i);
-	} else  {
-		if (i < size && (w = is_empty(data + i, size - i)) == 0)
-			return 0; /* non-blank line after tag line */
-	}
+	if (i < size)
+		w = is_empty(data + i, size - i);
 
 	return i + w;
 }
