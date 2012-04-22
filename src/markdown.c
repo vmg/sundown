@@ -1189,7 +1189,8 @@ prefix_codefence(uint8_t *data, size_t size)
 static size_t
 is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 {
-	size_t i = 0, syn = 0;
+	size_t i = 0, syn_len = 0;
+	uint8_t *syn_start;
 
 	i = prefix_codefence(data, size);
 	if (i == 0)
@@ -1198,14 +1199,13 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 	while (i < size && data[i] == ' ')
 		i++;
 
-	if (syntax)
-		syntax->data = data + i;
+	syn_start = data + i;
 
 	if (i < size && data[i] == '{') {
-		i++; syntax->data++;
+		i++; syn_start++;
 
 		while (i < size && data[i] != '}' && data[i] != '\n') {
-			syn++; i++;
+			syn_len++; i++;
 		}
 
 		if (i == size || data[i] != '}')
@@ -1213,22 +1213,24 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 
 		/* strip all whitespace at the beginning and the end
 		 * of the {} block */
-		while (syn > 0 && _isspace(syntax->data[0])) {
-			syntax->data++; syn--;
+		while (syn_len > 0 && _isspace(syn_start[0])) {
+			syn_start++; syn_len--;
 		}
 
-		while (syn > 0 && _isspace(syntax->data[syn - 1]))
-			syn--;
+		while (syn_len > 0 && _isspace(syn_start[syn_len - 1]))
+			syn_len--;
 
 		i++;
 	} else {
 		while (i < size && !_isspace(data[i])) {
-			syn++; i++;
+			syn_len++; i++;
 		}
 	}
 
-	if (syntax)
-		syntax->size = syn;
+	if (syntax) {
+		syntax->data = syn_start;
+		syntax->size = syn_len;
+	}
 
 	while (i < size && data[i] != '\n') {
 		if (!_isspace(data[i]))
