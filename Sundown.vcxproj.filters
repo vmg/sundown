@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="html_block_names.txt" />
+    <None Include="sundown.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="html">
+      <UniqueIdentifier>{e619ec45-23d2-4b96-8028-7bbf74c4faca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{868e910a-66ef-4a46-b8ee-357b700b2dc7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="html\houdini.h">
+      <Filter>html</Filter>
+    </ClInclude>
+    <ClInclude Include="html\html.h">
+      <Filter>html</Filter>
+    </ClInclude>
+    <ClInclude Include="src\autolink.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\buffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\html_blocks.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\markdown.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stack.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="html\houdini_href_e.c">
+      <Filter>html</Filter>
+    </ClCompile>
+    <ClCompile Include="html\houdini_html_e.c">
+      <Filter>html</Filter>
+    </ClCompile>
+    <ClCompile Include="html\html.c">
+      <Filter>html</Filter>
+    </ClCompile>
+    <ClCompile Include="html\html_smartypants.c">
+      <Filter>html</Filter>
+    </ClCompile>
+    <ClCompile Include="src\autolink.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\buffer.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\markdown.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stack.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
