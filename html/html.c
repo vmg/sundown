@@ -27,6 +27,7 @@
 
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
+
 int
 sdhtml_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 {
@@ -226,11 +227,20 @@ rndr_linebreak(struct buf *ob, void *opaque)
 
 static void
 rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
-{
+{   
 	struct html_renderopt *options = opaque;
 
 	if (ob->size)
 		bufputc(ob, '\n');
+        
+        if(options->section_level == level)
+        {
+            BUFPUTSL(ob, "</section>");
+            options->open_sections--;
+        }
+        BUFPUTSL(ob, "<section>");
+        options->open_sections++;
+        options->section_level = level;
 
 	if (options->flags & HTML_TOC)
 		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
@@ -499,6 +509,19 @@ rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
 }
 
 static void
+rndr_finalize(struct buf *ob, void *opaque)
+{
+        struct html_renderopt *options = opaque;
+        int i;
+        
+        for(i = 0; i < options->open_sections; i++)
+        {
+            BUFPUTSL(ob, "\n</section>\n");
+        }
+}
+
+
+static void
 toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 {
 	struct html_renderopt *options = opaque;
@@ -626,12 +649,14 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_normal_text,
 
 		NULL,
-		NULL,
+		rndr_finalize,
 	};
 
 	/* Prepare the options pointer */
 	memset(options, 0x0, sizeof(struct html_renderopt));
 	options->flags = render_flags;
+        options->open_sections = 0;
+        options->section_level = 0;
 
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
