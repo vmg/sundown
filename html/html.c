@@ -240,7 +240,7 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
             BUFPUTSL(ob, "</section>");
             options->outline_data.open_section_count--;
         }
-        BUFPUTSL(ob, "<section>");
+        bufprintf(ob, "<section class=\"section%d\">\n", level);
         options->outline_data.open_section_count++;
         options->outline_data.current_level = level;
     }
