@@ -2519,6 +2519,9 @@ sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, str
 	if (md->cb.doc_footer)
 		md->cb.doc_footer(ob, md->opaque);
 
+	if (md->cb.outline)
+		md->cb.outline(ob, md->opaque);
+
 	/* clean-up */
 	bufrelease(text);
 	free_link_refs(md->refs);

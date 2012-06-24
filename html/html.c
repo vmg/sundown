@@ -233,6 +233,8 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 	if (ob->size)
 		bufputc(ob, '\n');
         
+    if (options->flags & HTML_OUTLINE) 
+    {
         if(options->outline_data.current_level == level)
         {
             BUFPUTSL(ob, "</section>");
@@ -241,6 +243,7 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
         BUFPUTSL(ob, "<section>");
         options->outline_data.open_section_count++;
         options->outline_data.current_level = level;
+    }
 
 	if (options->flags & HTML_TOC)
 		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
@@ -511,13 +514,15 @@ rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
 static void
 rndr_finalize(struct buf *ob, void *opaque)
 {
-        struct html_renderopt *options = opaque;
-        int i;
+    struct html_renderopt *options = opaque;
+    int i;
         
+    if (options->flags & HTML_OUTLINE) {
         for(i = 0; i < options->outline_data.open_section_count; i++)
         {
             BUFPUTSL(ob, "\n</section>\n");
         }
+    }
 }
 
 
@@ -608,6 +613,8 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 
 		NULL,
 		toc_finalize,
+
+		NULL,
 	};
 
 	memset(options, 0x0, sizeof(struct html_renderopt));
@@ -649,17 +656,25 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_normal_text,
 
 		NULL,
-		rndr_finalize,
+		NULL,
+
+		NULL, //rndr_finalize,
 	};
 
 	/* Prepare the options pointer */
 	memset(options, 0x0, sizeof(struct html_renderopt));
 	options->flags = render_flags;
-        options->outline_data.open_section_count = 0;
-        options->outline_data.current_level = 0;
 
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
+
+	if (render_flags & HTML_OUTLINE)
+    {
+		callbacks->outline = rndr_finalize;
+
+        options->outline_data.open_section_count = 0;
+        options->outline_data.current_level = 0;
+    }
 
 	if (render_flags & HTML_SKIP_IMAGES)
 		callbacks->image = NULL;
