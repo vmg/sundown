@@ -235,7 +235,7 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
         
     if (options->flags & HTML_OUTLINE) 
     {
-        if(options->outline_data.current_level == level)
+        if(options->outline_data.current_level >= level)
         {
             BUFPUTSL(ob, "</section>");
             options->outline_data.open_section_count--;
