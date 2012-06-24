@@ -233,14 +233,14 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 	if (ob->size)
 		bufputc(ob, '\n');
         
-        if(options->section_level == level)
+        if(options->outline_data.current_level == level)
         {
             BUFPUTSL(ob, "</section>");
-            options->open_sections--;
+            options->outline_data.open_section_count--;
         }
         BUFPUTSL(ob, "<section>");
-        options->open_sections++;
-        options->section_level = level;
+        options->outline_data.open_section_count++;
+        options->outline_data.current_level = level;
 
 	if (options->flags & HTML_TOC)
 		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
@@ -514,7 +514,7 @@ rndr_finalize(struct buf *ob, void *opaque)
         struct html_renderopt *options = opaque;
         int i;
         
-        for(i = 0; i < options->open_sections; i++)
+        for(i = 0; i < options->outline_data.open_section_count; i++)
         {
             BUFPUTSL(ob, "\n</section>\n");
         }
@@ -655,8 +655,8 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 	/* Prepare the options pointer */
 	memset(options, 0x0, sizeof(struct html_renderopt));
 	options->flags = render_flags;
-        options->open_sections = 0;
-        options->section_level = 0;
+        options->outline_data.open_section_count = 0;
+        options->outline_data.current_level = 0;
 
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));

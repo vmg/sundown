@@ -33,8 +33,11 @@ struct html_renderopt {
 	} toc_data;
 
 	unsigned int flags;
-        int section_level;
-        int open_sections;
+
+    struct {
+        int current_level;
+        int open_section_count;
+    } outline_data;
 
 	/* extra callbacks */
 	void (*link_attributes)(struct buf *ob, const struct buf *url, void *self);
