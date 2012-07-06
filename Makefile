@@ -20,7 +20,7 @@ DEPDIR=depends
 #MFLAGS=-fPIC
 
 CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml
-LDFLAGS=-g -O3 -Wall -Werror 
+LDFLAGS=-g -O3 -Wall -Werror
 CC=gcc
 
 
@@ -44,7 +44,7 @@ libsundown.so:	libsundown.so.1
 	ln -f -s $^ $@
 
 libsundown.so.1: $(SUNDOWN_SRC)
-	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
+	$(CC) $(LDFLAGS) -shared -Wall $^ -o $@
 
 # executables
 
