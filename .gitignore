@@ -3,3 +3,4 @@ libsundown.so*
 sundown
 smartypants
 *.exe
+<script src="https://gist.github.com/118964.js?file=gfm.rb"></script>
