@@ -173,7 +173,7 @@ bufputs(struct buf *buf, const char *str)
 
 /* bufputc: appends a single uint8_t to a buffer */
 void
-bufputc(struct buf *buf, int c)
+bufputc(struct buf *buf, uint8_t c)
 {
 	assert(buf && buf->unit);
 
