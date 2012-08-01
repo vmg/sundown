@@ -55,7 +55,7 @@ Credits
 -------
 
 `Sundown` is based on the original Upskirt parser by Natacha Porté, with many additions
-by Vicent Marti (@tanoku) and contributions from the following authors:
+by Vicent Marti (@vmg) and contributions from the following authors:
 
 	Ben Noordhuis, Bruno Michel, Joseph Koshy, Krzysztof Kowalczyk, Samuel Bronson,
 	Shuhei Tanuma
@@ -66,7 +66,7 @@ Bindings
 `Sundown` is available from other programming languages thanks to these bindings developed
 by our awesome contributors.
 
-- [Redcarpet](https://github.com/tanoku/redcarpet) (Ruby)
+- [Redcarpet](https://github.com/vmg/redcarpet) (Ruby)
 - [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
 - [Misaka](https://github.com/FSX/misaka) (Python)
 - [ffi-sundown](https://github.com/postmodern/ffi-sundown) (Ruby FFI)
