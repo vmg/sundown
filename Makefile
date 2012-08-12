@@ -22,6 +22,7 @@ DEPDIR=depends
 CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml
 LDFLAGS=-g -O3 -Wall -Werror 
 CC=gcc
+AR=ar
 
 
 SUNDOWN_SRC=\
@@ -34,7 +35,7 @@ SUNDOWN_SRC=\
 	html/houdini_html_e.o \
 	html/houdini_href_e.o
 
-all:		libsundown.so sundown smartypants html_blocks
+all:		libsundown.so libsundown.a sundown smartypants html_blocks
 
 .PHONY:		all clean
 
@@ -45,6 +46,9 @@ libsundown.so:	libsundown.so.1
 
 libsundown.so.1: $(SUNDOWN_SRC)
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
+
+libsundown.a: $(SUNDOWN_SRC)
+	$(AR) rcs libsundown.a $^
 
 # executables
 
@@ -64,7 +68,7 @@ src/html_blocks.h: html_block_names.txt
 # housekeeping
 clean:
 	rm -f src/*.o html/*.o examples/*.o
-	rm -f libsundown.so libsundown.so.1 sundown smartypants
+	rm -f libsundown.so libsundown.so.1 libsundown.a sundown smartypants
 	rm -f sundown.exe smartypants.exe
 	rm -rf $(DEPDIR)
 
