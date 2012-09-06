@@ -16,8 +16,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef UPSKIRT_MARKDOWN_H
-#define UPSKIRT_MARKDOWN_H
+#ifndef SUNDOWN_MARKDOWN_H
+#define SUNDOWN_MARKDOWN_H
 
 #include "buffer.h"
 #include "autolink.h"
