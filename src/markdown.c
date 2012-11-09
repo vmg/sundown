@@ -2445,7 +2445,7 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct fo
 	while (i < end && data[i] == ' ') i++;
 	if (i < end && (data[i] == '\n' || data[i] == '\r')) {
 		i++;
-		if (i < end && data[i] == '\r' && data[i - 1] == '\n') i++;
+		if (i < end && data[i] == '\n' && data[i - 1] == '\r') i++;
 	}
 	while (i < end && data[i] == ' ') i++;
 	if (i >= end || data[i] == '\n' || data[i] == '\r') return 0;
@@ -2457,14 +2457,15 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct fo
 	
 	/* process lines similiar to a list item */
 	while (i < end) {
-		i++;
-	
-		while (i < end && data[i - 1] != '\n')
-			i++;
-	
+		while (i < end && data[i] != '\n' && data[i] != '\r') i++;
+		
 		/* process an empty line */
 		if (is_empty(data + start, i - start)) {
 			in_empty = 1;
+			if (i < end && (data[i] == '\n' || data[i] == '\r')) {
+				i++;
+				if (i < end && data[i] == '\n' && data[i - 1] == '\r') i++;
+			}
 			start = i;
 			continue;
 		}
@@ -2488,6 +2489,14 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct fo
 	
 		/* adding the line into the content buffer */
 		bufput(contents, data + start + ind, i - start - ind);
+		/* add carriage return */
+		if (i < end) {
+			bufput(contents, "\n", 1);
+			if (i < end && (data[i] == '\n' || data[i] == '\r')) {
+				i++;
+				if (i < end && data[i] == '\n' && data[i - 1] == '\r') i++;
+			}
+		}
 		start = i;
 	}
 	
