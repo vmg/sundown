@@ -2516,7 +2516,7 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct fo
 		if (!add_footnote_ref(list, ref)) {
 			free_footnote_ref(ref);
 			return 0;
-        }
+		}
 		ref->contents = contents;
 	}
 	
