@@ -307,6 +307,13 @@ find_footnote_ref(struct footnote_list *list, uint8_t *name, size_t length)
 }
 
 static void
+free_footnote_ref(struct footnote_ref *ref)
+{
+	bufrelease(ref->contents);
+	free(ref);
+}
+
+static void
 free_footnote_list(struct footnote_list *list, int free_refs)
 {
 	struct footnote_item *item = list->head;
@@ -314,10 +321,8 @@ free_footnote_list(struct footnote_list *list, int free_refs)
 	
 	while (item) {
 		next = item->next;
-		if (free_refs) {
-			bufrelease(item->ref->contents);
-			free(item->ref);
-		}
+		if (free_refs)
+			free_footnote_ref(item->ref);
 		free(item);
 		item = next;
 	}
@@ -2508,8 +2513,10 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, struct fo
 		ref = create_footnote_ref(list, data + id_offset, id_end - id_offset);
 		if (!ref)
 			return 0;
-		if (!add_footnote_ref(list, ref))
+		if (!add_footnote_ref(list, ref)) {
+			free_footnote_ref(ref);
 			return 0;
+        }
 		ref->contents = contents;
 	}
 	
