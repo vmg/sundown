@@ -494,7 +494,7 @@ rndr_footnotes(struct buf *ob, const struct buf *text, void *opaque)
 	if (text)
 		bufput(ob, text->data, text->size);
 	
-	BUFPUTSL(ob, "\n</ol>\n</div>");
+	BUFPUTSL(ob, "\n</ol>\n</div>\n");
 }
 
 static void
