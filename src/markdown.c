@@ -501,7 +501,7 @@ parse_emph1(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 		if (data[i] == c && !_isspace(data[i - 1])) {
 
 			if (rndr->ext_flags & MKDEXT_NO_INTRA_EMPHASIS) {
-				if (!(i + 1 == size || _isspace(data[i + 1]) || ispunct(data[i + 1])))
+				if (i + 1 < size && isalnum(data[i + 1]))
 					continue;
 			}
 
@@ -595,6 +595,11 @@ char_emphasis(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 {
 	uint8_t c = data[0];
 	size_t ret;
+
+	if (rndr->ext_flags & MKDEXT_NO_INTRA_EMPHASIS) {
+		if (offset > 0 && !_isspace(data[-1]) && data[-1] != '>')
+			return 0;
+	}
 
 	if (size > 2 && data[1] != c) {
 		/* whitespace cannot follow an opening emphasis;
