@@ -1247,6 +1247,41 @@ is_codefence(uint8_t *data, size_t size, struct buf *syntax)
 	return i + 1;
 }
 
+/* return if the character is non-alhpanumeric or a dash */
+int
+is_shebang_char(char c)
+{
+  return (c < 'a' || c > 'z')
+      && (c < 'A' || c > 'Z')
+      && (c < '0' || c > '9')
+      && c != '-';
+}
+
+/* check if a line is a shebang; return its size if it is */
+static size_t
+is_shebang(uint8_t *data, size_t size, struct buf *syntax)
+{
+  size_t i = 2, syn_len = 0;
+  uint8_t *syn_start;
+
+  if(data[0] == '#' && data[1] == '!') {
+    syn_start = data + 2;
+		while (i < size && data[i] != '\n') {
+      if (is_shebang_char(data[i]))
+        return 0;
+			syn_len++; i++;
+		}
+
+    if (syntax) {
+      syntax->data = syn_start;
+      syntax->size = syn_len;
+    }
+
+    return i;
+  }
+  return 0;
+}
+
 /* is_atxheader • returns whether the line is a hash-prefixed header */
 static int
 is_atxheader(struct sd_markdown *rndr, uint8_t *data, size_t size)
@@ -1587,6 +1622,7 @@ parse_blockcode(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 {
 	size_t beg, end, pre;
 	struct buf *work = 0;
+	struct buf lang = { 0, 0, 0, 0 };
 
 	work = rndr_newbuf(rndr, BUFFER_BLOCK);
 
@@ -1595,20 +1631,23 @@ parse_blockcode(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 		for (end = beg + 1; end < size && data[end - 1] != '\n'; end++) {};
 		pre = prefix_code(data + beg, end - beg);
 
-		if (pre)
+    if ((rndr->ext_flags & MKDEXT_SHEBANG_CODE) != 0 && beg == 0 &&
+      is_shebang(data + pre, end - pre, &lang));
+    else if (pre) {
 			beg += pre; /* skipping prefix */
-		else if (!is_empty(data + beg, end - beg))
+
+      if (beg < end) {
+        /* verbatim copy to the working buffer,
+          escaping entities */
+        if (is_empty(data + beg, end - beg))
+          bufputc(work, '\n');
+        else bufput(work, data + beg, end - beg);
+      }
+    }
+    else if (!is_empty(data + beg, end - beg))
 			/* non-empty non-prefixed line breaks the pre */
 			break;
-
-		if (beg < end) {
-			/* verbatim copy to the working buffer,
-				escaping entities */
-			if (is_empty(data + beg, end - beg))
-				bufputc(work, '\n');
-			else bufput(work, data + beg, end - beg);
-		}
-		beg = end;
+    beg = end;
 	}
 
 	while (work->size && work->data[work->size - 1] == '\n')
@@ -1617,7 +1656,7 @@ parse_blockcode(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t 
 	bufputc(work, '\n');
 
 	if (rndr->cb.blockcode)
-		rndr->cb.blockcode(ob, work, NULL, rndr->opaque);
+		rndr->cb.blockcode(ob, work, lang.size ? &lang : NULL, rndr->opaque);
 
 	rndr_popbuf(rndr, BUFFER_BLOCK);
 	return beg;
