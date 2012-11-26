@@ -1,8 +1,11 @@
-﻿Sundown
+Sundown
 =======
 
 `Sundown` is a Markdown parser based on the original code of the
-[Upskirt library](http://fossil.instinctive.eu/libupskirt/index) by Natacha Porté.
+[Upskirt library](http://fossil.instinctive.eu/libupskirt/index) by Natacha Porté.<br/>
+It is implemented in C with a lightweight objective-C wrapper.</b>
+
+<b>Now available via cocoapods</b>
 
 Features
 --------
