@@ -23,3 +23,4 @@ style
 fieldset
 noscript
 blockquote
+A7SAS
