@@ -1391,6 +1391,10 @@ parse_blockquote(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 	uint8_t *work_data = 0;
 	struct buf *out = 0;
 
+	/* AST construction */
+	if (rndr->cb.blockquote_begin)
+		rndr->cb.blockquote_begin(rndr->opaque);
+
 	out = rndr_newbuf(rndr, BUFFER_BLOCK);
 	beg = 0;
 	while (beg < size) {
@@ -1643,6 +1647,10 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	if (!beg)
 		return 0;
 
+	/* AST construction */
+	if (rndr->cb.listitem_begin)
+		rndr->cb.listitem_begin(*flags, rndr->opaque);
+
 	/* skipping to the beginning of the following line */
 	end = beg;
 	while (end < size && data[end - 1] != '\n')
@@ -1767,6 +1775,10 @@ parse_list(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size,
 {
 	struct buf *work = 0;
 	size_t i = 0, j;
+
+	/* AST construction */
+	if (rndr->cb.list_begin)
+		rndr->cb.list_begin(flags, rndr->opaque);
 
 	work = rndr_newbuf(rndr, BUFFER_BLOCK);
 

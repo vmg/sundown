@@ -97,6 +97,11 @@ struct sd_callbacks {
 	/* header and footer */
 	void (*doc_header)(struct buf *ob, void *opaque);
 	void (*doc_footer)(struct buf *ob, void *opaque);
+
+	/* AST construction helpers */
+	void (*blockquote_begin)(void *opaque);
+	void (*list_begin)(int flags, void *opaque);
+	void (*listitem_begin)(int flags, void *opaque);
 };
 
 struct sd_markdown;

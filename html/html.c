@@ -572,6 +572,10 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 
 		NULL,
 		toc_finalize,
+
+		NULL,
+		NULL,
+		NULL		
 	};
 
 	memset(options, 0x0, sizeof(struct html_renderopt));
@@ -613,6 +617,10 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 
 		NULL,
 		NULL,
+
+		NULL,
+		NULL,
+		NULL
 	};
 
 	/* Prepare the options pointer */
