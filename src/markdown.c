@@ -2199,15 +2199,21 @@ parse_table(
 static void
 parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size)
 {
-	size_t beg, end, i;
+	size_t beg, end, i, block_beg, empty;
 	uint8_t *txt_data;
 	beg = 0;
 
 	if (rndr->work_bufs[BUFFER_SPAN].size +
 		rndr->work_bufs[BUFFER_BLOCK].size > rndr->max_nesting)
 		return;
+    
+    /* Source data collection */
+    if (rndr->cb.block_parse_begin)
+        rndr->cb.block_parse_begin(rndr->opaque);
 
 	while (beg < size) {
+        block_beg = beg;
+        empty = 0;
 		txt_data = data + beg;
 		end = size - beg;
 
@@ -2218,8 +2224,10 @@ parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 				(i = parse_htmlblock(ob, rndr, txt_data, end, 1)) != 0)
 			beg += i;
 
-		else if ((i = is_empty(txt_data, end)) != 0)
+		else if ((i = is_empty(txt_data, end)) != 0) {
 			beg += i;
+            empty = i;
+        }
 
 		else if (is_hrule(txt_data, end)) {
 			if (rndr->cb.hrule)
@@ -2253,7 +2261,16 @@ parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 
 		else
 			beg += parse_paragraph(ob, rndr, txt_data, end);
+        
+        /* Source data collection */
+		if ((rndr->cb.block_did_parse) &&
+            beg > block_beg)
+			rndr->cb.block_did_parse(block_beg, txt_data, beg - block_beg, empty, rndr->opaque);
 	}
+    
+    /* Source data collection */
+    if (rndr->cb.block_parse_end)
+        rndr->cb.block_parse_end(rndr->opaque);
 }
 
 
