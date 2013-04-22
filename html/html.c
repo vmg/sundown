@@ -577,8 +577,6 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 		NULL,
 		NULL,
 
-        NULL,
-        NULL,
         NULL
 	};
 
@@ -626,8 +624,6 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		NULL,
 		NULL,
         
-        NULL,
-        NULL,
         NULL
 	};
 

@@ -21,6 +21,7 @@
 
 #include "buffer.h"
 #include "autolink.h"
+#include "src_map.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -103,10 +104,8 @@ struct sd_callbacks {
 	void (*list_begin)(int flags, void *opaque);
 	void (*listitem_begin)(int flags, void *opaque);
     
-    /* Source data collection */
-    void (*block_parse_begin)(void *opaque);
-    void (*block_parse_end)(void *opaque);
-    void (*block_did_parse)(size_t cur, const uint8_t *txt_data, size_t size, size_t empty, void *opaque);
+    /* source map */
+    void (*block_did_parse)(const src_map* map, const uint8_t *txt_data, size_t size, void *opaque);
 };
 
 struct sd_markdown;
