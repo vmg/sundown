@@ -7,7 +7,9 @@ Sundown
 
 About this Fork
 ---------------
-This fork was made to facilitate Markdown AST construction based on renderer callbacks. Additional callbacks are added to avoid misusing string-oriented output buffer and provide support for nested markdown blocks AST construction.
+This fork was made to facilitate Markdown AST construction based on renderer callbacks. Additional callbacks added to provide support for nested markdown blocks AST construction.
+
+Also included source map support - mapping parsed markdown blocks to its source text input.
 
 This fork is used in [Apiary.io](http://apiary.io) API Blueprint parser - [Snowcrash](https://github.com/apiaryio/snowcrash).
 
