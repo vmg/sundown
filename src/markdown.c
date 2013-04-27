@@ -2639,15 +2639,15 @@ sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, str
 
 	if (text->size) {
 
+		/* adding a final newline if not already present */
+		if (text->data[text->size - 1] != '\n' &&  text->data[text->size - 1] != '\r')
+			bufputc(text, '\n');
+
         /* source map */
         if (map) {
             range rng = {0, text->size};
             src_map_append(map, &rng);
         }
-        
-		/* adding a final newline if not already present */
-		if (text->data[text->size - 1] != '\n' &&  text->data[text->size - 1] != '\r')
-			bufputc(text, '\n');
         
 		parse_block(ob, md, text->data, text->size, map);
         
