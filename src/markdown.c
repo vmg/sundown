@@ -2283,7 +2283,7 @@ parse_table(
 static void
 parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, const src_map *map)
 {
-	size_t beg, end, i, block_beg, empty;
+	size_t beg, end, i, block_beg;
 	uint8_t *txt_data;
 	beg = 0;
 
@@ -2293,7 +2293,6 @@ parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 
 	while (beg < size) {
         block_beg = beg;
-        empty = 0;
 		txt_data = data + beg;
 		end = size - beg;
         
@@ -2316,7 +2315,6 @@ parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 
 		else if ((i = is_empty(txt_data, end)) != 0) {
 			beg += i;
-            empty = i;
         }
 
 		else if (is_hrule(txt_data, end)) {
