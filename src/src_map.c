@@ -81,7 +81,7 @@ src_map_new_submap(const src_map *map, const range *r)
         }
     }
     
-    if (first_item == -1)
+    if (first_item == (size_t)-1)
         return NULL;
     
     /* create new map */
@@ -173,7 +173,7 @@ src_map_new_tail(const src_map *map, size_t index)
         cur += it->len;
     }
 
-    if (first_item == -1)
+    if (first_item == (size_t)-1)
         return NULL;
     
     /* create new map */
