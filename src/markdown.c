@@ -1812,7 +1812,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
             if (item_map)
                 sublist_map = src_map_new_tail(item_map, sublist);
 
-			parse_block(inter, rndr, work->data + sublist, work->size - sublist, item_map);
+			parse_block(inter, rndr, work->data + sublist, work->size - sublist, sublist_map);
             
             if (sublist_map)
                 src_map_release(sublist_map);
@@ -1820,14 +1820,18 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		else
 			parse_inline(inter, rndr, work->data, work->size);
 	}
-    
-    /* source map */
-    if (item_map)
-        src_map_release(item_map);
 
 	/* render of li itself */
 	if (rndr->cb.listitem)
 		rndr->cb.listitem(ob, inter, *flags, rndr->opaque);
+    
+    /* source map */
+    if (item_map) {
+        if (rndr->cb.block_did_parse)
+            rndr->cb.block_did_parse(item_map, data + i, size - i, rndr->opaque);
+        
+        src_map_release(item_map);
+    }
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
 	rndr_popbuf(rndr, BUFFER_SPAN);
@@ -1863,9 +1867,6 @@ parse_list(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size,
 
         /* source map */
         if (block_map) {
-            if (rndr->cb.block_did_parse)
-                rndr->cb.block_did_parse(block_map, data + i, size - i, rndr->opaque);
-
             src_map_release(block_map);
         }
         
