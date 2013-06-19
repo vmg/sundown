@@ -1656,7 +1656,7 @@ static size_t
 parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, int *flags, const src_map *map)
 {
 	struct buf *work = 0, *inter = 0;
-	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
+	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i = 0;
 	int in_empty = 0, has_inside_empty = 0, in_fence = 0;
 
 	/* keeping track of the first indentation prefix */
