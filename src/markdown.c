@@ -2164,6 +2164,9 @@ parse_table_header(
 	if (header_end && data[header_end - 1] == '|')
 		pipes--;
 
+    if (pipes < 0)
+        return 0;
+    
 	*columns = pipes + 1;
 	*column_data = calloc(*columns, sizeof(int));
 
