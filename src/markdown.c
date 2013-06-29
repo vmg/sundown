@@ -1392,15 +1392,15 @@ parse_blockquote(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t
 	uint8_t *work_data = 0;
 	struct buf *out = 0;
 
+    /* source map */
+    src_map *block_map = NULL;
+    
 	/* AST construction */
 	if (rndr->cb.blockquote_begin)
 		rndr->cb.blockquote_begin(rndr->opaque);
 
 	out = rndr_newbuf(rndr, BUFFER_BLOCK);
 
-    /* source map */
-    src_map *block_map = NULL;
-    
 	beg = 0;
 	while (beg < size) {
 		for (end = beg + 1; end < size && data[end - 1] != '\n'; end++);
@@ -1658,7 +1658,8 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	struct buf *work = 0, *inter = 0;
 	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i = 0;
 	int in_empty = 0, has_inside_empty = 0, in_fence = 0;
-
+    src_map *item_map = NULL;
+    
 	/* keeping track of the first indentation prefix */
 	while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
 		orgpre++;
@@ -1684,8 +1685,6 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	inter = rndr_newbuf(rndr, BUFFER_SPAN);
 
     /* source map */
-    src_map *item_map = NULL;
-    
     if (map) {
         size_t cur = src_map_location(map, beg);
         range item_range = { cur, end - beg };
@@ -1788,10 +1787,11 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	if (*flags & MKD_LI_BLOCK) {
 		/* intermediate render of block li */
 		if (sublist && sublist < work->size) {
+            src_map *sublist_map = NULL;
+            
 			parse_block(inter, rndr, work->data, sublist, item_map);
             
             /* source map */
-            src_map *sublist_map = NULL;
             if (item_map)
                 sublist_map = src_map_new_tail(item_map, sublist);
             
@@ -1805,10 +1805,11 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	} else {
 		/* intermediate render of inline li */
 		if (sublist && sublist < work->size) {
+            src_map *sublist_map = NULL;
+            
 			parse_inline(inter, rndr, work->data, sublist);
             
             /* source map */
-            src_map *sublist_map = NULL;
             if (item_map)
                 sublist_map = src_map_new_tail(item_map, sublist);
 
@@ -2296,17 +2297,21 @@ parse_block(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 		return;
 
 	while (beg < size) {
+        size_t cur = 0;
+        src_map *block_map = NULL;
+        
         block_beg = beg;
 		txt_data = data + beg;
 		end = size - beg;
         
         /* source map */
-        size_t cur = 0;
-        src_map *block_map = NULL;
-        
         if (map) {
+            range actual_range;
+            
             cur = src_map_location(map, beg);
-            range actual_range = { cur, end };
+            actual_range.loc = cur;
+            actual_range.len = end;
+            
             block_map = src_map_new_submap(map, &actual_range);
         }
 

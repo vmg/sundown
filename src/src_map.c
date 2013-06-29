@@ -46,10 +46,11 @@ src_map_new()
 void
 src_map_release(src_map *map)
 {
+    size_t i = 0;
+
     if (!map)
         return;
     
-    size_t i;
 	for (i = 0; i < (size_t)map->asize; ++i) {
 		range_release(map->item[i]);
     }
@@ -62,6 +63,11 @@ src_map_release(src_map *map)
 src_map *
 src_map_new_submap(const src_map *map, const range *r)
 {
+    size_t i;
+    size_t first_item = -1;
+    src_map *new_map = NULL;
+    size_t remain_len = 0;
+    
     if (!map ||
         !map->size ||
         !r ||
@@ -69,8 +75,6 @@ src_map_new_submap(const src_map *map, const range *r)
         return NULL;
 
     /* find first item */
-    size_t i;
-    size_t first_item = -1;
 	for (i = 0; i < (size_t)map->size; ++i) {
         
         range *it = (range *)map->item[i];
@@ -85,8 +89,8 @@ src_map_new_submap(const src_map *map, const range *r)
         return NULL;
     
     /* create new map */
-    src_map *new_map = src_map_new();
-    size_t remain_len = r->len;
+    new_map = src_map_new();
+    remain_len = r->len;
     
 	for (i = first_item; i < (size_t)map->size; ++i) {
 
@@ -110,6 +114,8 @@ src_map_new_submap(const src_map *map, const range *r)
 void
 src_map_append(src_map *map, const range *r)
 {
+    range *new_range = NULL;
+    
     if (!map ||
         !r ||
         !r->len)
@@ -125,7 +131,7 @@ src_map_append(src_map *map, const range *r)
     }
 
     /* not continuous, create new range and push */
-    range *new_range = range_new(r->loc, r->len);
+    new_range = range_new(r->loc, r->len);
     stack_push(map, new_range);
 }
 
@@ -133,12 +139,13 @@ src_map_append(src_map *map, const range *r)
 size_t
 src_map_location(const src_map *map, size_t index)
 {
+    size_t i = 0;
+    size_t cur = 0;
+    
     if (!map ||
         !map->size)
         return -1;
     
-    size_t i;
-    size_t cur = 0;
 	for (i = 0; i < (size_t)map->size; ++i) {
 
         range *it = (range *)map->item[i];
@@ -156,13 +163,15 @@ src_map_location(const src_map *map, size_t index)
 src_map *
 src_map_new_tail(const src_map *map, size_t index)
 {
+    size_t i = 0;
+    size_t cur = 0;
+    size_t first_item = -1;
+    src_map *new_map = NULL;
+    
     if (!map ||
         !map->size)
         return NULL;
     
-    size_t i;
-    size_t cur = 0;
-    size_t first_item = -1;
 	for (i = 0; i < (size_t)map->size; ++i) {
         
         range *it = (range *)map->item[i];
@@ -177,7 +186,7 @@ src_map_new_tail(const src_map *map, size_t index)
         return NULL;
     
     /* create new map */
-    src_map *new_map = src_map_new();
+    new_map = src_map_new();
     
 	for (i = first_item; i < map->size; ++i) {
         
