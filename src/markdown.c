@@ -2522,6 +2522,7 @@ sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, str
 
 	/* clean-up */
 	bufrelease(text);
+    
 	free_link_refs(md->refs);
 
 	assert(md->work_bufs[BUFFER_SPAN].size == 0);
