@@ -376,7 +376,7 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 		BUFPUTSL(ob, "\" title=\"");
 		escape_html(ob, title->data, title->size); }
 
-	bufputs(ob, USE_XHTML(options) ? "\"/>" : "\">");
+	bufputs(ob, USE_XHTML(options) ? "\" onerror=\"this.style.visibility = 'hidden'\"/>" : "\" onerror=\"this.style.visibility = 'hidden'\">");
 	return 1;
 }
 
