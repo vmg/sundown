@@ -21,7 +21,6 @@ DEPDIR=depends
 
 CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml
 LDFLAGS=-g -O3 -Wall -Werror 
-CC=gcc
 
 
 SUNDOWN_SRC=\
