@@ -46,7 +46,7 @@ struct buf {
 
 /* BUFPUTSL: optimized bufputs of a string literal */
 #define BUFPUTSL(output, literal) \
-	bufput(output, literal, sizeof literal - 1)
+	bufput(output, literal, sizeof(literal) - 1)
 
 /* bufgrow: increasing the allocated size to the given value */
 int bufgrow(struct buf *, size_t);

@@ -529,7 +529,12 @@ rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
 static void
 rndr_footnotes(struct buf *ob, const struct buf *text, void *opaque)
 {
-	BUFPUTSL(ob, "<div class=\"footnotes\">\n<hr />\n<ol>\n");
+	struct html_renderopt *options = opaque;
+
+	if (ob->size) bufputc(ob, '\n');
+	BUFPUTSL(ob, "<div class=\"footnotes\">\n");
+	BUFPUTSL(ob, (USE_XHTML(options) ? "<hr/>\n" : "<hr>\n"));
+	BUFPUTSL(ob, "<ol>\n");
 	
 	if (text)
 		bufput(ob, text->data, text->size);
