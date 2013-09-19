@@ -1,27 +1,29 @@
-﻿Sundown
+Hoedown
 =======
 
-`Sundown` is a Markdown parser based on the original code of the
-[Upskirt library](http://fossil.instinctive.eu/libupskirt/index) by Natacha Porté.
+`Hoedown` is a revived fork of [Sundown](https://github.com/vmg/sundown),
+the Markdown parser based on the original code of the
+[Upskirt library](http://fossil.instinctive.eu/libupskirt/index)
+by Natacha Porté.
 
 Features
 --------
 
 *	**Fully standards compliant**
 
-	`Sundown` passes out of the box the official Markdown v1.0.0 and v1.0.3
+	`Hoedown` passes out of the box the official Markdown v1.0.0 and v1.0.3
 	test suites, and has been extensively tested with additional corner cases
 	to make sure its output is as sane as possible at all times.
 
 *	**Massive extension support**
 
-	`Sundown` has optional support for several (unofficial) Markdown extensions,
+	`Hoedown` has optional support for several (unofficial) Markdown extensions,
 	such as non-strict emphasis, fenced code blocks, tables, autolinks,
 	strikethrough and more.
 
 *	**UTF-8 aware**
 
-	`Sundown` is fully UTF-8 aware, both when parsing the source document and when
+	`Hoedown` is fully UTF-8 aware, both when parsing the source document and when
 	generating the resulting (X)HTML code.
 
 *	**Tested & Ready to be used on production**
@@ -30,29 +32,31 @@ Features
 	all possible DOS attacks (stack overflows, out of memory situations, malformed
 	Markdown syntax...) and against client attacks through malicious embedded HTML.
 
-	We've worked very hard to make `Sundown` never crash or run out of memory
-	under *any* input. `Sundown` renders all the Markdown content in GitHub and so
+	We've worked very hard to make `Hoedown` never crash or run out of memory
+	under *any* input. `Hoedown` renders all the Markdown content in GitHub and so
 	far hasn't crashed a single time.
 
 *	**Customizable renderers**
 
-	`Sundown` is not stuck with XHTML output: the Markdown parser of the library
+	`Hoedown` is not stuck with XHTML output: the Markdown parser of the library
 	is decoupled from the renderer, so it's trivial to extend the library with
 	custom renderers. A fully functional (X)HTML renderer is included.
 
 *	**Optimized for speed**
 
-	`Sundown` is written in C, with a special emphasis on performance. When wrapped
+	`Hoedown` is written in C, with a special emphasis on performance. When wrapped
 	on a dynamic language such as Python or Ruby, it has shown to be up to 40
 	times faster than other native alternatives.
 
 *	**Zero-dependency**
 
-	`Sundown` is a zero-dependency library composed of 3 `.c` files and their headers.
+	`Hoedown` is a zero-dependency library composed of 3 `.c` files and their headers.
 	No dependencies, no bullshit. Only standard C99 that builds everywhere.
 
 Credits
 -------
+
+`Hoedown` is a fork of `Sundown`.
 
 `Sundown` is based on the original Upskirt parser by Natacha Porté, with many additions
 by Vicent Marti (@vmg) and contributions from the following authors:
@@ -63,7 +67,7 @@ by Vicent Marti (@vmg) and contributions from the following authors:
 Bindings
 --------
 
-`Sundown` is available from other programming languages thanks to these bindings developed
+`Hoedown` is available from other programming languages thanks to these bindings developed
 by our awesome contributors.
 
 - [Redcarpet](https://github.com/vmg/redcarpet) (Ruby)
@@ -80,7 +84,7 @@ by our awesome contributors.
 Help us
 -------
 
-`Sundown` is all about security. If you find a (potential) security vulnerability in the
+`Hoedown` is all about security. If you find a (potential) security vulnerability in the
 library, or a way to make it crash through malicious input, please report it to us,
 either directly via email or by opening an Issue on GitHub, and help make the web safer
 for everybody.
@@ -88,7 +92,7 @@ for everybody.
 Unicode character handling
 --------------------------
 
-Given that the Markdown spec makes no provision for Unicode character handling, `Sundown`
+Given that the Markdown spec makes no provision for Unicode character handling, `Hoedown`
 takes a conservative approach towards deciding which extended characters trigger Markdown
 features:
 
@@ -101,12 +105,12 @@ features:
 Install
 -------
 
-There is nothing to install. `Sundown` is composed of 3 `.c` files (`markdown.c`,
+There is nothing to install. `Hoedown` is composed of 3 `.c` files (`markdown.c`,
 `buffer.c` and `array.c`), so just throw them in your project. Zero-dependency means
 zero-dependency. You might want to include `render/html.c` if you want to use the
 included XHTML renderer, or write your own renderer. Either way, it's all fun and joy.
 
-If you are hardcore, you can use the included `Makefile` to build `Sundown` into a dynamic
+If you are hardcore, you can use the included `Makefile` to build `Hoedown` into a dynamic
 library, or to build the sample `sundown` executable, which is just a commandline
 Markdown to XHTML parser. (If gcc gives you grief about `-fPIC`, e.g. with MinGW, try
 `make MFLAGS=` instead of just `make`.)
