@@ -418,5 +418,3 @@ hoedown_html_smartypants(struct hoedown_buffer *ob, const uint8_t *text, size_t 
 		}
 	}
 }
-
-

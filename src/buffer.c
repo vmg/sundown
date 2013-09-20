@@ -205,4 +205,3 @@ hoedown_buffer_slurp(struct hoedown_buffer *buf, size_t len)
 	buf->size -= len;
 	memmove(buf->data, buf->data + len, buf->size);
 }
-

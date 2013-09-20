@@ -2883,5 +2883,3 @@ hoedown_version(int *ver_major, int *ver_minor, int *ver_revision)
 	*ver_minor = HOEDOWN_VER_MINOR;
 	*ver_revision = HOEDOWN_VER_REVISION;
 }
-
-/* vim: set filetype=c: */
