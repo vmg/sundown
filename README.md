@@ -64,8 +64,7 @@ Help us
 
 `Hoedown` is all about security. If you find a (potential) security vulnerability in the
 library, or a way to make it crash through malicious input, please report it to us,
-either directly via email or by opening an Issue on GitHub, and help make the web safer
-for everybody.
+by leaving an Issue at <https://github.com/devinus/hoedown/issues/new>.
 
 Unicode character handling
 --------------------------
@@ -83,7 +82,7 @@ features:
 Install
 -------
 
-There is nothing to install. `Hoedown` is composed of 3 `.c` files (`markdown.c`,
+There is nothing to install. `Hoedown` is composed of 4 `.c` files (`markdown.c`,
 `buffer.c` and `stack.c`), so just throw them in your project. Zero-dependency means
 zero-dependency. You might want to include `render/html.c` if you want to use the
 included XHTML renderer, or write your own renderer. Either way, it's all fun and joy.
