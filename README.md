@@ -28,11 +28,11 @@ Features
 
 *	**Tested & Ready to be used on production**
 
-	`Sundown` has been extensively security audited, and includes protection against
+	`Hoedown` has been extensively security audited, and includes protection against
 	all possible DOS attacks (stack overflows, out of memory situations, malformed
 	Markdown syntax...) and against client attacks through malicious embedded HTML.
 
-	We've worked very hard to make `Hoedown` never crash or run out of memory
+	We've worked very hard to make `Hoedown` never crash or run out of memory
 	under *any* input. `Hoedown` renders all the Markdown content in GitHub and so
 	far hasn't crashed a single time.
 
@@ -129,7 +129,3 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-<!-- Local Variables: -->
-<!-- fill-column: 89 -->
-<!-- End: -->
