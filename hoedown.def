@@ -1,0 +1,20 @@
+LIBRARY HOEDOWN
+EXPORTS
+	hoedown_html_renderer
+	hoedown_html_toc_renderer
+	hoedown_html_smartypants
+	hoedown_buffer_grow
+	hoedown_buffer_new
+	hoedown_buffer_cstr
+	hoedown_buffer_prefix
+	hoedown_buffer_put 
+	hoedown_buffer_puts
+	hoedown_buffer_putc
+	hoedown_buffer_release
+	hoedown_buffer_reset
+	hoedown_buffer_slurp
+	hoedown_buffer_printf
+	hoedown_markdown_new
+	hoedown_markdown_render
+	hoedown_markdown_free
+	hoedown_version

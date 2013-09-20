@@ -7,20 +7,20 @@
 extern "C" {
 #endif
 
-struct stack {
+struct hoedown_stack {
 	void **item;
 	size_t size;
 	size_t asize;
 };
 
-void stack_free(struct stack *);
-int stack_grow(struct stack *, size_t);
-int stack_init(struct stack *, size_t);
+void hoedown_stack_free(struct hoedown_stack *);
+int hoedown_stack_grow(struct hoedown_stack *, size_t);
+int hoedown_stack_init(struct hoedown_stack *, size_t);
 
-int stack_push(struct stack *, void *);
+int hoedown_stack_push(struct hoedown_stack *, void *);
 
-void *stack_pop(struct stack *);
-void *stack_top(struct stack *);
+void *hoedown_stack_pop(struct hoedown_stack *);
+void *hoedown_stack_top(struct hoedown_stack *);
 
 #ifdef __cplusplus
 }

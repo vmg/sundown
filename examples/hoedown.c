@@ -30,13 +30,13 @@
 int
 main(int argc, char **argv)
 {
-	struct buf *ib, *ob;
+	struct hoedown_buffer *ib, *ob;
 	int ret;
 	FILE *in = stdin;
 
-	struct sd_callbacks callbacks;
-	struct html_renderopt options;
-	struct sd_markdown *markdown;
+	struct hoedown_callbacks callbacks;
+	struct hoedown_html_renderopt options;
+	struct hoedown_markdown *markdown;
 
 	/* opening the file if given from the command line */
 	if (argc > 1) {
@@ -48,31 +48,31 @@ main(int argc, char **argv)
 	}
 
 	/* reading everything */
-	ib = bufnew(READ_UNIT);
-	bufgrow(ib, READ_UNIT);
+	ib = hoedown_buffer_new(READ_UNIT);
+	hoedown_buffer_grow(ib, READ_UNIT);
 	while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
 		ib->size += ret;
-		bufgrow(ib, ib->size + READ_UNIT);
+		hoedown_buffer_grow(ib, ib->size + READ_UNIT);
 	}
 
 	if (in != stdin)
 		fclose(in);
 
 	/* performing markdown parsing */
-	ob = bufnew(OUTPUT_UNIT);
+	ob = hoedown_buffer_new(OUTPUT_UNIT);
 
-	sdhtml_renderer(&callbacks, &options, 0);
-	markdown = sd_markdown_new(0, 16, &callbacks, &options);
+	hoedown_html_renderer(&callbacks, &options, 0);
+	markdown = hoedown_markdown_new(0, 16, &callbacks, &options);
 
-	sd_markdown_render(ob, ib->data, ib->size, markdown);
-	sd_markdown_free(markdown);
+	hoedown_markdown_render(ob, ib->data, ib->size, markdown);
+	hoedown_markdown_free(markdown);
 
 	/* writing the result to stdout */
 	ret = fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
-	bufrelease(ib);
-	bufrelease(ob);
+	hoedown_buffer_release(ib);
+	hoedown_buffer_release(ob);
 
 	return (ret < 0) ? -1 : 0;
 }

@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "houdini.h"
+#include "escape.h"
 
-#define ESCAPE_GROW_FACTOR(x) (((x) * 12) / 10)
+#define ESCAPE_GROW_FACTOR(x) (((x) * 12) / 10) /* this is very scientific, yes */
 
 /*
  * The following characters will not be escaped:
@@ -51,13 +51,13 @@ static const char HREF_SAFE[] = {
 };
 
 void
-houdini_escape_href(struct buf *ob, const uint8_t *src, size_t size)
+hoedown_escape_href(struct hoedown_buffer *ob, const uint8_t *src, size_t size)
 {
 	static const char hex_chars[] = "0123456789ABCDEF";
 	size_t  i = 0, org;
 	char hex_str[3];
 
-	bufgrow(ob, ESCAPE_GROW_FACTOR(size));
+	hoedown_buffer_grow(ob, ESCAPE_GROW_FACTOR(size));
 	hex_str[0] = '%';
 
 	while (i < size) {
@@ -66,7 +66,7 @@ houdini_escape_href(struct buf *ob, const uint8_t *src, size_t size)
 			i++;
 
 		if (i > org)
-			bufput(ob, src + org, i - org);
+			hoedown_buffer_put(ob, src + org, i - org);
 
 		/* escaping */
 		if (i >= size)
@@ -92,7 +92,7 @@ houdini_escape_href(struct buf *ob, const uint8_t *src, size_t size)
 		 * when building GET strings */
 #if 0
 		case ' ':
-			bufputc(ob, '+');
+			hoedown_buffer_putc(ob, '+');
 			break;
 #endif
 
@@ -100,7 +100,77 @@ houdini_escape_href(struct buf *ob, const uint8_t *src, size_t size)
 		default:
 			hex_str[1] = hex_chars[(src[i] >> 4) & 0xF];
 			hex_str[2] = hex_chars[src[i] & 0xF];
-			bufput(ob, hex_str, 3);
+			hoedown_buffer_put(ob, hex_str, 3);
+		}
+
+		i++;
+	}
+}
+
+/**
+ * According to the OWASP rules:
+ *
+ * & --> &amp;
+ * < --> &lt;
+ * > --> &gt;
+ * " --> &quot;
+ * ' --> &#x27;     &apos; is not recommended
+ * / --> &#x2F;     forward slash is included as it helps end an HTML entity
+ *
+ */
+static const char HTML_ESCAPE_TABLE[] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 1, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 4, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+static const char *HTML_ESCAPES[] = {
+        "",
+        "&quot;",
+        "&amp;",
+        "&#39;",
+        "&#47;",
+        "&lt;",
+        "&gt;"
+};
+
+void
+hoedown_escape_html(struct hoedown_buffer *ob, const uint8_t *src, size_t size, int secure)
+{
+	size_t i = 0, org, esc = 0;
+
+	hoedown_buffer_grow(ob, ESCAPE_GROW_FACTOR(size));
+
+	while (i < size) {
+		org = i;
+		while (i < size && (esc = HTML_ESCAPE_TABLE[src[i]]) == 0)
+			i++;
+
+		if (i > org)
+			hoedown_buffer_put(ob, src + org, i - org);
+
+		/* escaping */
+		if (i >= size)
+			break;
+
+		/* The forward slash is only escaped in secure mode */
+		if (src[i] == '/' && !secure) {
+			hoedown_buffer_putc(ob, '/');
+		} else {
+			hoedown_buffer_puts(ob, HTML_ESCAPES[esc]);
 		}
 
 		i++;

@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2009, Natacha Porté
- * Copyright (c) 2011, Vicent Marti
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #include "markdown.h"
 #include "html.h"
 
@@ -23,12 +6,12 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "houdini.h"
+#include "escape.h"
 
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
 int
-sdhtml_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
+hoedown_html_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 {
 	size_t i;
 	int closed = 0;
@@ -60,29 +43,29 @@ sdhtml_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 	return HTML_TAG_NONE;
 }
 
-static inline void escape_html(struct buf *ob, const uint8_t *source, size_t length)
+static inline void escape_html(struct hoedown_buffer *ob, const uint8_t *source, size_t length)
 {
-	houdini_escape_html0(ob, source, length, 0);
+	hoedown_escape_html(ob, source, length, 0);
 }
 
-static inline void escape_href(struct buf *ob, const uint8_t *source, size_t length)
+static inline void escape_href(struct hoedown_buffer *ob, const uint8_t *source, size_t length)
 {
-	houdini_escape_href(ob, source, length);
+	hoedown_escape_href(ob, source, length);
 }
 
 /********************
  * GENERIC RENDERER *
  ********************/
 static int
-rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, void *opaque)
+rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum mkd_autolink type, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
 	if (!link || !link->size)
 		return 0;
 
 	if ((options->flags & HTML_SAFELINK) != 0 &&
-		!sd_autolink_issafe(link->data, link->size) &&
+		!hoedown_autolink_issafe(link->data, link->size) &&
 		type != MKDA_EMAIL)
 		return 0;
 
@@ -92,9 +75,9 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 	escape_href(ob, link->data, link->size);
 
 	if (options->link_attributes) {
-		bufputc(ob, '\"');
+		hoedown_buffer_putc(ob, '\"');
 		options->link_attributes(ob, link, opaque);
-		bufputc(ob, '>');
+		hoedown_buffer_putc(ob, '>');
 	} else {
 		BUFPUTSL(ob, "\">");
 	}
@@ -104,7 +87,7 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 	 * an actual URI, e.g. `mailto:foo@bar.com`, we don't
 	 * want to print the `mailto:` prefix
 	 */
-	if (bufprefix(link, "mailto:") == 0) {
+	if (hoedown_buffer_prefix(link, "mailto:") == 0) {
 		escape_html(ob, link->data + 7, link->size - 7);
 	} else {
 		escape_html(ob, link->data, link->size);
@@ -116,11 +99,11 @@ rndr_autolink(struct buf *ob, const struct buf *link, enum mkd_autolink type, vo
 }
 
 static void
-rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, void *opaque)
+rndr_blockcode(struct hoedown_buffer *ob, const struct hoedown_buffer *text, const struct hoedown_buffer *lang, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
-	if (ob->size) bufputc(ob, '\n');
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
 
 	if (lang && lang->size) {
 		size_t i, cls = 0;
@@ -143,7 +126,7 @@ rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, v
 				if (lang->data[org] == '.')
 					org++;
 
-				if (cls) bufputc(ob, ' ');
+				if (cls) hoedown_buffer_putc(ob, ' ');
 				escape_html(ob, lang->data + org, i - org);
 			}
 		}
@@ -162,18 +145,18 @@ rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, v
 }
 
 static void
-rndr_blockquote(struct buf *ob, const struct buf *text, void *opaque)
+rndr_blockquote(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
-	if (ob->size) bufputc(ob, '\n');
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	BUFPUTSL(ob, "<blockquote>\n");
-	if (text) bufput(ob, text->data, text->size);
+	if (text) hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</blockquote>\n");
 }
 
 static int
-rndr_codespan(struct buf *ob, const struct buf *text, void *opaque)
+rndr_codespan(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 	if (options->flags & HTML_PRETTIFY)
 		BUFPUTSL(ob, "<code class=\"prettyprint\">");
 	else
@@ -184,110 +167,110 @@ rndr_codespan(struct buf *ob, const struct buf *text, void *opaque)
 }
 
 static int
-rndr_strikethrough(struct buf *ob, const struct buf *text, void *opaque)
+rndr_strikethrough(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size)
 		return 0;
 
 	BUFPUTSL(ob, "<del>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</del>");
 	return 1;
 }
 
 static int
-rndr_double_emphasis(struct buf *ob, const struct buf *text, void *opaque)
+rndr_double_emphasis(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size)
 		return 0;
 
 	BUFPUTSL(ob, "<strong>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</strong>");
 
 	return 1;
 }
 
 static int
-rndr_emphasis(struct buf *ob, const struct buf *text, void *opaque)
+rndr_emphasis(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size) return 0;
 	BUFPUTSL(ob, "<em>");
-	if (text) bufput(ob, text->data, text->size);
+	if (text) hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</em>");
 	return 1;
 }
 
 static int
-rndr_underline(struct buf *ob, const struct buf *text, void *opaque)
+rndr_underline(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size)
 		return 0;
 
 	BUFPUTSL(ob, "<u>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</u>");
 
 	return 1;
 }
 
 static int
-rndr_highlight(struct buf *ob, const struct buf *text, void *opaque)
+rndr_highlight(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size)
 		return 0;
 
 	BUFPUTSL(ob, "<mark>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</mark>");
 
 	return 1;
 }
 
 static int
-rndr_quote(struct buf *ob, const struct buf *text, void *opaque)
+rndr_quote(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size)
 		return 0;
 
 	BUFPUTSL(ob, "<q>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</q>");
 
 	return 1;
 }
 
 static int
-rndr_linebreak(struct buf *ob, void *opaque)
+rndr_linebreak(struct hoedown_buffer *ob, void *opaque)
 {
-	struct html_renderopt *options = opaque;
-	bufputs(ob, USE_XHTML(options) ? "<br/>\n" : "<br>\n");
+	struct hoedown_html_renderopt *options = opaque;
+	hoedown_buffer_puts(ob, USE_XHTML(options) ? "<br/>\n" : "<br>\n");
 	return 1;
 }
 
 static void
-rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
+rndr_header(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int level, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
 	if (ob->size)
-		bufputc(ob, '\n');
+		hoedown_buffer_putc(ob, '\n');
 
 	if ((options->flags & HTML_TOC) && (level <= options->toc_data.nesting_level))
-		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
+		hoedown_buffer_printf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
 	else
-		bufprintf(ob, "<h%d>", level);
+		hoedown_buffer_printf(ob, "<h%d>", level);
 
-	if (text) bufput(ob, text->data, text->size);
-	bufprintf(ob, "</h%d>\n", level);
+	if (text) hoedown_buffer_put(ob, text->data, text->size);
+	hoedown_buffer_printf(ob, "</h%d>\n", level);
 }
 
 static int
-rndr_link(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *content, void *opaque)
+rndr_link(struct hoedown_buffer *ob, const struct hoedown_buffer *link, const struct hoedown_buffer *title, const struct hoedown_buffer *content, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
-	if (link != NULL && (options->flags & HTML_SAFELINK) != 0 && !sd_autolink_issafe(link->data, link->size))
+	if (link != NULL && (options->flags & HTML_SAFELINK) != 0 && !hoedown_autolink_issafe(link->data, link->size))
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
@@ -301,29 +284,29 @@ rndr_link(struct buf *ob, const struct buf *link, const struct buf *title, const
 	}
 
 	if (options->link_attributes) {
-		bufputc(ob, '\"');
+		hoedown_buffer_putc(ob, '\"');
 		options->link_attributes(ob, link, opaque);
-		bufputc(ob, '>');
+		hoedown_buffer_putc(ob, '>');
 	} else {
 		BUFPUTSL(ob, "\">");
 	}
 
-	if (content && content->size) bufput(ob, content->data, content->size);
+	if (content && content->size) hoedown_buffer_put(ob, content->data, content->size);
 	BUFPUTSL(ob, "</a>");
 	return 1;
 }
 
 static void
-rndr_list(struct buf *ob, const struct buf *text, int flags, void *opaque)
+rndr_list(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
-	if (ob->size) bufputc(ob, '\n');
-	bufput(ob, flags & MKD_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
-	if (text) bufput(ob, text->data, text->size);
-	bufput(ob, flags & MKD_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	hoedown_buffer_put(ob, flags & MKD_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
+	if (text) hoedown_buffer_put(ob, text->data, text->size);
+	hoedown_buffer_put(ob, flags & MKD_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
 }
 
 static void
-rndr_listitem(struct buf *ob, const struct buf *text, int flags, void *opaque)
+rndr_listitem(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
 	BUFPUTSL(ob, "<li>");
 	if (text) {
@@ -331,18 +314,18 @@ rndr_listitem(struct buf *ob, const struct buf *text, int flags, void *opaque)
 		while (size && text->data[size - 1] == '\n')
 			size--;
 
-		bufput(ob, text->data, size);
+		hoedown_buffer_put(ob, text->data, size);
 	}
 	BUFPUTSL(ob, "</li>\n");
 }
 
 static void
-rndr_paragraph(struct buf *ob, const struct buf *text, void *opaque)
+rndr_paragraph(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 	size_t i = 0;
 
-	if (ob->size) bufputc(ob, '\n');
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
 
 	if (!text || !text->size)
 		return;
@@ -361,7 +344,7 @@ rndr_paragraph(struct buf *ob, const struct buf *text, void *opaque)
 				i++;
 
 			if (i > org)
-				bufput(ob, text->data + org, i - org);
+				hoedown_buffer_put(ob, text->data + org, i - org);
 
 			/*
 			 * do not insert a line break if this newline
@@ -374,13 +357,13 @@ rndr_paragraph(struct buf *ob, const struct buf *text, void *opaque)
 			i++;
 		}
 	} else {
-		bufput(ob, &text->data[i], text->size - i);
+		hoedown_buffer_put(ob, &text->data[i], text->size - i);
 	}
 	BUFPUTSL(ob, "</p>\n");
 }
 
 static void
-rndr_raw_block(struct buf *ob, const struct buf *text, void *opaque)
+rndr_raw_block(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	size_t org, sz;
 	if (!text) return;
@@ -389,33 +372,33 @@ rndr_raw_block(struct buf *ob, const struct buf *text, void *opaque)
 	org = 0;
 	while (org < sz && text->data[org] == '\n') org++;
 	if (org >= sz) return;
-	if (ob->size) bufputc(ob, '\n');
-	bufput(ob, text->data + org, sz - org);
-	bufputc(ob, '\n');
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	hoedown_buffer_put(ob, text->data + org, sz - org);
+	hoedown_buffer_putc(ob, '\n');
 }
 
 static int
-rndr_triple_emphasis(struct buf *ob, const struct buf *text, void *opaque)
+rndr_triple_emphasis(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size) return 0;
 	BUFPUTSL(ob, "<strong><em>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</em></strong>");
 	return 1;
 }
 
 static void
-rndr_hrule(struct buf *ob, void *opaque)
+rndr_hrule(struct hoedown_buffer *ob, void *opaque)
 {
-	struct html_renderopt *options = opaque;
-	if (ob->size) bufputc(ob, '\n');
-	bufputs(ob, USE_XHTML(options) ? "<hr/>\n" : "<hr>\n");
+	struct hoedown_html_renderopt *options = opaque;
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	hoedown_buffer_puts(ob, USE_XHTML(options) ? "<hr/>\n" : "<hr>\n");
 }
 
 static int
-rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *alt, void *opaque)
+rndr_image(struct hoedown_buffer *ob, const struct hoedown_buffer *link, const struct hoedown_buffer *title, const struct hoedown_buffer *alt, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 	if (!link || !link->size) return 0;
 
 	BUFPUTSL(ob, "<img src=\"");
@@ -429,14 +412,14 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 		BUFPUTSL(ob, "\" title=\"");
 		escape_html(ob, title->data, title->size); }
 
-	bufputs(ob, USE_XHTML(options) ? "\"/>" : "\">");
+	hoedown_buffer_puts(ob, USE_XHTML(options) ? "\"/>" : "\">");
 	return 1;
 }
 
 static int
-rndr_raw_html(struct buf *ob, const struct buf *text, void *opaque)
+rndr_raw_html(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
 	/* HTML_ESCAPE overrides SKIP_HTML, SKIP_STYLE, SKIP_LINKS and SKIP_IMAGES
 	* It doens't see if there are any valid tags, just escape all of them. */
@@ -449,45 +432,45 @@ rndr_raw_html(struct buf *ob, const struct buf *text, void *opaque)
 		return 1;
 
 	if ((options->flags & HTML_SKIP_STYLE) != 0 &&
-		sdhtml_is_tag(text->data, text->size, "style"))
+		hoedown_html_is_tag(text->data, text->size, "style"))
 		return 1;
 
 	if ((options->flags & HTML_SKIP_LINKS) != 0 &&
-		sdhtml_is_tag(text->data, text->size, "a"))
+		hoedown_html_is_tag(text->data, text->size, "a"))
 		return 1;
 
 	if ((options->flags & HTML_SKIP_IMAGES) != 0 &&
-		sdhtml_is_tag(text->data, text->size, "img"))
+		hoedown_html_is_tag(text->data, text->size, "img"))
 		return 1;
 
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	return 1;
 }
 
 static void
-rndr_table(struct buf *ob, const struct buf *header, const struct buf *body, void *opaque)
+rndr_table(struct hoedown_buffer *ob, const struct hoedown_buffer *header, const struct hoedown_buffer *body, void *opaque)
 {
-	if (ob->size) bufputc(ob, '\n');
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	BUFPUTSL(ob, "<table><thead>\n");
 	if (header)
-		bufput(ob, header->data, header->size);
+		hoedown_buffer_put(ob, header->data, header->size);
 	BUFPUTSL(ob, "</thead><tbody>\n");
 	if (body)
-		bufput(ob, body->data, body->size);
+		hoedown_buffer_put(ob, body->data, body->size);
 	BUFPUTSL(ob, "</tbody></table>\n");
 }
 
 static void
-rndr_tablerow(struct buf *ob, const struct buf *text, void *opaque)
+rndr_tablerow(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	BUFPUTSL(ob, "<tr>\n");
 	if (text)
-		bufput(ob, text->data, text->size);
+		hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</tr>\n");
 }
 
 static void
-rndr_tablecell(struct buf *ob, const struct buf *text, int flags, void *opaque)
+rndr_tablecell(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
 	if (flags & MKD_TABLE_HEADER) {
 		BUFPUTSL(ob, "<th");
@@ -513,7 +496,7 @@ rndr_tablecell(struct buf *ob, const struct buf *text, int flags, void *opaque)
 	}
 
 	if (text)
-		bufput(ob, text->data, text->size);
+		hoedown_buffer_put(ob, text->data, text->size);
 
 	if (flags & MKD_TABLE_HEADER) {
 		BUFPUTSL(ob, "</th>\n");
@@ -523,40 +506,40 @@ rndr_tablecell(struct buf *ob, const struct buf *text, int flags, void *opaque)
 }
 
 static int
-rndr_superscript(struct buf *ob, const struct buf *text, void *opaque)
+rndr_superscript(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (!text || !text->size) return 0;
 	BUFPUTSL(ob, "<sup>");
-	bufput(ob, text->data, text->size);
+	hoedown_buffer_put(ob, text->data, text->size);
 	BUFPUTSL(ob, "</sup>");
 	return 1;
 }
 
 static void
-rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
+rndr_normal_text(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	if (text)
 		escape_html(ob, text->data, text->size);
 }
 
 static void
-rndr_footnotes(struct buf *ob, const struct buf *text, void *opaque)
+rndr_footnotes(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
-	if (ob->size) bufputc(ob, '\n');
+	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	BUFPUTSL(ob, "<div class=\"footnotes\">\n");
 	BUFPUTSL(ob, (USE_XHTML(options) ? "<hr/>\n" : "<hr>\n"));
 	BUFPUTSL(ob, "<ol>\n");
 	
 	if (text)
-		bufput(ob, text->data, text->size);
+		hoedown_buffer_put(ob, text->data, text->size);
 	
 	BUFPUTSL(ob, "\n</ol>\n</div>\n");
 }
 
 static void
-rndr_footnote_def(struct buf *ob, const struct buf *text, unsigned int num, void *opaque)
+rndr_footnote_def(struct hoedown_buffer *ob, const struct hoedown_buffer *text, unsigned int num, void *opaque)
 {
 	size_t i = 0;
 	int pfound = 0;
@@ -574,28 +557,28 @@ rndr_footnote_def(struct buf *ob, const struct buf *text, unsigned int num, void
 		}
 	}
 	
-	bufprintf(ob, "\n<li id=\"fn%d\">\n", num);
+	hoedown_buffer_printf(ob, "\n<li id=\"fn%d\">\n", num);
 	if (pfound) {
-		bufput(ob, text->data, i);
-		bufprintf(ob, "&nbsp;<a href=\"#fnref%d\" rev=\"footnote\">&#8617;</a>", num);
-		bufput(ob, text->data + i, text->size - i);
+		hoedown_buffer_put(ob, text->data, i);
+		hoedown_buffer_printf(ob, "&nbsp;<a href=\"#fnref%d\" rev=\"footnote\">&#8617;</a>", num);
+		hoedown_buffer_put(ob, text->data + i, text->size - i);
 	} else if (text) {
-		bufput(ob, text->data, text->size);
+		hoedown_buffer_put(ob, text->data, text->size);
 	}
 	BUFPUTSL(ob, "</li>\n");
 }
 
 static int
-rndr_footnote_ref(struct buf *ob, unsigned int num, void *opaque)
+rndr_footnote_ref(struct hoedown_buffer *ob, unsigned int num, void *opaque)
 {
-	bufprintf(ob, "<sup id=\"fnref%d\"><a href=\"#fn%d\" rel=\"footnote\">%d</a></sup>", num, num, num);
+	hoedown_buffer_printf(ob, "<sup id=\"fnref%d\"><a href=\"#fn%d\" rel=\"footnote\">%d</a></sup>", num, num, num);
 	return 1;
 }
 
 static void
-toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
+toc_header(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int level, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
 	if (level <= options->toc_data.nesting_level) {
 		/* set the level offset if this is the first header
@@ -621,24 +604,24 @@ toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 			BUFPUTSL(ob,"</li>\n<li>\n");
 		}
 
-		bufprintf(ob, "<a href=\"#toc_%d\">", options->toc_data.header_count++);
+		hoedown_buffer_printf(ob, "<a href=\"#toc_%d\">", options->toc_data.header_count++);
 		if (text) escape_html(ob, text->data, text->size);
 		BUFPUTSL(ob, "</a>\n");
 	}
 }
 
 static int
-toc_link(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *content, void *opaque)
+toc_link(struct hoedown_buffer *ob, const struct hoedown_buffer *link, const struct hoedown_buffer *title, const struct hoedown_buffer *content, void *opaque)
 {
 	if (content && content->size)
-		bufput(ob, content->data, content->size);
+		hoedown_buffer_put(ob, content->data, content->size);
 	return 1;
 }
 
 static void
-toc_finalize(struct buf *ob, void *opaque)
+toc_finalize(struct hoedown_buffer *ob, void *opaque)
 {
-	struct html_renderopt *options = opaque;
+	struct hoedown_html_renderopt *options = opaque;
 
 	while (options->toc_data.current_level > 0) {
 		BUFPUTSL(ob, "</li>\n</ul>\n");
@@ -647,9 +630,9 @@ toc_finalize(struct buf *ob, void *opaque)
 }
 
 void
-sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, int nesting_level)
+hoedown_html_toc_renderer(struct hoedown_callbacks *callbacks, struct hoedown_html_renderopt *options, int nesting_level)
 {
-	static const struct sd_callbacks cb_default = {
+	static const struct hoedown_callbacks cb_default = {
 		NULL,
 		NULL,
 		NULL,
@@ -687,17 +670,17 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 		toc_finalize,
 	};
 
-	memset(options, 0x0, sizeof(struct html_renderopt));
+	memset(options, 0x0, sizeof(struct hoedown_html_renderopt));
 	options->flags = HTML_TOC;
 	options->toc_data.nesting_level = nesting_level;
 
-	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
+	memcpy(callbacks, &cb_default, sizeof(struct hoedown_callbacks));
 }
 
 void
-sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, unsigned int render_flags)
+hoedown_html_renderer(struct hoedown_callbacks *callbacks, struct hoedown_html_renderopt *options, unsigned int render_flags)
 {
-	static const struct sd_callbacks cb_default = {
+	static const struct hoedown_callbacks cb_default = {
 		rndr_blockcode,
 		rndr_blockquote,
 		rndr_raw_block,
@@ -736,11 +719,11 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 	};
 
 	/* Prepare the options pointer */
-	memset(options, 0x0, sizeof(struct html_renderopt));
+	memset(options, 0x0, sizeof(struct hoedown_html_renderopt));
 	options->flags = render_flags;
 
 	/* Prepare the callbacks */
-	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
+	memcpy(callbacks, &cb_default, sizeof(struct hoedown_callbacks));
 
 	if (render_flags & HTML_SKIP_IMAGES)
 		callbacks->image = NULL;

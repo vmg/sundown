@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2008, Natacha Porté
- * Copyright (c) 2011, Vicent Martí
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #define BUFFER_MAX_ALLOC_SIZE (1024 * 1024 * 16) //16mb
 
 #include "buffer.h"
@@ -32,7 +15,7 @@
 #endif
 
 int
-bufprefix(const struct buf *buf, const char *prefix)
+hoedown_buffer_prefix(const struct hoedown_buffer *buf, const char *prefix)
 {
 	size_t i;
 	assert(buf && buf->unit);
@@ -48,9 +31,9 @@ bufprefix(const struct buf *buf, const char *prefix)
 	return 0;
 }
 
-/* bufgrow: increasing the allocated size to the given value */
+/* hoedown_buffer_grow: increasing the allocated size to the given value */
 int
-bufgrow(struct buf *buf, size_t neosz)
+hoedown_buffer_grow(struct hoedown_buffer *buf, size_t neosz)
 {
 	size_t neoasz;
 	void *neodata;
@@ -77,12 +60,12 @@ bufgrow(struct buf *buf, size_t neosz)
 }
 
 
-/* bufnew: allocation of a new buffer */
-struct buf *
-bufnew(size_t unit)
+/* hoedown_buffer_new: allocation of a new buffer */
+struct hoedown_buffer *
+hoedown_buffer_new(size_t unit)
 {
-	struct buf *ret;
-	ret = malloc(sizeof (struct buf));
+	struct hoedown_buffer *ret;
+	ret = malloc(sizeof (struct hoedown_buffer));
 
 	if (ret) {
 		ret->data = 0;
@@ -94,14 +77,14 @@ bufnew(size_t unit)
 
 /* bufnullterm: NULL-termination of the string array */
 const char *
-bufcstr(struct buf *buf)
+hoedown_buffer_cstr(struct hoedown_buffer *buf)
 {
 	assert(buf && buf->unit);
 
 	if (buf->size < buf->asize && buf->data[buf->size] == 0)
 		return (char *)buf->data;
 
-	if (buf->size + 1 <= buf->asize || bufgrow(buf, buf->size + 1) == 0) {
+	if (buf->size + 1 <= buf->asize || hoedown_buffer_grow(buf, buf->size + 1) == 0) {
 		buf->data[buf->size] = 0;
 		return (char *)buf->data;
 	}
@@ -109,16 +92,16 @@ bufcstr(struct buf *buf)
 	return NULL;
 }
 
-/* bufprintf: formatted printing to a buffer */
+/* hoedown_buffer_printf: formatted printing to a buffer */
 void
-bufprintf(struct buf *buf, const char *fmt, ...)
+hoedown_buffer_printf(struct hoedown_buffer *buf, const char *fmt, ...)
 {
 	va_list ap;
 	int n;
 
 	assert(buf && buf->unit);
 
-	if (buf->size >= buf->asize && bufgrow(buf, buf->size + 1) < 0)
+	if (buf->size >= buf->asize && hoedown_buffer_grow(buf, buf->size + 1) < 0)
 		return;
 	
 	va_start(ap, fmt);
@@ -136,7 +119,7 @@ bufprintf(struct buf *buf, const char *fmt, ...)
 	}
 
 	if ((size_t)n >= buf->asize - buf->size) {
-		if (bufgrow(buf, buf->size + n + 1) < 0)
+		if (hoedown_buffer_grow(buf, buf->size + n + 1) < 0)
 			return;
 
 		va_start(ap, fmt);
@@ -150,43 +133,43 @@ bufprintf(struct buf *buf, const char *fmt, ...)
 	buf->size += n;
 }
 
-/* bufput: appends raw data to a buffer */
+/* hoedown_buffer_put: appends raw data to a buffer */
 void
-bufput(struct buf *buf, const void *data, size_t len)
+hoedown_buffer_put(struct hoedown_buffer *buf, const void *data, size_t len)
 {
 	assert(buf && buf->unit);
 
-	if (buf->size + len > buf->asize && bufgrow(buf, buf->size + len) < 0)
+	if (buf->size + len > buf->asize && hoedown_buffer_grow(buf, buf->size + len) < 0)
 		return;
 
 	memcpy(buf->data + buf->size, data, len);
 	buf->size += len;
 }
 
-/* bufputs: appends a NUL-terminated string to a buffer */
+/* hoedown_buffer_puts: appends a NUL-terminated string to a buffer */
 void
-bufputs(struct buf *buf, const char *str)
+hoedown_buffer_puts(struct hoedown_buffer *buf, const char *str)
 {
-	bufput(buf, str, strlen(str));
+	hoedown_buffer_put(buf, str, strlen(str));
 }
 
 
-/* bufputc: appends a single uint8_t to a buffer */
+/* hoedown_buffer_putc: appends a single uint8_t to a buffer */
 void
-bufputc(struct buf *buf, int c)
+hoedown_buffer_putc(struct hoedown_buffer *buf, int c)
 {
 	assert(buf && buf->unit);
 
-	if (buf->size + 1 > buf->asize && bufgrow(buf, buf->size + 1) < 0)
+	if (buf->size + 1 > buf->asize && hoedown_buffer_grow(buf, buf->size + 1) < 0)
 		return;
 
 	buf->data[buf->size] = c;
 	buf->size += 1;
 }
 
-/* bufrelease: decrease the reference count and free the buffer if needed */
+/* hoedown_buffer_release: decrease the reference count and free the buffer if needed */
 void
-bufrelease(struct buf *buf)
+hoedown_buffer_release(struct hoedown_buffer *buf)
 {
 	if (!buf)
 		return;
@@ -196,9 +179,9 @@ bufrelease(struct buf *buf)
 }
 
 
-/* bufreset: frees internal data of the buffer */
+/* hoedown_buffer_reset: frees internal data of the buffer */
 void
-bufreset(struct buf *buf)
+hoedown_buffer_reset(struct hoedown_buffer *buf)
 {
 	if (!buf)
 		return;
@@ -208,9 +191,9 @@ bufreset(struct buf *buf)
 	buf->size = buf->asize = 0;
 }
 
-/* bufslurp: removes a given number of bytes from the head of the array */
+/* hoedown_buffer_slurp: removes a given number of bytes from the head of the array */
 void
-bufslurp(struct buf *buf, size_t len)
+hoedown_buffer_slurp(struct hoedown_buffer *buf, size_t len)
 {
 	assert(buf && buf->unit);
 

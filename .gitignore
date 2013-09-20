@@ -1,5 +1,5 @@
 *.o
-libsundown.so*
-sundown
+libhoedown.so*
+hoedown
 smartypants
 *.exe

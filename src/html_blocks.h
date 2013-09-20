@@ -1,5 +1,5 @@
 /* C code produced by gperf version 3.0.3 */
-/* Command-line: gperf -N find_block_tag -H hash_block_tag -C -c -E -P -S 1 --ignore-case html_block_names.txt  */
+/* Command-line: gperf -N hoedown_find_block_tag -H hash_block_tag -C -c -E -P -S 1 --ignore-case html_block_names.txt  */
 /* Computed positions: -k'1-2' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -141,7 +141,7 @@ __attribute__ ((__gnu_inline__))
 #endif
 #endif
 const char *
-find_block_tag (str, len)
+hoedown_find_block_tag (str, len)
      register const char *str;
      register unsigned int len;
 {

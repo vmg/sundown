@@ -30,7 +30,7 @@
 int
 main(int argc, char **argv)
 {
-	struct buf *ib, *ob;
+	struct hoedown_buffer *ib, *ob;
 	size_t ret;
 	FILE *in = stdin;
 
@@ -44,27 +44,27 @@ main(int argc, char **argv)
 	}
 
 	/* reading everything */
-	ib = bufnew(READ_UNIT);
-	bufgrow(ib, READ_UNIT);
+	ib = hoedown_buffer_new(READ_UNIT);
+	hoedown_buffer_grow(ib, READ_UNIT);
 	while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
 		ib->size += ret;
-		bufgrow(ib, ib->size + READ_UNIT);
+		hoedown_buffer_grow(ib, ib->size + READ_UNIT);
 	}
 
 	if (in != stdin)
 		fclose(in);
 
 	/* performing markdown parsing */
-	ob = bufnew(OUTPUT_UNIT);
+	ob = hoedown_buffer_new(OUTPUT_UNIT);
 
-	sdhtml_smartypants(ob, ib->data, ib->size);
+	hoedown_html_smartypants(ob, ib->data, ib->size);
 
 	/* writing the result to stdout */
 	(void)fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
-	bufrelease(ib);
-	bufrelease(ob);
+	hoedown_buffer_release(ib);
+	hoedown_buffer_release(ob);
 
 	return 0;
 }
