@@ -19,18 +19,18 @@ DEPDIR=depends
 # "Machine-dependant" options
 #MFLAGS=-fPIC
 
-CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml
+CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc
 LDFLAGS=-g -O3 -Wall -Werror 
 
 
 HOEDOWN_SRC=\
-	src/markdown.o \
-	src/stack.o \
-	src/buffer.o \
 	src/autolink.o \
+	src/buffer.o \
 	src/escape.o \
 	src/html.o \
 	src/html_smartypants.o \
+	src/markdown.o \
+	src/stack.o
 
 all:		libhoedown.so hoedown smartypants html_blocks
 
@@ -64,7 +64,7 @@ test: hoedown
 
 # housekeeping
 clean:
-	rm -f src/*.o html/*.o examples/*.o
+	rm -f src/*.o examples/*.o
 	rm -f libhoedown.so libhoedown.so.1 hoedown smartypants
 	rm -f hoedown.exe smartypants.exe
 	rm -rf $(DEPDIR)
@@ -77,7 +77,7 @@ include $(wildcard $(DEPDIR)/*.d)
 
 # generic object compilations
 
-%.o:	src/%.c examples/%.c html/%.c
+%.o:	src/%.c examples/%.c
 	@mkdir -p $(DEPDIR)
 	@$(CC) -MM $< > $(DEPDIR)/$*.d
 	$(CC) $(CFLAGS) -o $@ $<
