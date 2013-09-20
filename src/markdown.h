@@ -10,10 +10,10 @@
 extern "C" {
 #endif
 
-#define HOEDOWN_VERSION "1.16.0"
-#define HOEDOWN_VER_MAJOR 1
-#define HOEDOWN_VER_MINOR 16
-#define HOEDOWN_VER_REVISION 0
+#define HOEDOWN_VERSION "0.0.1"
+#define HOEDOWN_VER_MAJOR 0
+#define HOEDOWN_VER_MINOR 0
+#define HOEDOWN_VER_REVISION 1
 
 /********************
  * TYPE DEFINITIONS *
