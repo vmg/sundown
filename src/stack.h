@@ -1,5 +1,7 @@
-#ifndef STACK_H__
-#define STACK_H__
+/* stack.h - simple stacking */
+
+#ifndef HOEDOWN_STACK_H
+#define HOEDOWN_STACK_H
 
 #include <stdlib.h>
 
@@ -26,4 +28,4 @@ void *hoedown_stack_top(struct hoedown_stack *);
 }
 #endif
 
-#endif
+#endif /** HOEDOWN_STACK_H **/

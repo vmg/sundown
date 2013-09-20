@@ -127,6 +127,4 @@ hoedown_version(int *major, int *minor, int *revision);
 }
 #endif
 
-#endif
-
-/* vim: set filetype=c: */
+#endif /** HOEDOWN_MARKDOWN_H **/

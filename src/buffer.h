@@ -1,3 +1,5 @@
+/* buffer.h - simple, fast buffers */
+
 #ifndef HOEDOWN_BUFFER_H
 #define HOEDOWN_BUFFER_H
 
@@ -68,4 +70,4 @@ void hoedown_buffer_printf(struct hoedown_buffer *, const char *, ...) __attribu
 }
 #endif
 
-#endif
+#endif /** HOEDOWN_BUFFER_H **/

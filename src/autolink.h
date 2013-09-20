@@ -1,3 +1,5 @@
+/* autolink.h - versatile autolinker */
+
 #ifndef HOEDOWN_AUTOLINK_H
 #define HOEDOWN_AUTOLINK_H
 
@@ -30,6 +32,4 @@ hoedown_autolink__url(size_t *rewind_p, struct hoedown_buffer *link,
 }
 #endif
 
-#endif
-
-/* vim: set filetype=c: */
+#endif /** HOEDOWN_AUTOLINK_H **/

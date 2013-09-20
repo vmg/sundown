@@ -1,3 +1,5 @@
+/* html.h - HTML renderer */
+
 #ifndef HOEDOWN_HTML_H
 #define HOEDOWN_HTML_H
 
@@ -59,5 +61,4 @@ hoedown_html_smartypants(struct hoedown_buffer *ob, const uint8_t *text, size_t 
 }
 #endif
 
-#endif
-
+#endif /** HOEDOWN_HTML_H **/

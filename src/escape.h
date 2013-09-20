@@ -1,3 +1,5 @@
+/* escape.h - escape utilities */
+
 #ifndef HOEDOWN_ESCAPE_H
 #define HOEDOWN_ESCAPE_H
 
@@ -14,4 +16,4 @@ extern void hoedown_escape_href(struct hoedown_buffer *ob, const uint8_t *src, s
 }
 #endif
 
-#endif
+#endif /** HOEDOWN_ESCAPE_H **/
