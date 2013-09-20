@@ -7,10 +7,8 @@ HOEDOWN_SRC=\
 	src\stack.obj \
 	src\buffer.obj \
 	src\autolink.obj \
-	html\html.obj \
-	html\html_smartypants.obj \
-	html\houdini_html_e.obj \
-	html\houdini_href_e.obj
+	html\escape.obj \
+	html\html.obj
 
 all: hoedown.dll hoedown.exe
 
