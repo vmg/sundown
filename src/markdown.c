@@ -1,12 +1,13 @@
 /* markdown.c - generic markdown parser */
 
 #include "markdown.h"
-#include "stack.h"
 
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+
+#include "stack.h"
 
 #if defined(_WIN32)
 #define strncasecmp	_strnicmp

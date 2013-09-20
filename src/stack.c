@@ -1,4 +1,5 @@
 #include "stack.h"
+
 #include <string.h>
 
 int

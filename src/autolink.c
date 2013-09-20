@@ -1,4 +1,3 @@
-#include "buffer.h"
 #include "autolink.h"
 
 #include <string.h>

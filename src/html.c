@@ -1,4 +1,3 @@
-#include "markdown.h"
 #include "html.h"
 
 #include <string.h>
