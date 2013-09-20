@@ -67,19 +67,8 @@ by Vicent Marti (@vmg) and contributions from the following authors:
 Bindings
 --------
 
-`Hoedown` is available from other programming languages thanks to these bindings developed
-by our awesome contributors.
-
-- [Redcarpet](https://github.com/vmg/redcarpet) (Ruby)
-- [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
-- [Misaka](https://github.com/FSX/misaka) (Python)
-- [ffi-sundown](https://github.com/postmodern/ffi-sundown) (Ruby FFI)
-- [Sundown HS](https://github.com/bitonic/sundown) (Haskell)
-- [Goskirt](https://github.com/madari/goskirt) (Go)
-- [Upskirt.go](https://github.com/buu700/upskirt.go) (Go)
-- [MoonShine](https://github.com/brandonc/moonshine) (.NET)
-- [PHP-Sundown](https://github.com/chobie/php-sundown) (PHP)
-- [Sundown.net](https://github.com/txdv/sundown.net) (.NET)
+You can see a community-maintained list of `Hoedown` bindings at
+[the wiki](https://github.com/devinus/hoedown/wiki/Bindings).
 
 Help us
 -------
