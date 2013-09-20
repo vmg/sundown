@@ -56,7 +56,7 @@ static inline void escape_href(struct hoedown_buffer *ob, const uint8_t *source,
  * GENERIC RENDERER *
  ********************/
 static int
-rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum mkd_autolink type, void *opaque)
+rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum hoedown_autolink type, void *opaque)
 {
 	struct hoedown_html_renderopt *options = opaque;
 
@@ -65,11 +65,11 @@ rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum
 
 	if ((options->flags & HTML_SAFELINK) != 0 &&
 		!hoedown_autolink_issafe(link->data, link->size) &&
-		type != MKDA_EMAIL)
+		type != HOEDOWN_AUTOLINK_EMAIL)
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
-	if (type == MKDA_EMAIL)
+	if (type == HOEDOWN_AUTOLINK_EMAIL)
 		BUFPUTSL(ob, "mailto:");
 	escape_href(ob, link->data, link->size);
 
@@ -299,9 +299,9 @@ static void
 rndr_list(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
-	hoedown_buffer_put(ob, flags & MKD_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
+	hoedown_buffer_put(ob, flags & HOEDOWN_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
 	if (text) hoedown_buffer_put(ob, text->data, text->size);
-	hoedown_buffer_put(ob, flags & MKD_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
+	hoedown_buffer_put(ob, flags & HOEDOWN_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
 }
 
 static void
@@ -471,22 +471,22 @@ rndr_tablerow(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void
 static void
 rndr_tablecell(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
-	if (flags & MKD_TABLE_HEADER) {
+	if (flags & HOEDOWN_TABLE_HEADER) {
 		BUFPUTSL(ob, "<th");
 	} else {
 		BUFPUTSL(ob, "<td");
 	}
 
-	switch (flags & MKD_TABLE_ALIGNMASK) {
-	case MKD_TABLE_ALIGN_CENTER:
+	switch (flags & HOEDOWN_TABLE_ALIGNMASK) {
+	case HOEDOWN_TABLE_ALIGN_CENTER:
 		BUFPUTSL(ob, " style=\"text-align: center\">");
 		break;
 
-	case MKD_TABLE_ALIGN_L:
+	case HOEDOWN_TABLE_ALIGN_L:
 		BUFPUTSL(ob, " style=\"text-align: left\">");
 		break;
 
-	case MKD_TABLE_ALIGN_R:
+	case HOEDOWN_TABLE_ALIGN_R:
 		BUFPUTSL(ob, " style=\"text-align: right\">");
 		break;
 
@@ -497,7 +497,7 @@ rndr_tablecell(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int
 	if (text)
 		hoedown_buffer_put(ob, text->data, text->size);
 
-	if (flags & MKD_TABLE_HEADER) {
+	if (flags & HOEDOWN_TABLE_HEADER) {
 		BUFPUTSL(ob, "</th>\n");
 	} else {
 		BUFPUTSL(ob, "</td>\n");
