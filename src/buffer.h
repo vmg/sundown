@@ -17,9 +17,9 @@ extern "C" {
 #endif
 
 typedef enum {
-	BUF_OK = 0,
-	BUF_ENOMEM = -1,
-} buferror_t;
+	HOEDOWN_BUF_OK = 0,
+	HOEDOWN_BUF_ENOMEM = -1,
+} hoedown_buferror_t;
 
 /* struct hoedown_buffer: character array buffer */
 struct hoedown_buffer {
