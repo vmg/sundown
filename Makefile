@@ -35,7 +35,7 @@ SUNDOWN_SRC=\
 
 all:		libsundown.so sundown smartypants html_blocks
 
-.PHONY:		all test clean
+.PHONY:		all html_blocks test clean
 
 # libraries
 
@@ -57,7 +57,7 @@ smartypants: examples/smartypants.o $(SUNDOWN_SRC)
 html_blocks: src/html_blocks.h
 
 src/html_blocks.h: html_block_names.txt
-	gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case $^ > $@
+	gperf -N find_block_tag -H hash_block_tag -C -c -E -S 1 --ignore-case $^ > $@
 
 test: sundown
 	perl test/MarkdownTest_1.0.3/MarkdownTest.pl \

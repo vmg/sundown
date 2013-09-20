@@ -1,5 +1,5 @@
 /* C code produced by gperf version 3.0.3 */
-/* Command-line: gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case html_block_names.txt  */
+/* Command-line: gperf -N find_block_tag -H hash_block_tag -C -c -E -P -S 1 --ignore-case html_block_names.txt  */
 /* Computed positions: -k'1-2' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -120,7 +120,7 @@ hash_block_tag (str, len)
       38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
       38, 38, 38, 38, 38, 38, 38
     };
-  register int hval = len;
+  register int hval = (int)len;
 
   switch (hval)
     {
@@ -154,52 +154,93 @@ find_block_tag (str, len)
       MAX_HASH_VALUE = 37
     };
 
-  static const char * const wordlist[] =
-    {
-      "",
-      "p",
-      "dl",
-      "div",
-      "math",
-      "table",
-      "",
-      "ul",
-      "del",
-      "form",
-      "blockquote",
-      "figure",
-      "ol",
-      "fieldset",
-      "",
-      "h1",
-      "",
-      "h6",
-      "pre",
-      "", "",
-      "script",
-      "h5",
-      "noscript",
-      "",
-      "style",
-      "iframe",
-      "h4",
-      "ins",
-      "", "", "",
-      "h3",
-      "", "", "", "",
-      "h2"
-    };
-
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
       register int key = hash_block_tag (str, len);
 
-      if (key <= MAX_HASH_VALUE && key >= 0)
+      if (key <= MAX_HASH_VALUE && key >= MIN_HASH_VALUE)
         {
-          register const char *s = wordlist[key];
+          register const char *resword;
 
-          if ((((unsigned char)*str ^ (unsigned char)*s) & ~32) == 0 && !gperf_case_strncmp (str, s, len) && s[len] == '\0')
-            return s;
+          switch (key - 1)
+            {
+              case 0:
+                resword = "p";
+                goto compare;
+              case 1:
+                resword = "dl";
+                goto compare;
+              case 2:
+                resword = "div";
+                goto compare;
+              case 3:
+                resword = "math";
+                goto compare;
+              case 4:
+                resword = "table";
+                goto compare;
+              case 6:
+                resword = "ul";
+                goto compare;
+              case 7:
+                resword = "del";
+                goto compare;
+              case 8:
+                resword = "form";
+                goto compare;
+              case 9:
+                resword = "blockquote";
+                goto compare;
+              case 10:
+                resword = "figure";
+                goto compare;
+              case 11:
+                resword = "ol";
+                goto compare;
+              case 12:
+                resword = "fieldset";
+                goto compare;
+              case 14:
+                resword = "h1";
+                goto compare;
+              case 16:
+                resword = "h6";
+                goto compare;
+              case 17:
+                resword = "pre";
+                goto compare;
+              case 20:
+                resword = "script";
+                goto compare;
+              case 21:
+                resword = "h5";
+                goto compare;
+              case 22:
+                resword = "noscript";
+                goto compare;
+              case 24:
+                resword = "style";
+                goto compare;
+              case 25:
+                resword = "iframe";
+                goto compare;
+              case 26:
+                resword = "h4";
+                goto compare;
+              case 27:
+                resword = "ins";
+                goto compare;
+              case 31:
+                resword = "h3";
+                goto compare;
+              case 36:
+                resword = "h2";
+                goto compare;
+            }
+          return 0;
+        compare:
+          if ((((unsigned char)*str ^ (unsigned char)*resword) & ~32) == 0 && !gperf_case_strncmp (str, resword, len) && resword[len] == '\0')
+            return resword;
         }
     }
   return 0;
