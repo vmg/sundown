@@ -1,6 +1,4 @@
-#include "markdown.h"
 #include "html.h"
-#include "buffer.h"
 
 #include <errno.h>
 #include <getopt.h>
@@ -38,7 +36,7 @@ main(int argc, char **argv)
 	if (in != stdin)
 		fclose(in);
 
-	/* performing markdown parsing */
+	/* performing SmartyPants parsing */
 	ob = hoedown_buffer_new(OUTPUT_UNIT);
 
 	hoedown_html_smartypants(ob, ib->data, ib->size);

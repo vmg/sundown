@@ -1,6 +1,5 @@
 #include "markdown.h"
 #include "html.h"
-#include "buffer.h"
 
 #include <errno.h>
 #include <stdio.h>
