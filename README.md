@@ -53,17 +53,6 @@ Features
 	`Hoedown` is a zero-dependency library composed of 3 `.c` files and their headers.
 	No dependencies, no bullshit. Only standard C99 that builds everywhere.
 
-Credits
--------
-
-`Hoedown` is a fork of `Sundown`.
-
-`Sundown` is based on the original Upskirt parser by Natacha Porté, with many additions
-by Vicent Marti (@vmg) and contributions from the following authors:
-
-	Ben Noordhuis, Bruno Michel, Joseph Koshy, Krzysztof Kowalczyk, Samuel Bronson,
-	Shuhei Tanuma
-
 Bindings
 --------
 
@@ -95,7 +84,7 @@ Install
 -------
 
 There is nothing to install. `Hoedown` is composed of 3 `.c` files (`markdown.c`,
-`buffer.c` and `array.c`), so just throw them in your project. Zero-dependency means
+`buffer.c` and `stack.c`), so just throw them in your project. Zero-dependency means
 zero-dependency. You might want to include `render/html.c` if you want to use the
 included XHTML renderer, or write your own renderer. Either way, it's all fun and joy.
 
