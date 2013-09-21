@@ -1,4 +1,3 @@
-
 CFLAGS=/O2 /EHsc /I"src/" /I"examples"/
 CC=cl
 
@@ -8,7 +7,7 @@ HOEDOWN_SRC=\
 	src\escape.obj \
 	src\html.obj \
 	src\html_blocks.obj \
-	src\html_smartpants.obj \
+	src\html_smartypants.obj \
 	src\markdown.obj \
 	src\stack.obj
 
