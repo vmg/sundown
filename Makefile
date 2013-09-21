@@ -1,4 +1,4 @@
-CFLAGS = -c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc
+CFLAGS = -c -g -O3 -fpic -Wall -Werror -Wsign-compare -Isrc
 LDFLAGS = -g -O3 -Wall -Werror
 
 HOEDOWN_SRC=\
