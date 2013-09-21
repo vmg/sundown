@@ -1,3 +1,5 @@
+/* buffer.h - simple, fast buffers */
+
 #ifndef HOEDOWN_BUFFER_H
 #define HOEDOWN_BUFFER_H
 
@@ -15,9 +17,9 @@ extern "C" {
 #endif
 
 typedef enum {
-	BUF_OK = 0,
-	BUF_ENOMEM = -1,
-} buferror_t;
+	HOEDOWN_BUF_OK = 0,
+	HOEDOWN_BUF_ENOMEM = -1,
+} hoedown_buferror_t;
 
 /* struct hoedown_buffer: character array buffer */
 struct hoedown_buffer {
@@ -68,4 +70,4 @@ void hoedown_buffer_printf(struct hoedown_buffer *, const char *, ...) __attribu
 }
 #endif
 
-#endif
+#endif /** HOEDOWN_BUFFER_H **/

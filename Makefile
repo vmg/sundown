@@ -1,37 +1,23 @@
 # Makefile
 
-# Copyright (c) 2009, Natacha Porté
-#
-# Permission to use, copy, modify, and distribute this software for any
-# purpose with or without fee is hereby granted, provided that the above
-# copyright notice and this permission notice appear in all copies.
-#
-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
 DEPDIR=depends
 
 # "Machine-dependant" options
 #MFLAGS=-fPIC
 
-CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml
+CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc
 LDFLAGS=-g -O3 -Wall -Werror 
 
 
 HOEDOWN_SRC=\
-	src/markdown.o \
-	src/stack.o \
-	src/buffer.o \
 	src/autolink.o \
+	src/buffer.o \
 	src/escape.o \
 	src/html.o \
 	src/html_blocks.o \
-	src/html_smartypants.o
+	src/html_smartypants.o \
+	src/markdown.o \
+	src/stack.o
 
 all:		libhoedown.so hoedown smartypants html_blocks
 
@@ -64,7 +50,7 @@ test: hoedown
 
 # housekeeping
 clean:
-	rm -f src/*.o html/*.o examples/*.o
+	rm -f src/*.o examples/*.o
 	rm -f libhoedown.so libhoedown.so.1 hoedown smartypants
 	rm -f hoedown.exe smartypants.exe
 	rm -rf $(DEPDIR)
@@ -77,7 +63,7 @@ include $(wildcard $(DEPDIR)/*.d)
 
 # generic object compilations
 
-%.o:	src/%.c examples/%.c html/%.c
+%.o:	src/%.c examples/%.c
 	@mkdir -p $(DEPDIR)
 	@$(CC) -MM $< > $(DEPDIR)/$*.d
 	$(CC) $(CFLAGS) -o $@ $<

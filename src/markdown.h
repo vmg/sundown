@@ -10,44 +10,44 @@
 extern "C" {
 #endif
 
-#define HOEDOWN_VERSION "1.16.0"
-#define HOEDOWN_VER_MAJOR 1
-#define HOEDOWN_VER_MINOR 16
-#define HOEDOWN_VER_REVISION 0
+#define HOEDOWN_VERSION "0.0.1"
+#define HOEDOWN_VER_MAJOR 0
+#define HOEDOWN_VER_MINOR 0
+#define HOEDOWN_VER_REVISION 1
 
 /********************
  * TYPE DEFINITIONS *
  ********************/
 
-/* mkd_autolink - type of autolink */
-enum mkd_autolink {
-	MKDA_NOT_AUTOLINK,	/* used internally when it is not an autolink*/
-	MKDA_NORMAL,		/* normal http/http/ftp/mailto/etc link */
-	MKDA_EMAIL,			/* e-mail link without explit mailto: */
+/* hoedown_autolink - type of autolink */
+enum hoedown_autolink {
+	HOEDOWN_AUTOLINK_NONE,	/* used internally when it is not an autolink*/
+	HOEDOWN_AUTOLINK_NORMAL,		/* normal http/http/ftp/mailto/etc link */
+	HOEDOWN_AUTOLINK_EMAIL,			/* e-mail link without explit mailto: */
 };
 
-enum mkd_tableflags {
-	MKD_TABLE_ALIGN_L = 1,
-	MKD_TABLE_ALIGN_R = 2,
-	MKD_TABLE_ALIGN_CENTER = 3,
-	MKD_TABLE_ALIGNMASK = 3,
-	MKD_TABLE_HEADER = 4
+enum hoedown_tableflags {
+	HOEDOWN_TABLE_ALIGN_L = 1,
+	HOEDOWN_TABLE_ALIGN_R = 2,
+	HOEDOWN_TABLE_ALIGN_CENTER = 3,
+	HOEDOWN_TABLE_ALIGNMASK = 3,
+	HOEDOWN_TABLE_HEADER = 4
 };
 
-enum mkd_extensions {
-	MKDEXT_NO_INTRA_EMPHASIS = (1 << 0),
-	MKDEXT_TABLES = (1 << 1),
-	MKDEXT_FENCED_CODE = (1 << 2),
-	MKDEXT_AUTOLINK = (1 << 3),
-	MKDEXT_STRIKETHROUGH = (1 << 4),
-	MKDEXT_UNDERLINE = (1 << 5),
-	MKDEXT_SPACE_HEADERS = (1 << 6),
-	MKDEXT_SUPERSCRIPT = (1 << 7),
-	MKDEXT_LAX_SPACING = (1 << 8),
-	MKDEXT_DISABLE_INDENTED_CODE = (1 << 9),
-	MKDEXT_HIGHLIGHT = (1 << 10),
-	MKDEXT_FOOTNOTES = (1 << 11),
-	MKDEXT_QUOTE = (1 << 12)
+enum hoedown_extensions {
+	HOEDOWN_EXT_NO_INTRA_EMPHASIS = (1 << 0),
+	HOEDOWN_EXT_TABLES = (1 << 1),
+	HOEDOWN_EXT_FENCED_CODE = (1 << 2),
+	HOEDOWN_EXT_AUTOLINK = (1 << 3),
+	HOEDOWN_EXT_STRIKETHROUGH = (1 << 4),
+	HOEDOWN_EXT_UNDERLINE = (1 << 5),
+	HOEDOWN_EXT_SPACE_HEADERS = (1 << 6),
+	HOEDOWN_EXT_SUPERSCRIPT = (1 << 7),
+	HOEDOWN_EXT_LAX_SPACING = (1 << 8),
+	HOEDOWN_EXT_DISABLE_INDENTED_CODE = (1 << 9),
+	HOEDOWN_EXT_HIGHLIGHT = (1 << 10),
+	HOEDOWN_EXT_FOOTNOTES = (1 << 11),
+	HOEDOWN_EXT_QUOTE = (1 << 12)
 };
 
 /* hoedown_callbacks - functions for rendering parsed data */
@@ -68,7 +68,7 @@ struct hoedown_callbacks {
 	void (*footnote_def)(struct hoedown_buffer *ob, const struct hoedown_buffer *text, unsigned int num, void *opaque);
 
 	/* span level callbacks - NULL or return 0 prints the span verbatim */
-	int (*autolink)(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum mkd_autolink type, void *opaque);
+	int (*autolink)(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum hoedown_autolink type, void *opaque);
 	int (*codespan)(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque);
 	int (*double_emphasis)(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque);
 	int (*emphasis)(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque);
@@ -100,8 +100,8 @@ struct hoedown_markdown;
  *********/
 
 /* list/listitem flags */
-#define MKD_LIST_ORDERED	1
-#define MKD_LI_BLOCK		2  /* <li> containing block data */
+#define HOEDOWN_LIST_ORDERED	1
+#define HOEDOWN_LI_BLOCK	2  /* <li> containing block data */
 
 /**********************
  * EXPORTED FUNCTIONS *
@@ -127,6 +127,4 @@ hoedown_version(int *major, int *minor, int *revision);
 }
 #endif
 
-#endif
-
-/* vim: set filetype=c: */
+#endif /** HOEDOWN_MARKDOWN_H **/

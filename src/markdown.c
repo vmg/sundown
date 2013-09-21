@@ -1,12 +1,13 @@
 /* markdown.c - generic markdown parser */
 
 #include "markdown.h"
-#include "stack.h"
 
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+
+#include "stack.h"
 
 #if defined(_WIN32)
 #define strncasecmp	_strnicmp
@@ -17,7 +18,7 @@
 #define BUFFER_BLOCK 0
 #define BUFFER_SPAN 1
 
-#define MKD_LI_END 8	/* internal list flag */
+#define HOEDOWN_LI_END 8	/* internal list flag */
 
 const char *hoedown_find_block_tag(const char *str, unsigned int len);
 
@@ -367,7 +368,7 @@ is_mail_autolink(uint8_t *data, size_t size)
 
 /* tag_length • returns the length of the given tag, or 0 is it's not valid */
 static size_t
-tag_length(uint8_t *data, size_t size, enum mkd_autolink *autolink)
+tag_length(uint8_t *data, size_t size, enum hoedown_autolink *autolink)
 {
 	size_t i, j;
 
@@ -382,7 +383,7 @@ tag_length(uint8_t *data, size_t size, enum mkd_autolink *autolink)
 		return 0;
 
 	/* scheme test */
-	*autolink = MKDA_NOT_AUTOLINK;
+	*autolink = HOEDOWN_AUTOLINK_NONE;
 
 	/* try to find the beginning of an URI */
 	while (i < size && (isalnum(data[i]) || data[i] == '.' || data[i] == '+' || data[i] == '-'))
@@ -390,19 +391,19 @@ tag_length(uint8_t *data, size_t size, enum mkd_autolink *autolink)
 
 	if (i > 1 && data[i] == '@') {
 		if ((j = is_mail_autolink(data + i, size - i)) != 0) {
-			*autolink = MKDA_EMAIL;
+			*autolink = HOEDOWN_AUTOLINK_EMAIL;
 			return i + j;
 		}
 	}
 
 	if (i > 2 && data[i] == ':') {
-		*autolink = MKDA_NORMAL;
+		*autolink = HOEDOWN_AUTOLINK_NORMAL;
 		i++;
 	}
 
 	/* completing autolink test: no whitespace or ' or " */
 	if (i >= size)
-		*autolink = MKDA_NOT_AUTOLINK;
+		*autolink = HOEDOWN_AUTOLINK_NONE;
 
 	else if (*autolink) {
 		j = i;
@@ -418,7 +419,7 @@ tag_length(uint8_t *data, size_t size, enum mkd_autolink *autolink)
 		if (i >= size) return 0;
 		if (i > j && data[i] == '>') return i + 1;
 		/* one of the forbidden chars has been found */
-		*autolink = MKDA_NOT_AUTOLINK;
+		*autolink = HOEDOWN_AUTOLINK_NONE;
 	}
 
 	/* looking for sometinhg looking like a tag end */
@@ -577,7 +578,7 @@ parse_emph1(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *d
 
 		if (data[i] == c && !_isspace(data[i - 1])) {
 
-			if (rndr->ext_flags & MKDEXT_NO_INTRA_EMPHASIS) {
+			if (rndr->ext_flags & HOEDOWN_EXT_NO_INTRA_EMPHASIS) {
 				if (i + 1 < size && isalnum(data[i + 1]))
 					continue;
 			}
@@ -585,7 +586,7 @@ parse_emph1(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *d
 			work = rndr_newbuf(rndr, BUFFER_SPAN);
 			parse_inline(work, rndr, data, i);
 
-			if (rndr->ext_flags & MKDEXT_UNDERLINE && c == '_')
+			if (rndr->ext_flags & HOEDOWN_EXT_UNDERLINE && c == '_')
 				r = rndr->cb.underline(ob, work, rndr->opaque);
 			else
 				r = rndr->cb.emphasis(ob, work, rndr->opaque);
@@ -679,7 +680,7 @@ char_emphasis(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t 
 	uint8_t c = data[0];
 	size_t ret;
 
-	if (rndr->ext_flags & MKDEXT_NO_INTRA_EMPHASIS) {
+	if (rndr->ext_flags & HOEDOWN_EXT_NO_INTRA_EMPHASIS) {
 		if (offset > 0 && !_isspace(data[-1]) && data[-1] != '>' && data[-1] != '(')
 			return 0;
 	}
@@ -868,13 +869,13 @@ char_entity(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *d
 static size_t
 char_langle_tag(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *data, size_t offset, size_t size)
 {
-	enum mkd_autolink altype = MKDA_NOT_AUTOLINK;
+	enum hoedown_autolink altype = HOEDOWN_AUTOLINK_NONE;
 	size_t end = tag_length(data, size, &altype);
 	struct hoedown_buffer work = { data, end, 0, 0 };
 	int ret = 0;
 
 	if (end > 2) {
-		if (rndr->cb.autolink && altype != MKDA_NOT_AUTOLINK) {
+		if (rndr->cb.autolink && altype != HOEDOWN_AUTOLINK_NONE) {
 			struct hoedown_buffer *u_link = rndr_newbuf(rndr, BUFFER_SPAN);
 			work.data = data + 1;
 			work.size = end - 2;
@@ -935,7 +936,7 @@ char_autolink_email(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, ui
 
 	if ((link_len = hoedown_autolink__email(&rewind, link, data, offset, size, 0)) > 0) {
 		ob->size -= rewind;
-		rndr->cb.autolink(ob, link, MKDA_EMAIL, rndr->opaque);
+		rndr->cb.autolink(ob, link, HOEDOWN_AUTOLINK_EMAIL, rndr->opaque);
 	}
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
@@ -955,7 +956,7 @@ char_autolink_url(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint
 
 	if ((link_len = hoedown_autolink__url(&rewind, link, data, offset, size, 0)) > 0) {
 		ob->size -= rewind;
-		rndr->cb.autolink(ob, link, MKDA_NORMAL, rndr->opaque);
+		rndr->cb.autolink(ob, link, HOEDOWN_AUTOLINK_NORMAL, rndr->opaque);
 	}
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
@@ -1005,7 +1006,7 @@ char_link(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *dat
 	i++;
 	
 	/* footnote link */
-	if (rndr->ext_flags & MKDEXT_FOOTNOTES && data[1] == '^') {
+	if (rndr->ext_flags & HOEDOWN_EXT_FOOTNOTES && data[1] == '^') {
 		if (txt_e < 3)
 			goto cleanup;
 	
@@ -1415,7 +1416,7 @@ is_atxheader(struct hoedown_markdown *rndr, uint8_t *data, size_t size)
 	if (data[0] != '#')
 		return 0;
 
-	if (rndr->ext_flags & MKDEXT_SPACE_HEADERS) {
+	if (rndr->ext_flags & HOEDOWN_EXT_SPACE_HEADERS) {
 		size_t level = 0;
 
 		while (level < size && level < 6 && data[level] == '#')
@@ -1622,7 +1623,7 @@ parse_paragraph(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_
 		 * let's check to see if there's some kind of block starting
 		 * here
 		 */
-		if ((rndr->ext_flags & MKDEXT_LAX_SPACING) && !isalnum(data[i])) {
+		if ((rndr->ext_flags & HOEDOWN_EXT_LAX_SPACING) && !isalnum(data[i])) {
 			if (prefix_oli(data + i, size - i) ||
 				prefix_uli(data + i, size - i)) {
 				end = i;
@@ -1637,7 +1638,7 @@ parse_paragraph(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_
 			}
 
 			/* see if a code fence starts here */
-			if ((rndr->ext_flags & MKDEXT_FENCED_CODE) != 0 &&
+			if ((rndr->ext_flags & HOEDOWN_EXT_FENCED_CODE) != 0 &&
 				is_codefence(data + i, size - i, NULL) != 0) {
 				end = i;
 				break;
@@ -1840,7 +1841,7 @@ parse_listitem(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t
 
 		pre = i;
 
-		if (rndr->ext_flags & MKDEXT_FENCED_CODE) {
+		if (rndr->ext_flags & HOEDOWN_EXT_FENCED_CODE) {
 			if (is_codefence(data + beg + i, end - beg - i, NULL) != 0)
 				in_fence = !in_fence;
 		}
@@ -1854,9 +1855,9 @@ parse_listitem(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t
 
 		/* checking for ul/ol switch */
 		if (in_empty && (
-			((*flags & MKD_LIST_ORDERED) && has_next_uli) ||
-			(!(*flags & MKD_LIST_ORDERED) && has_next_oli))){
-			*flags |= MKD_LI_END;
+			((*flags & HOEDOWN_LIST_ORDERED) && has_next_uli) ||
+			(!(*flags & HOEDOWN_LIST_ORDERED) && has_next_oli))){
+			*flags |= HOEDOWN_LI_END;
 			break; /* the following item must have same list type */
 		}
 
@@ -1875,7 +1876,7 @@ parse_listitem(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t
 		 * note that now we only require 1 space of indentation
 		 * to continue a list */
 		else if (in_empty && pre == 0) {
-			*flags |= MKD_LI_END;
+			*flags |= HOEDOWN_LI_END;
 			break;
 		}
 		else if (in_empty) {
@@ -1892,9 +1893,9 @@ parse_listitem(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t
 
 	/* render of li contents */
 	if (has_inside_empty)
-		*flags |= MKD_LI_BLOCK;
+		*flags |= HOEDOWN_LI_BLOCK;
 
-	if (*flags & MKD_LI_BLOCK) {
+	if (*flags & HOEDOWN_LI_BLOCK) {
 		/* intermediate render of block li */
 		if (sublist && sublist < work->size) {
 			parse_block(inter, rndr, work->data, sublist);
@@ -1935,7 +1936,7 @@ parse_list(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *da
 		j = parse_listitem(work, rndr, data + i, size - i, &flags);
 		i += j;
 
-		if (!j || (flags & MKD_LI_END))
+		if (!j || (flags & HOEDOWN_LI_END))
 			break;
 	}
 
@@ -2285,7 +2286,7 @@ parse_table_header(
 			i++;
 
 		if (data[i] == ':') {
-			i++; (*column_data)[col] |= MKD_TABLE_ALIGN_L;
+			i++; (*column_data)[col] |= HOEDOWN_TABLE_ALIGN_L;
 			dashes++;
 		}
 
@@ -2294,7 +2295,7 @@ parse_table_header(
 		}
 
 		if (i < under_end && data[i] == ':') {
-			i++; (*column_data)[col] |= MKD_TABLE_ALIGN_R;
+			i++; (*column_data)[col] |= HOEDOWN_TABLE_ALIGN_R;
 			dashes++;
 		}
 
@@ -2318,7 +2319,7 @@ parse_table_header(
 		header_end,
 		*columns,
 		*column_data,
-		MKD_TABLE_HEADER
+		HOEDOWN_TABLE_HEADER
 	);
 
 	return under_end + 1;
@@ -2418,25 +2419,25 @@ parse_block(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *d
 			beg++;
 		}
 
-		else if ((rndr->ext_flags & MKDEXT_FENCED_CODE) != 0 &&
+		else if ((rndr->ext_flags & HOEDOWN_EXT_FENCED_CODE) != 0 &&
 			(i = parse_fencedcode(ob, rndr, txt_data, end)) != 0)
 			beg += i;
 
-		else if ((rndr->ext_flags & MKDEXT_TABLES) != 0 &&
+		else if ((rndr->ext_flags & HOEDOWN_EXT_TABLES) != 0 &&
 			(i = parse_table(ob, rndr, txt_data, end)) != 0)
 			beg += i;
 
 		else if (prefix_quote(txt_data, end))
 			beg += parse_blockquote(ob, rndr, txt_data, end);
 
-		else if (!(rndr->ext_flags & MKDEXT_DISABLE_INDENTED_CODE) && prefix_code(txt_data, end))
+		else if (!(rndr->ext_flags & HOEDOWN_EXT_DISABLE_INDENTED_CODE) && prefix_code(txt_data, end))
 			beg += parse_blockcode(ob, rndr, txt_data, end);
 
 		else if (prefix_uli(txt_data, end))
 			beg += parse_list(ob, rndr, txt_data, end, 0);
 
 		else if (prefix_oli(txt_data, end))
-			beg += parse_list(ob, rndr, txt_data, end, MKD_LIST_ORDERED);
+			beg += parse_list(ob, rndr, txt_data, end, HOEDOWN_LIST_ORDERED);
 
 		else
 			beg += parse_paragraph(ob, rndr, txt_data, end);
@@ -2722,9 +2723,9 @@ hoedown_markdown_new(
 	if (md->cb.emphasis || md->cb.double_emphasis || md->cb.triple_emphasis) {
 		md->active_char['*'] = MD_CHAR_EMPHASIS;
 		md->active_char['_'] = MD_CHAR_EMPHASIS;
-		if (extensions & MKDEXT_STRIKETHROUGH)
+		if (extensions & HOEDOWN_EXT_STRIKETHROUGH)
 			md->active_char['~'] = MD_CHAR_EMPHASIS;
-		if (extensions & MKDEXT_HIGHLIGHT)
+		if (extensions & HOEDOWN_EXT_HIGHLIGHT)
 			md->active_char['='] = MD_CHAR_EMPHASIS;
 	}
 
@@ -2741,16 +2742,16 @@ hoedown_markdown_new(
 	md->active_char['\\'] = MD_CHAR_ESCAPE;
 	md->active_char['&'] = MD_CHAR_ENTITITY;
 
-	if (extensions & MKDEXT_AUTOLINK) {
+	if (extensions & HOEDOWN_EXT_AUTOLINK) {
 		md->active_char[':'] = MD_CHAR_AUTOLINK_URL;
 		md->active_char['@'] = MD_CHAR_AUTOLINK_EMAIL;
 		md->active_char['w'] = MD_CHAR_AUTOLINK_WWW;
 	}
 
-	if (extensions & MKDEXT_SUPERSCRIPT)
+	if (extensions & HOEDOWN_EXT_SUPERSCRIPT)
 		md->active_char['^'] = MD_CHAR_SUPERSCRIPT;
 
-	if (extensions & MKDEXT_QUOTE)
+	if (extensions & HOEDOWN_EXT_QUOTE)
 		md->active_char['"'] = MD_CHAR_QUOTE;
 
 	/* Extension data */
@@ -2781,7 +2782,7 @@ hoedown_markdown_render(struct hoedown_buffer *ob, const uint8_t *document, size
 	/* reset the references table */
 	memset(&md->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
 	
-	int footnotes_enabled = md->ext_flags & MKDEXT_FOOTNOTES;
+	int footnotes_enabled = md->ext_flags & HOEDOWN_EXT_FOOTNOTES;
 	
 	/* reset the footnotes lists */
 	if (footnotes_enabled) {
@@ -2879,5 +2880,3 @@ hoedown_version(int *ver_major, int *ver_minor, int *ver_revision)
 	*ver_minor = HOEDOWN_VER_MINOR;
 	*ver_revision = HOEDOWN_VER_REVISION;
 }
-
-/* vim: set filetype=c: */

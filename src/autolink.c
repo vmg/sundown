@@ -1,4 +1,3 @@
-#include "buffer.h"
 #include "autolink.h"
 
 #include <string.h>
@@ -278,4 +277,3 @@ hoedown_autolink__url(
 
 	return link_end;
 }
-

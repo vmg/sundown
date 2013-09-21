@@ -1,4 +1,3 @@
-#include "buffer.h"
 #include "html.h"
 
 #include <string.h>
@@ -313,7 +312,7 @@ smartypants_cb__ltag(struct hoedown_buffer *ob, struct smartypants_data *smrt, u
 		i++;
 
 	for (tag = 0; tag < skip_tags_count; ++tag) {
-		if (hoedown_html_is_tag(text, size, skip_tags[tag]) == HTML_TAG_OPEN)
+		if (hoedown_html_is_tag(text, size, skip_tags[tag]) == HOEDOWN_HTML_TAG_OPEN)
 			break;
 	}
 
@@ -325,7 +324,7 @@ smartypants_cb__ltag(struct hoedown_buffer *ob, struct smartypants_data *smrt, u
 			if (i == size)
 				break;
 
-			if (hoedown_html_is_tag(text + i, size - i, skip_tags[tag]) == HTML_TAG_CLOSE)
+			if (hoedown_html_is_tag(text + i, size - i, skip_tags[tag]) == HOEDOWN_HTML_TAG_CLOSE)
 				break;
 
 			i++;
@@ -419,5 +418,3 @@ hoedown_html_smartypants(struct hoedown_buffer *ob, const uint8_t *text, size_t 
 		}
 	}
 }
-
-

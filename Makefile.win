@@ -1,14 +1,16 @@
 
-CFLAGS=/O2 /EHsc /I"src/" /I"examples"/ /I"html"/
+CFLAGS=/O2 /EHsc /I"src/" /I"examples"/
 CC=cl
 
 HOEDOWN_SRC=\
-	src\markdown.obj \
-	src\stack.obj \
-	src\buffer.obj \
 	src\autolink.obj \
-	html\escape.obj \
-	html\html.obj
+	src\buffer.obj \
+	src\escape.obj \
+	src\html.obj \
+	src\html_blocks.obj \
+	src\html_smartpants.obj \
+	src\markdown.obj \
+	src\stack.obj
 
 all: hoedown.dll hoedown.exe
 

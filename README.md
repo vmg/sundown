@@ -30,11 +30,11 @@ Features
 
 *	**Tested & Ready to be used on production**
 
-	`Sundown` has been extensively security audited, and includes protection against
+	`Hoedown` has been extensively security audited, and includes protection against
 	all possible DOS attacks (stack overflows, out of memory situations, malformed
 	Markdown syntax...) and against client attacks through malicious embedded HTML.
 
-	We've worked very hard to make `Hoedown` never crash or run out of memory
+	We've worked very hard to make `Hoedown` never crash or run out of memory
 	under *any* input. `Hoedown` renders all the Markdown content in GitHub and so
 	far hasn't crashed a single time.
 
@@ -52,44 +52,21 @@ Features
 
 *	**Zero-dependency**
 
-	`Hoedown` is a zero-dependency library composed of 3 `.c` files and their headers.
+	`Hoedown` is a zero-dependency library composed of 4 `.c` files and their headers.
 	No dependencies, no bullshit. Only standard C99 that builds everywhere.
-
-Credits
--------
-
-`Hoedown` is a fork of `Sundown`.
-
-`Sundown` is based on the original Upskirt parser by Natacha Porté, with many additions
-by Vicent Marti (@vmg) and contributions from the following authors:
-
-	Ben Noordhuis, Bruno Michel, Joseph Koshy, Krzysztof Kowalczyk, Samuel Bronson,
-	Shuhei Tanuma
 
 Bindings
 --------
 
-`Hoedown` is available from other programming languages thanks to these bindings developed
-by our awesome contributors.
-
-- [Redcarpet](https://github.com/vmg/redcarpet) (Ruby)
-- [RobotSkirt](https://github.com/benmills/robotskirt) (Node.js)
-- [Misaka](https://github.com/FSX/misaka) (Python)
-- [ffi-sundown](https://github.com/postmodern/ffi-sundown) (Ruby FFI)
-- [Sundown HS](https://github.com/bitonic/sundown) (Haskell)
-- [Goskirt](https://github.com/madari/goskirt) (Go)
-- [Upskirt.go](https://github.com/buu700/upskirt.go) (Go)
-- [MoonShine](https://github.com/brandonc/moonshine) (.NET)
-- [PHP-Sundown](https://github.com/chobie/php-sundown) (PHP)
-- [Sundown.net](https://github.com/txdv/sundown.net) (.NET)
+You can see a community-maintained list of `Hoedown` bindings at
+[the wiki](https://github.com/devinus/hoedown/wiki/Bindings).
 
 Help us
 -------
 
 `Hoedown` is all about security. If you find a (potential) security vulnerability in the
 library, or a way to make it crash through malicious input, please report it to us,
-either directly via email or by opening an Issue on GitHub, and help make the web safer
-for everybody.
+by leaving an Issue at <https://github.com/devinus/hoedown/issues/new>.
 
 Unicode character handling
 --------------------------
@@ -107,31 +84,13 @@ features:
 Install
 -------
 
-There is nothing to install. `Hoedown` is composed of 3 `.c` files (`markdown.c`,
-`buffer.c` and `array.c`), so just throw them in your project. Zero-dependency means
-zero-dependency. You might want to include `render/html.c` if you want to use the
-included XHTML renderer, or write your own renderer. Either way, it's all fun and joy.
+There is nothing to install. `Hoedown` is composed of 4 `.c` files (`markdown.c`,
+`buffer.c`, `stack.c`, and `autolink.c`) and their headers, so just throw them in your
+project. Zero-dependency means zero-dependency. You might want to include `html.c`,
+`html_smartypants.c` and `escape.c` if you want to use the included XHTML renderer, or
+write your own renderer. Either way, it's all fun and joy.
 
 If you are hardcore, you can use the included `Makefile` to build `Hoedown` into a dynamic
-library, or to build the sample `sundown` executable, which is just a commandline
+library, or to build the sample `hoedown` executable, which is just a commandline
 Markdown to XHTML parser. (If gcc gives you grief about `-fPIC`, e.g. with MinGW, try
 `make MFLAGS=` instead of just `make`.)
-
-License
--------
-
-Permission to use, copy, modify, and distribute this software for any
-purpose with or without fee is hereby granted, provided that the above
-copyright notice and this permission notice appear in all copies.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-<!-- Local Variables: -->
-<!-- fill-column: 89 -->
-<!-- End: -->

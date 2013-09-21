@@ -41,10 +41,10 @@ hoedown_buffer_grow(struct hoedown_buffer *buf, size_t neosz)
 	assert(buf && buf->unit);
 
 	if (neosz > BUFFER_MAX_ALLOC_SIZE)
-		return BUF_ENOMEM;
+		return HOEDOWN_BUF_ENOMEM;
 
 	if (buf->asize >= neosz)
-		return BUF_OK;
+		return HOEDOWN_BUF_OK;
 
 	neoasz = buf->asize + buf->unit;
 	while (neoasz < neosz)
@@ -52,11 +52,11 @@ hoedown_buffer_grow(struct hoedown_buffer *buf, size_t neosz)
 
 	neodata = realloc(buf->data, neoasz);
 	if (!neodata)
-		return BUF_ENOMEM;
+		return HOEDOWN_BUF_ENOMEM;
 
 	buf->data = neodata;
 	buf->asize = neoasz;
-	return BUF_OK;
+	return HOEDOWN_BUF_OK;
 }
 
 
@@ -205,4 +205,3 @@ hoedown_buffer_slurp(struct hoedown_buffer *buf, size_t len)
 	buf->size -= len;
 	memmove(buf->data, buf->data + len, buf->size);
 }
-

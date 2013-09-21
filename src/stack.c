@@ -1,4 +1,5 @@
 #include "stack.h"
+
 #include <string.h>
 
 int
@@ -78,4 +79,3 @@ hoedown_stack_top(struct hoedown_stack *st)
 
 	return st->item[st->size - 1];
 }
-

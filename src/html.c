@@ -1,4 +1,3 @@
-#include "markdown.h"
 #include "html.h"
 
 #include <string.h>
@@ -8,7 +7,7 @@
 
 #include "escape.h"
 
-#define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
+#define USE_XHTML(opt) (opt->flags & HOEDOWN_HTML_USE_XHTML)
 
 int
 hoedown_html_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
@@ -17,7 +16,7 @@ hoedown_html_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagnam
 	int closed = 0;
 
 	if (tag_size < 3 || tag_data[0] != '<')
-		return HTML_TAG_NONE;
+		return HOEDOWN_HTML_TAG_NONE;
 
 	i = 1;
 
@@ -31,16 +30,16 @@ hoedown_html_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagnam
 			break;
 
 		if (tag_data[i] != *tagname)
-			return HTML_TAG_NONE;
+			return HOEDOWN_HTML_TAG_NONE;
 	}
 
 	if (i == tag_size)
-		return HTML_TAG_NONE;
+		return HOEDOWN_HTML_TAG_NONE;
 
 	if (isspace(tag_data[i]) || tag_data[i] == '>')
-		return closed ? HTML_TAG_CLOSE : HTML_TAG_OPEN;
+		return closed ? HOEDOWN_HTML_TAG_CLOSE : HOEDOWN_HTML_TAG_OPEN;
 
-	return HTML_TAG_NONE;
+	return HOEDOWN_HTML_TAG_NONE;
 }
 
 static inline void escape_html(struct hoedown_buffer *ob, const uint8_t *source, size_t length)
@@ -57,20 +56,20 @@ static inline void escape_href(struct hoedown_buffer *ob, const uint8_t *source,
  * GENERIC RENDERER *
  ********************/
 static int
-rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum mkd_autolink type, void *opaque)
+rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum hoedown_autolink type, void *opaque)
 {
 	struct hoedown_html_renderopt *options = opaque;
 
 	if (!link || !link->size)
 		return 0;
 
-	if ((options->flags & HTML_SAFELINK) != 0 &&
+	if ((options->flags & HOEDOWN_HTML_SAFELINK) != 0 &&
 		!hoedown_autolink_issafe(link->data, link->size) &&
-		type != MKDA_EMAIL)
+		type != HOEDOWN_AUTOLINK_EMAIL)
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
-	if (type == MKDA_EMAIL)
+	if (type == HOEDOWN_AUTOLINK_EMAIL)
 		BUFPUTSL(ob, "mailto:");
 	escape_href(ob, link->data, link->size);
 
@@ -107,7 +106,7 @@ rndr_blockcode(struct hoedown_buffer *ob, const struct hoedown_buffer *text, con
 
 	if (lang && lang->size) {
 		size_t i, cls = 0;
-		if (options->flags & HTML_PRETTIFY) {
+		if (options->flags & HOEDOWN_HTML_PRETTIFY) {
 			BUFPUTSL(ob, "<pre><code class=\"prettyprint");
 			cls++;
 		} else {
@@ -132,7 +131,7 @@ rndr_blockcode(struct hoedown_buffer *ob, const struct hoedown_buffer *text, con
 		}
 
 		BUFPUTSL(ob, "\">");
-	} else if (options->flags & HTML_PRETTIFY) {
+	} else if (options->flags & HOEDOWN_HTML_PRETTIFY) {
 		BUFPUTSL(ob, "<pre><code class=\"prettyprint\">");
 	} else {
 		BUFPUTSL(ob, "<pre><code>");
@@ -157,7 +156,7 @@ static int
 rndr_codespan(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void *opaque)
 {
 	struct hoedown_html_renderopt *options = opaque;
-	if (options->flags & HTML_PRETTIFY)
+	if (options->flags & HOEDOWN_HTML_PRETTIFY)
 		BUFPUTSL(ob, "<code class=\"prettyprint\">");
 	else
 		BUFPUTSL(ob, "<code>");
@@ -256,7 +255,7 @@ rndr_header(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int le
 	if (ob->size)
 		hoedown_buffer_putc(ob, '\n');
 
-	if ((options->flags & HTML_TOC) && (level <= options->toc_data.nesting_level))
+	if ((options->flags & HOEDOWN_HTML_TOC) && (level <= options->toc_data.nesting_level))
 		hoedown_buffer_printf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
 	else
 		hoedown_buffer_printf(ob, "<h%d>", level);
@@ -270,7 +269,7 @@ rndr_link(struct hoedown_buffer *ob, const struct hoedown_buffer *link, const st
 {
 	struct hoedown_html_renderopt *options = opaque;
 
-	if (link != NULL && (options->flags & HTML_SAFELINK) != 0 && !hoedown_autolink_issafe(link->data, link->size))
+	if (link != NULL && (options->flags & HOEDOWN_HTML_SAFELINK) != 0 && !hoedown_autolink_issafe(link->data, link->size))
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
@@ -300,9 +299,9 @@ static void
 rndr_list(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
-	hoedown_buffer_put(ob, flags & MKD_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
+	hoedown_buffer_put(ob, flags & HOEDOWN_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
 	if (text) hoedown_buffer_put(ob, text->data, text->size);
-	hoedown_buffer_put(ob, flags & MKD_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
+	hoedown_buffer_put(ob, flags & HOEDOWN_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
 }
 
 static void
@@ -336,7 +335,7 @@ rndr_paragraph(struct hoedown_buffer *ob, const struct hoedown_buffer *text, voi
 		return;
 
 	BUFPUTSL(ob, "<p>");
-	if (options->flags & HTML_HARD_WRAP) {
+	if (options->flags & HOEDOWN_HTML_HARD_WRAP) {
 		size_t org;
 		while (i < text->size) {
 			org = i;
@@ -423,23 +422,23 @@ rndr_raw_html(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void
 
 	/* HTML_ESCAPE overrides SKIP_HTML, SKIP_STYLE, SKIP_LINKS and SKIP_IMAGES
 	* It doens't see if there are any valid tags, just escape all of them. */
-	if((options->flags & HTML_ESCAPE) != 0) {
+	if((options->flags & HOEDOWN_HTML_ESCAPE) != 0) {
 		escape_html(ob, text->data, text->size);
 		return 1;
 	}
 
-	if ((options->flags & HTML_SKIP_HTML) != 0)
+	if ((options->flags & HOEDOWN_HTML_SKIP_HTML) != 0)
 		return 1;
 
-	if ((options->flags & HTML_SKIP_STYLE) != 0 &&
+	if ((options->flags & HOEDOWN_HTML_SKIP_STYLE) != 0 &&
 		hoedown_html_is_tag(text->data, text->size, "style"))
 		return 1;
 
-	if ((options->flags & HTML_SKIP_LINKS) != 0 &&
+	if ((options->flags & HOEDOWN_HTML_SKIP_LINKS) != 0 &&
 		hoedown_html_is_tag(text->data, text->size, "a"))
 		return 1;
 
-	if ((options->flags & HTML_SKIP_IMAGES) != 0 &&
+	if ((options->flags & HOEDOWN_HTML_SKIP_IMAGES) != 0 &&
 		hoedown_html_is_tag(text->data, text->size, "img"))
 		return 1;
 
@@ -472,22 +471,22 @@ rndr_tablerow(struct hoedown_buffer *ob, const struct hoedown_buffer *text, void
 static void
 rndr_tablecell(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int flags, void *opaque)
 {
-	if (flags & MKD_TABLE_HEADER) {
+	if (flags & HOEDOWN_TABLE_HEADER) {
 		BUFPUTSL(ob, "<th");
 	} else {
 		BUFPUTSL(ob, "<td");
 	}
 
-	switch (flags & MKD_TABLE_ALIGNMASK) {
-	case MKD_TABLE_ALIGN_CENTER:
+	switch (flags & HOEDOWN_TABLE_ALIGNMASK) {
+	case HOEDOWN_TABLE_ALIGN_CENTER:
 		BUFPUTSL(ob, " style=\"text-align: center\">");
 		break;
 
-	case MKD_TABLE_ALIGN_L:
+	case HOEDOWN_TABLE_ALIGN_L:
 		BUFPUTSL(ob, " style=\"text-align: left\">");
 		break;
 
-	case MKD_TABLE_ALIGN_R:
+	case HOEDOWN_TABLE_ALIGN_R:
 		BUFPUTSL(ob, " style=\"text-align: right\">");
 		break;
 
@@ -498,7 +497,7 @@ rndr_tablecell(struct hoedown_buffer *ob, const struct hoedown_buffer *text, int
 	if (text)
 		hoedown_buffer_put(ob, text->data, text->size);
 
-	if (flags & MKD_TABLE_HEADER) {
+	if (flags & HOEDOWN_TABLE_HEADER) {
 		BUFPUTSL(ob, "</th>\n");
 	} else {
 		BUFPUTSL(ob, "</td>\n");
@@ -671,7 +670,7 @@ hoedown_html_toc_renderer(struct hoedown_callbacks *callbacks, struct hoedown_ht
 	};
 
 	memset(options, 0x0, sizeof(struct hoedown_html_renderopt));
-	options->flags = HTML_TOC;
+	options->flags = HOEDOWN_HTML_TOC;
 	options->toc_data.nesting_level = nesting_level;
 
 	memcpy(callbacks, &cb_default, sizeof(struct hoedown_callbacks));
@@ -725,14 +724,14 @@ hoedown_html_renderer(struct hoedown_callbacks *callbacks, struct hoedown_html_r
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct hoedown_callbacks));
 
-	if (render_flags & HTML_SKIP_IMAGES)
+	if (render_flags & HOEDOWN_HTML_SKIP_IMAGES)
 		callbacks->image = NULL;
 
-	if (render_flags & HTML_SKIP_LINKS) {
+	if (render_flags & HOEDOWN_HTML_SKIP_LINKS) {
 		callbacks->link = NULL;
 		callbacks->autolink = NULL;
 	}
 
-	if (render_flags & HTML_SKIP_HTML || render_flags & HTML_ESCAPE)
+	if (render_flags & HOEDOWN_HTML_SKIP_HTML || render_flags & HOEDOWN_HTML_ESCAPE)
 		callbacks->blockhtml = NULL;
 }
