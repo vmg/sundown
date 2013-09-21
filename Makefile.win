@@ -7,6 +7,7 @@ HOEDOWN_SRC=\
 	src\buffer.obj \
 	src\escape.obj \
 	src\html.obj \
+	src\html_blocks.obj \
 	src\html_smartpants.obj \
 	src\markdown.obj \
 	src\stack.obj

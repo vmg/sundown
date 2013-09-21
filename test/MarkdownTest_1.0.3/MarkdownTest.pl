@@ -102,6 +102,7 @@ my $time_end = new Benchmark;
 my $time_diff = timediff($time_end, $time_start);
 print "Benchmark: ", timestr($time_diff), "\n";
 
+exit 1 if $tests_failed;
 
 __END__
 

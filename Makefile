@@ -14,6 +14,7 @@ HOEDOWN_SRC=\
 	src/buffer.o \
 	src/escape.o \
 	src/html.o \
+	src/html_blocks.o \
 	src/html_smartypants.o \
 	src/markdown.o \
 	src/stack.o
@@ -39,10 +40,9 @@ smartypants: examples/smartypants.o $(HOEDOWN_SRC)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # perfect hashing
-html_blocks: src/html_blocks.h
 
-src/html_blocks.h: html_block_names.txt
-	gperf -N hoedown_find_block_tag -H hash_block_tag -C -c -E -S 1 --ignore-case $^ > $@
+src/html_blocks.c: html_block_names.gperf
+	gperf -L ANSI-C -N hoedown_find_block_tag -c -C -E -S 1 --ignore-case -m100 $^ > $@
 
 test: hoedown
 	perl test/MarkdownTest_1.0.3/MarkdownTest.pl \
