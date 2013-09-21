@@ -10,7 +10,7 @@
 #endif
 
 int
-hoedown_autolink_issafe(const uint8_t *link, size_t link_len)
+hoedown_autolink_is_safe(const uint8_t *link, size_t link_len)
 {
 	static const size_t valid_uris_count = 5;
 	static const char *valid_uris[] = {
@@ -250,7 +250,7 @@ hoedown_autolink__url(
 	while (rewind < max_rewind && isalpha(data[-rewind - 1]))
 		rewind++;
 
-	if (!hoedown_autolink_issafe(data - rewind, size + rewind))
+	if (!hoedown_autolink_is_safe(data - rewind, size + rewind))
 		return 0;
 
 	link_end = strlen("://");

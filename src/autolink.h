@@ -14,7 +14,7 @@ enum {
 };
 
 int
-hoedown_autolink_issafe(const uint8_t *link, size_t link_len);
+hoedown_autolink_is_safe(const uint8_t *link, size_t link_len);
 
 size_t
 hoedown_autolink__www(size_t *rewind_p, struct hoedown_buffer *link,
