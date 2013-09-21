@@ -91,5 +91,5 @@ write your own renderer. Either way, it's all fun and joy.
 
 If you are hardcore, you can use the included `Makefile` to build `Hoedown` into a dynamic
 library, or to build the sample `hoedown` executable, which is just a commandline
-Markdown to XHTML parser. (If gcc gives you grief about `-fPIC`, e.g. with MinGW, try
-`make MFLAGS=` instead of just `make`.)
+Markdown to XHTML parser. (If your compiler gives you grief about `-fPIC`, e.g. with MinGW,
+try disabling that flag.)
