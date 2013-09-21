@@ -64,7 +64,7 @@ rndr_autolink(struct hoedown_buffer *ob, const struct hoedown_buffer *link, enum
 		return 0;
 
 	if ((options->flags & HOEDOWN_HTML_SAFELINK) != 0 &&
-		!hoedown_autolink_issafe(link->data, link->size) &&
+		!hoedown_autolink_is_safe(link->data, link->size) &&
 		type != HOEDOWN_AUTOLINK_EMAIL)
 		return 0;
 
@@ -269,7 +269,7 @@ rndr_link(struct hoedown_buffer *ob, const struct hoedown_buffer *link, const st
 {
 	struct hoedown_html_renderopt *options = opaque;
 
-	if (link != NULL && (options->flags & HOEDOWN_HTML_SAFELINK) != 0 && !hoedown_autolink_issafe(link->data, link->size))
+	if (link != NULL && (options->flags & HOEDOWN_HTML_SAFELINK) != 0 && !hoedown_autolink_is_safe(link->data, link->size))
 		return 0;
 
 	BUFPUTSL(ob, "<a href=\"");
