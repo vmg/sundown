@@ -35,8 +35,7 @@ Features
 	Markdown syntax...) and against client attacks through malicious embedded HTML.
 
 	We've worked very hard to make `Hoedown` never crash or run out of memory
-	under *any* input. `Hoedown` renders all the Markdown content in GitHub and so
-	far hasn't crashed a single time.
+	under *any* input.
 
 *	**Customizable renderers**
 
