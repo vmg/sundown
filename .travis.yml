@@ -4,4 +4,4 @@ compiler:
   - gcc
 perl:
   - "5.12"
-script: "make test"
+script: make test
