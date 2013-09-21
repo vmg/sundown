@@ -2715,8 +2715,8 @@ hoedown_markdown_new(
 
 	memcpy(&md->cb, callbacks, sizeof(struct hoedown_callbacks));
 
-	hoedown_stack_init(&md->work_bufs[BUFFER_BLOCK], 4);
-	hoedown_stack_init(&md->work_bufs[BUFFER_SPAN], 8);
+	hoedown_stack_new(&md->work_bufs[BUFFER_BLOCK], 4);
+	hoedown_stack_new(&md->work_bufs[BUFFER_SPAN], 8);
 
 	memset(md->active_char, 0x0, 256);
 

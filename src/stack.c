@@ -40,7 +40,7 @@ hoedown_stack_free(struct hoedown_stack *st)
 }
 
 int
-hoedown_stack_init(struct hoedown_stack *st, size_t initial_size)
+hoedown_stack_new(struct hoedown_stack *st, size_t initial_size)
 {
 	st->item = NULL;
 	st->size = 0;
