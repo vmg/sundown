@@ -57,7 +57,6 @@ hoedown_escape_href(struct hoedown_buffer *ob, const uint8_t *src, size_t size)
 	size_t  i = 0, org;
 	char hex_str[3];
 
-	hoedown_buffer_grow(ob, ESCAPE_GROW_FACTOR(size));
 	hex_str[0] = '%';
 
 	while (i < size) {
@@ -65,8 +64,18 @@ hoedown_escape_href(struct hoedown_buffer *ob, const uint8_t *src, size_t size)
 		while (i < size && HREF_SAFE[src[i]] != 0)
 			i++;
 
-		if (i > org)
+		if (i > org) {
+			if (org == 0) {
+				if (i >= size) {
+					hoedown_buffer_put(ob, src, size);
+					return;
+				}
+
+				hoedown_buffer_grow(ob, ESCAPE_GROW_FACTOR(size));
+			}
+
 			hoedown_buffer_put(ob, src + org, i - org);
+		}
 
 		/* escaping */
 		if (i >= size)
@@ -152,15 +161,23 @@ hoedown_escape_html(struct hoedown_buffer *ob, const uint8_t *src, size_t size, 
 {
 	size_t i = 0, org, esc = 0;
 
-	hoedown_buffer_grow(ob, ESCAPE_GROW_FACTOR(size));
-
 	while (i < size) {
 		org = i;
 		while (i < size && (esc = HTML_ESCAPE_TABLE[src[i]]) == 0)
 			i++;
 
-		if (i > org)
+		if (i > org) {
+			if (org == 0) {
+				if (i >= size) {
+					hoedown_buffer_put(ob, src, size);
+					return;
+				}
+
+				hoedown_buffer_grow(ob, ESCAPE_GROW_FACTOR(size));
+			}
+
 			hoedown_buffer_put(ob, src + org, i - org);
+		}
 
 		/* escaping */
 		if (i >= size)
