@@ -1,6 +1,6 @@
 LIBRARY HOEDOWN
 EXPORTS
-	hoedown_autolink_issafe
+	hoedown_autolink_is_safe
 	hoedown_autolink__www
 	hoedown_autolink__email
 	hoedown_autolink__url
@@ -27,7 +27,7 @@ EXPORTS
 	hoedown_version
 	hoedown_stack_free
 	hoedown_stack_grow
-	hoedown_stack_init
+	hoedown_stack_new
 	hoedown_stack_push
 	hoedown_stack_pop
 	hoedown_stack_top
