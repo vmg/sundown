@@ -9,12 +9,10 @@
 #define READ_UNIT 1024
 #define OUTPUT_UNIT 64
 
-/* main • main function, interfacing STDIO with the parser */
 int
 main(int argc, char **argv)
 {
 	struct hoedown_buffer *ib, *ob;
-	int ret;
 	FILE *in = stdin;
 
 	struct hoedown_callbacks callbacks;
@@ -25,17 +23,16 @@ main(int argc, char **argv)
 	if (argc > 1) {
 		in = fopen(argv[1], "r");
 		if (!in) {
-			fprintf(stderr,"Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
+			fprintf(stderr, "Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
 			return 1;
 		}
 	}
 
 	/* reading everything */
 	ib = hoedown_buffer_new(READ_UNIT);
-	hoedown_buffer_grow(ib, READ_UNIT);
-	while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
-		ib->size += ret;
+	while (!feof(in) && !ferror(in)) {
 		hoedown_buffer_grow(ib, ib->size + READ_UNIT);
+		ib->size += fread(ib->data + ib->size, 1, READ_UNIT, in);
 	}
 
 	if (in != stdin)
@@ -51,11 +48,11 @@ main(int argc, char **argv)
 	hoedown_markdown_free(markdown);
 
 	/* writing the result to stdout */
-	ret = fwrite(ob->data, 1, ob->size, stdout);
+	(void)fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
 	hoedown_buffer_release(ib);
 	hoedown_buffer_release(ob);
 
-	return (ret < 0) ? -1 : 0;
+	return ferror(stdout);
 }
