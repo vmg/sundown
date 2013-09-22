@@ -207,12 +207,13 @@ smartypants_cb__dash(struct hoedown_buffer *ob, struct smartypants_data *smrt, u
 static size_t
 smartypants_cb__amp(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
+	int len;
 	if (size >= 6 && memcmp(text, "&quot;", 6) == 0) {
 		if (smartypants_quotes(ob, previous_char, size >= 7 ? text[6] : 0, 'd', &smrt->in_dquote))
 			return 5;
 	}
 
-	int len = squote_len(text, size);
+	len = squote_len(text, size);
 	if (len > 0) {
 		return (len-1) + smartypants_squote(ob, smrt, previous_char, text+(len-1), size-(len-1), text, len);
 	}

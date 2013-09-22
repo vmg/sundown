@@ -1007,11 +1007,11 @@ char_link(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *dat
 	
 	/* footnote link */
 	if (rndr->ext_flags & HOEDOWN_EXT_FOOTNOTES && data[1] == '^') {
-		if (txt_e < 3)
-			goto cleanup;
-	
 		struct hoedown_buffer id = { 0, 0, 0, 0 };
 		struct footnote_ref *fr;
+
+		if (txt_e < 3)
+			goto cleanup;
 		
 		id.data = data + 2;
 		id.size = txt_e - 2;
@@ -1040,6 +1040,8 @@ char_link(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *dat
 
 	/* inline style link */
 	if (i < size && data[i] == '(') {
+		size_t nb_p;
+
 		/* skipping initial whitespace */
 		i++;
 
@@ -1050,7 +1052,7 @@ char_link(struct hoedown_buffer *ob, struct hoedown_markdown *rndr, uint8_t *dat
 
 		/* looking for link end: ' " ) */
 		/* Count the number of open parenthesis */
-		size_t nb_p = 0;
+		nb_p = 0;
 
 		while (i < size) {
 			if (data[i] == '\\') i += 2;
@@ -2766,11 +2768,12 @@ hoedown_markdown_new(
 void
 hoedown_markdown_render(struct hoedown_buffer *ob, const uint8_t *document, size_t doc_size, struct hoedown_markdown *md)
 {
-#define MARKDOWN_GROW(x) ((x) + ((x) >> 1))
 	static const char UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
 
 	struct hoedown_buffer *text;
 	size_t beg, end;
+
+	int footnotes_enabled;
 
 	text = hoedown_buffer_new(64);
 	if (!text)
@@ -2782,7 +2785,7 @@ hoedown_markdown_render(struct hoedown_buffer *ob, const uint8_t *document, size
 	/* reset the references table */
 	memset(&md->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
 	
-	int footnotes_enabled = md->ext_flags & HOEDOWN_EXT_FOOTNOTES;
+	footnotes_enabled = md->ext_flags & HOEDOWN_EXT_FOOTNOTES;
 	
 	/* reset the footnotes lists */
 	if (footnotes_enabled) {
@@ -2823,7 +2826,7 @@ hoedown_markdown_render(struct hoedown_buffer *ob, const uint8_t *document, size
 		}
 
 	/* pre-grow the output buffer to minimize allocations */
-	hoedown_buffer_grow(ob, MARKDOWN_GROW(text->size));
+	hoedown_buffer_grow(ob, text->size + (text->size >> 1));
 
 	/* second pass: actual rendering */
 	if (md->cb.doc_header)

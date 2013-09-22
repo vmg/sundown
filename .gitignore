@@ -1,5 +1,9 @@
 *.o
-libhoedown.so*
-hoedown
-smartypants
+*.obj
 *.exe
+hoedown
+hoedown.dll
+hoedown.exp
+hoedown.lib
+smartypants
+libhoedown.so*
