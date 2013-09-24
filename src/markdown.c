@@ -234,8 +234,8 @@ free_link_refs(struct link_ref **references)
 
 		while (r) {
 			next = r->next;
-			hoedown_buffer_release(r->link);
-			hoedown_buffer_release(r->title);
+			hoedown_buffer_free(r->link);
+			hoedown_buffer_free(r->title);
 			free(r);
 			r = next;
 		}
@@ -293,7 +293,7 @@ find_footnote_ref(struct footnote_list *list, uint8_t *name, size_t length)
 static void
 free_footnote_ref(struct footnote_ref *ref)
 {
-	hoedown_buffer_release(ref->contents);
+	hoedown_buffer_free(ref->contents);
 	free(ref);
 }
 
@@ -2771,7 +2771,7 @@ hoedown_markdown_new(
 void
 hoedown_markdown_render(struct hoedown_buffer *ob, const uint8_t *document, size_t doc_size, struct hoedown_markdown *md)
 {
-	static const char UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
+	static const uint8_t UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
 
 	struct hoedown_buffer *text;
 	size_t beg, end;
@@ -2851,7 +2851,7 @@ hoedown_markdown_render(struct hoedown_buffer *ob, const uint8_t *document, size
 		md->cb.doc_footer(ob, md->opaque);
 
 	/* clean-up */
-	hoedown_buffer_release(text);
+	hoedown_buffer_free(text);
 	free_link_refs(md->refs);
 	if (footnotes_enabled) {
 		free_footnote_list(&md->footnotes_found, 1);
@@ -2868,10 +2868,10 @@ hoedown_markdown_free(struct hoedown_markdown *md)
 	size_t i;
 
 	for (i = 0; i < (size_t)md->work_bufs[BUFFER_SPAN].asize; ++i)
-		hoedown_buffer_release(md->work_bufs[BUFFER_SPAN].item[i]);
+		hoedown_buffer_free(md->work_bufs[BUFFER_SPAN].item[i]);
 
 	for (i = 0; i < (size_t)md->work_bufs[BUFFER_BLOCK].asize; ++i)
-		hoedown_buffer_release(md->work_bufs[BUFFER_BLOCK].item[i]);
+		hoedown_buffer_free(md->work_bufs[BUFFER_BLOCK].item[i]);
 
 	hoedown_stack_free(&md->work_bufs[BUFFER_SPAN]);
 	hoedown_stack_free(&md->work_bufs[BUFFER_BLOCK]);
@@ -2882,7 +2882,7 @@ hoedown_markdown_free(struct hoedown_markdown *md)
 void
 hoedown_version(int *ver_major, int *ver_minor, int *ver_revision)
 {
-	*ver_major = HOEDOWN_VER_MAJOR;
-	*ver_minor = HOEDOWN_VER_MINOR;
-	*ver_revision = HOEDOWN_VER_REVISION;
+	*ver_major = HOEDOWN_VERSION_MAJOR;
+	*ver_minor = HOEDOWN_VERSION_MINOR;
+	*ver_revision = HOEDOWN_VERSION_REVISION;
 }

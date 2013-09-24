@@ -1,7 +1,5 @@
-CFLAGS = -c -g -O3 -Wall -Werror -Wsign-compare -Isrc
-LDFLAGS = -g -O3 -Wall -Werror
+CFLAGS = -c -g -O3 -Wall -Wextra -Wno-unused-parameter -Isrc
 
-# MingW/Cygwin
 ifneq ($(OS),Windows_NT)
 	CFLAGS += -fPIC
 endif

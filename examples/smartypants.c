@@ -42,8 +42,8 @@ main(int argc, char **argv)
 	(void)fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
-	hoedown_buffer_release(ib);
-	hoedown_buffer_release(ob);
+	hoedown_buffer_free(ib);
+	hoedown_buffer_free(ob);
 
 	return ferror(stdout);
 }

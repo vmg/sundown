@@ -15,12 +15,10 @@ struct hoedown_stack {
 	size_t asize;
 };
 
+int hoedown_stack_new(struct hoedown_stack *, size_t);
 void hoedown_stack_free(struct hoedown_stack *);
 int hoedown_stack_grow(struct hoedown_stack *, size_t);
-int hoedown_stack_new(struct hoedown_stack *, size_t);
-
 int hoedown_stack_push(struct hoedown_stack *, void *);
-
 void *hoedown_stack_pop(struct hoedown_stack *);
 void *hoedown_stack_top(struct hoedown_stack *);
 

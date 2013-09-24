@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 enum {
-	HOEDOWN_AUTOLINK_SHORT_DOMAINS = (1 << 0),
+	HOEDOWN_AUTOLINK_SHORT_DOMAINS = (1 << 0)
 };
 
 int

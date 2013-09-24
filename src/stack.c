@@ -3,6 +3,32 @@
 #include <string.h>
 
 int
+hoedown_stack_new(struct hoedown_stack *st, size_t initial_size)
+{
+	st->item = NULL;
+	st->size = 0;
+	st->asize = 0;
+
+	if (!initial_size)
+		initial_size = 8;
+
+	return hoedown_stack_grow(st, initial_size);
+}
+
+void
+hoedown_stack_free(struct hoedown_stack *st)
+{
+	if (!st)
+		return;
+
+	free(st->item);
+
+	st->item = NULL;
+	st->size = 0;
+	st->asize = 0;
+}
+
+int
 hoedown_stack_grow(struct hoedown_stack *st, size_t new_size)
 {
 	void **new_st;
@@ -26,30 +52,14 @@ hoedown_stack_grow(struct hoedown_stack *st, size_t new_size)
 	return 0;
 }
 
-void
-hoedown_stack_free(struct hoedown_stack *st)
-{
-	if (!st)
-		return;
-
-	free(st->item);
-
-	st->item = NULL;
-	st->size = 0;
-	st->asize = 0;
-}
-
 int
-hoedown_stack_new(struct hoedown_stack *st, size_t initial_size)
+hoedown_stack_push(struct hoedown_stack *st, void *item)
 {
-	st->item = NULL;
-	st->size = 0;
-	st->asize = 0;
+	if (hoedown_stack_grow(st, st->size * 2) < 0)
+		return -1;
 
-	if (!initial_size)
-		initial_size = 8;
-
-	return hoedown_stack_grow(st, initial_size);
+	st->item[st->size++] = item;
+	return 0;
 }
 
 void *
@@ -59,16 +69,6 @@ hoedown_stack_pop(struct hoedown_stack *st)
 		return NULL;
 
 	return st->item[--st->size];
-}
-
-int
-hoedown_stack_push(struct hoedown_stack *st, void *item)
-{
-	if (hoedown_stack_grow(st, st->size * 2) < 0)
-		return -1;
-
-	st->item[st->size++] = item;
-	return 0;
 }
 
 void *

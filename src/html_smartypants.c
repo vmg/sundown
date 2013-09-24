@@ -66,9 +66,11 @@ word_boundary(uint8_t c)
 	return c == 0 || isspace(c) || ispunct(c);
 }
 
-// If 'text' begins with any kind of single quote (e.g. "'" or "&apos;" etc.),
-// returns the length of the sequence of characters that makes up the single-
-// quote.  Otherwise, returns zero.
+/*
+	If 'text' begins with any kind of single quote (e.g. "'" or "&apos;" etc.),
+	returns the length of the sequence of characters that makes up the single-
+	quote.  Otherwise, returns zero.
+*/
 static size_t
 squote_len(const uint8_t *text, size_t size)
 {
@@ -85,7 +87,7 @@ squote_len(const uint8_t *text, size_t size)
 	return 0;
 }
 
-// Converts " or ' at very beginning or end of a word to left or right quote
+/* Converts " or ' at very beginning or end of a word to left or right quote */
 static int
 smartypants_quotes(struct hoedown_buffer *ob, uint8_t previous_char, uint8_t next_char, uint8_t quote, int *is_open)
 {
@@ -103,10 +105,12 @@ smartypants_quotes(struct hoedown_buffer *ob, uint8_t previous_char, uint8_t nex
 	return 1;
 }
 
-// Converts ' to left or right single quote; but the initial ' might be in
-// different forms, e.g. &apos; or &#39; or &#x27;.
-// 'squote_text' points to the original single quote, and 'squote_size' is its length.
-// 'text' points at the last character of the single-quote, e.g. ' or ;
+/*
+	Converts ' to left or right single quote; but the initial ' might be in
+	different forms, e.g. &apos; or &#39; or &#x27;.
+	'squote_text' points to the original single quote, and 'squote_size' is its length.
+	'text' points at the last character of the single-quote, e.g. ' or ;
+*/
 static size_t
 smartypants_squote(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size,
 				   const uint8_t *squote_text, size_t squote_size)
@@ -115,21 +119,21 @@ smartypants_squote(struct hoedown_buffer *ob, struct smartypants_data *smrt, uin
 		uint8_t t1 = tolower(text[1]);
 		size_t next_squote_len = squote_len(text+1, size-1);
 
-		// convert '' to &ldquo; or &rdquo;
+		/* convert '' to &ldquo; or &rdquo; */
 		if (next_squote_len > 0) {
 			uint8_t next_char = (size > 1+next_squote_len) ? text[1+next_squote_len] : 0;
 			if (smartypants_quotes(ob, previous_char, next_char, 'd', &smrt->in_dquote))
 				return next_squote_len;
 		}
 
-		// Tom's, isn't, I'm, I'd
+		/* Tom's, isn't, I'm, I'd */
 		if ((t1 == 's' || t1 == 't' || t1 == 'm' || t1 == 'd') &&
 			(size == 3 || word_boundary(text[2]))) {
 			BUFPUTSL(ob, "&rsquo;");
 			return 0;
 		}
 
-		// you're, you'll, you've
+		/* you're, you'll, you've */
 		if (size >= 3) {
 			uint8_t t2 = tolower(text[2]);
 
@@ -150,14 +154,14 @@ smartypants_squote(struct hoedown_buffer *ob, struct smartypants_data *smrt, uin
 	return 0;
 }
 
-// Converts ' to left or right single quote.
+/* Converts ' to left or right single quote. */
 static size_t
 smartypants_cb__squote(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
 	return smartypants_squote(ob, smrt, previous_char, text, size, text, 1);
 }
 
-// Converts (c), (r), (tm)
+/* Converts (c), (r), (tm) */
 static size_t
 smartypants_cb__parens(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
@@ -185,7 +189,7 @@ smartypants_cb__parens(struct hoedown_buffer *ob, struct smartypants_data *smrt,
 	return 0;
 }
 
-// Converts "--" to em-dash, etc.
+/* Converts "--" to em-dash, etc. */
 static size_t
 smartypants_cb__dash(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
@@ -203,7 +207,7 @@ smartypants_cb__dash(struct hoedown_buffer *ob, struct smartypants_data *smrt, u
 	return 0;
 }
 
-// Converts &quot; etc.
+/* Converts &quot; etc. */
 static size_t
 smartypants_cb__amp(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
@@ -225,7 +229,7 @@ smartypants_cb__amp(struct hoedown_buffer *ob, struct smartypants_data *smrt, ui
 	return 0;
 }
 
-// Converts "..." to ellipsis
+/* Converts "..." to ellipsis */
 static size_t
 smartypants_cb__period(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
@@ -243,7 +247,7 @@ smartypants_cb__period(struct hoedown_buffer *ob, struct smartypants_data *smrt,
 	return 0;
 }
 
-// Converts `` to opening double quote
+/* Converts `` to opening double quote */
 static size_t
 smartypants_cb__backtick(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
@@ -256,7 +260,7 @@ smartypants_cb__backtick(struct hoedown_buffer *ob, struct smartypants_data *smr
 	return 0;
 }
 
-// Converts 1/2, 1/4, 3/4
+/* Converts 1/2, 1/4, 3/4 */
 static size_t
 smartypants_cb__number(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
@@ -289,7 +293,7 @@ smartypants_cb__number(struct hoedown_buffer *ob, struct smartypants_data *smrt,
 	return 0;
 }
 
-// Converts " to left or right double quote
+/* Converts " to left or right double quote */
 static size_t
 smartypants_cb__dquote(struct hoedown_buffer *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {

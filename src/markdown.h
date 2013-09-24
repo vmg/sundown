@@ -11,9 +11,9 @@ extern "C" {
 #endif
 
 #define HOEDOWN_VERSION "0.0.1"
-#define HOEDOWN_VER_MAJOR 0
-#define HOEDOWN_VER_MINOR 0
-#define HOEDOWN_VER_REVISION 1
+#define HOEDOWN_VERSION_MAJOR 0
+#define HOEDOWN_VERSION_MINOR 0
+#define HOEDOWN_VERSION_REVISION 1
 
 /********************
  * TYPE DEFINITIONS *
@@ -21,9 +21,9 @@ extern "C" {
 
 /* hoedown_autolink - type of autolink */
 enum hoedown_autolink {
-	HOEDOWN_AUTOLINK_NONE,	/* used internally when it is not an autolink*/
-	HOEDOWN_AUTOLINK_NORMAL,		/* normal http/http/ftp/mailto/etc link */
-	HOEDOWN_AUTOLINK_EMAIL,			/* e-mail link without explit mailto: */
+	HOEDOWN_AUTOLINK_NONE,		/* used internally when it is not an autolink*/
+	HOEDOWN_AUTOLINK_NORMAL,	/* normal http/http/ftp/mailto/etc link */
+	HOEDOWN_AUTOLINK_EMAIL		/* e-mail link without explit mailto: */
 };
 
 enum hoedown_tableflags {
@@ -101,7 +101,7 @@ struct hoedown_markdown;
 
 /* list/listitem flags */
 #define HOEDOWN_LIST_ORDERED	1
-#define HOEDOWN_LI_BLOCK	2  /* <li> containing block data */
+#define HOEDOWN_LI_BLOCK		2	/* <li> containing block data */
 
 /**********************
  * EXPORTED FUNCTIONS *

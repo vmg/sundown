@@ -11,7 +11,7 @@ EXPORTS
 	hoedown_buffer_put
 	hoedown_buffer_puts
 	hoedown_buffer_putc
-	hoedown_buffer_release
+	hoedown_buffer_free
 	hoedown_buffer_reset
 	hoedown_buffer_slurp
 	hoedown_buffer_printf
