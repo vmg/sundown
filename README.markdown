@@ -1,4 +1,13 @@
-﻿Sundown
+﻿**2012-11-09: Sundown is deprecated and no longer under development.**
+
+You may use [Hoedown](https://github.com/hoedown/hoedown) instead, which is
+a continuation of this project and incorporates many improvements and features,
+a better API and documentation.
+
+----
+----
+
+Sundown
 =======
 
 `Sundown` is a Markdown parser based on the original code of the
