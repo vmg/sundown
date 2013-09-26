@@ -1,5 +1,9 @@
 *.o
-libsundown.so*
-sundown
-smartypants
+*.obj
 *.exe
+hoedown
+hoedown.dll
+hoedown.exp
+hoedown.lib
+smartypants
+libhoedown.so*
