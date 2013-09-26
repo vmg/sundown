@@ -528,7 +528,7 @@ rndr_footnotes(struct hoedown_buffer *ob, const struct hoedown_buffer *text, voi
 
 	if (ob->size) hoedown_buffer_putc(ob, '\n');
 	BUFPUTSL(ob, "<div class=\"footnotes\">\n");
-	BUFPUTSL(ob, (USE_XHTML(options) ? "<hr/>\n" : "<hr>\n"));
+	hoedown_buffer_puts(ob, USE_XHTML(options) ? "<hr/>\n" : "<hr>\n");
 	BUFPUTSL(ob, "<ol>\n");
 	
 	if (text)
