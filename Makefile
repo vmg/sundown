@@ -48,9 +48,9 @@ test: hoedown
 # Housekeeping
 
 clean:
-	$(RM) -f src/*.o examples/*.o
-	$(RM) -f libhoedown.so libhoedown.so.1 hoedown smartypants
-	$(RM) -f hoedown.exe smartypants.exe
+	$(RM) src/*.o examples/*.o
+	$(RM) libhoedown.so libhoedown.so.1 hoedown smartypants
+	$(RM) hoedown.exe smartypants.exe
 
 # Generic object compilations
 

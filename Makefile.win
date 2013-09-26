@@ -25,7 +25,9 @@ smartypants.exe: examples\smartypants.obj $(HOEDOWN_SRC)
 # Housekeeping
 
 clean:
-	del $(HOEDOWN_SRC) hoedown.dll hoedown.exe hoedown.exp hoedown.lib smartypants.exe
+	del $(HOEDOWN_SRC)
+	del hoedown.dll hoedown.exp hoedown.lib
+	del hoedown.exe smartypants.exe
 
 # Generic object compilations
 
