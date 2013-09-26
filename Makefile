@@ -26,6 +26,9 @@ libhoedown.so: libhoedown.so.1
 libhoedown.so.1: $(HOEDOWN_SRC)
 	$(CC) $(LDFLAGS) -shared $^ -o $@
 
+libhoedown.a: $(HOEDOWN_SRC)
+	$(AR) rcs libhoedown.a $^
+
 # Executables
 
 hoedown: examples/hoedown.o $(HOEDOWN_SRC)
@@ -49,8 +52,8 @@ test: hoedown
 
 clean:
 	$(RM) src/*.o examples/*.o
-	$(RM) libhoedown.so libhoedown.so.1 hoedown smartypants
-	$(RM) hoedown.exe smartypants.exe
+	$(RM) libhoedown.so libhoedown.so.1 libhoedown.a
+	$(RM) hoedown smartypants hoedown.exe smartypants.exe
 
 # Generic object compilations
 
