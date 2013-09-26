@@ -1,20 +1,3 @@
-/*
- * Copyright (c) 2011, Vicent Marti
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-#include "buffer.h"
 #include "autolink.h"
 
 #include <string.h>
@@ -27,7 +10,7 @@
 #endif
 
 int
-sd_autolink_issafe(const uint8_t *link, size_t link_len)
+hoedown_autolink_is_safe(const uint8_t *link, size_t link_len)
 {
 	static const size_t valid_uris_count = 5;
 	static const char *valid_uris[] = {
@@ -61,7 +44,7 @@ autolink_delim(uint8_t *data, size_t link_end, size_t max_rewind, size_t size)
 		}
 
 	while (link_end > 0) {
-		if (strchr("?!.,", data[link_end - 1]) != NULL)
+		if (strchr("?!.,:", data[link_end - 1]) != NULL)
 			link_end--;
 
 		else if (data[link_end - 1] == ';') {
@@ -141,7 +124,7 @@ check_domain(uint8_t *data, size_t size, int allow_short)
 		return 0;
 
 	for (i = 1; i < size - 1; ++i) {
-		if (data[i] == '.') np++;
+		if (strchr(".:", data[i]) != NULL) np++;
 		else if (!isalnum(data[i]) && data[i] != '-') break;
 	}
 
@@ -159,9 +142,9 @@ check_domain(uint8_t *data, size_t size, int allow_short)
 }
 
 size_t
-sd_autolink__www(
+hoedown_autolink__www(
 	size_t *rewind_p,
-	struct buf *link,
+	struct hoedown_buffer *link,
 	uint8_t *data,
 	size_t max_rewind,
 	size_t size,
@@ -188,16 +171,16 @@ sd_autolink__www(
 	if (link_end == 0)
 		return 0;
 
-	bufput(link, data, link_end);
+	hoedown_buffer_put(link, data, link_end);
 	*rewind_p = 0;
 
 	return (int)link_end;
 }
 
 size_t
-sd_autolink__email(
+hoedown_autolink__email(
 	size_t *rewind_p,
-	struct buf *link,
+	struct hoedown_buffer *link,
 	uint8_t *data,
 	size_t max_rewind,
 	size_t size,
@@ -207,7 +190,7 @@ sd_autolink__email(
 	int nb = 0, np = 0;
 
 	for (rewind = 0; rewind < max_rewind; ++rewind) {
-		uint8_t c = data[-rewind - 1];
+		uint8_t c = data[0-rewind - 1];
 
 		if (isalnum(c))
 			continue;
@@ -244,16 +227,16 @@ sd_autolink__email(
 	if (link_end == 0)
 		return 0;
 
-	bufput(link, data - rewind, link_end + rewind);
+	hoedown_buffer_put(link, data - rewind, link_end + rewind);
 	*rewind_p = rewind;
 
 	return link_end;
 }
 
 size_t
-sd_autolink__url(
+hoedown_autolink__url(
 	size_t *rewind_p,
-	struct buf *link,
+	struct hoedown_buffer *link,
 	uint8_t *data,
 	size_t max_rewind,
 	size_t size,
@@ -264,10 +247,10 @@ sd_autolink__url(
 	if (size < 4 || data[1] != '/' || data[2] != '/')
 		return 0;
 
-	while (rewind < max_rewind && isalpha(data[-rewind - 1]))
+	while (rewind < max_rewind && isalpha(data[0-rewind - 1]))
 		rewind++;
 
-	if (!sd_autolink_issafe(data - rewind, size + rewind))
+	if (!hoedown_autolink_is_safe(data - rewind, size + rewind))
 		return 0;
 
 	link_end = strlen("://");
@@ -275,7 +258,7 @@ sd_autolink__url(
 	domain_len = check_domain(
 		data + link_end,
 		size - link_end,
-		flags & SD_AUTOLINK_SHORT_DOMAINS);
+		flags & HOEDOWN_AUTOLINK_SHORT_DOMAINS);
 
 	if (domain_len == 0)
 		return 0;
@@ -289,9 +272,8 @@ sd_autolink__url(
 	if (link_end == 0)
 		return 0;
 
-	bufput(link, data - rewind, link_end + rewind);
+	hoedown_buffer_put(link, data - rewind, link_end + rewind);
 	*rewind_p = rewind;
 
 	return link_end;
 }
-

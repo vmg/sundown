@@ -1,0 +1,9 @@
+language: c
+compiler:
+  - clang
+  - gcc
+perl:
+  - "5.12"
+before_install:
+ - sudo apt-get install -qq tidy
+script: make test

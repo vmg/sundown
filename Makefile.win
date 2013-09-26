@@ -1,33 +1,35 @@
+CC = cl
+CFLAGS = /O2 /EHsc /I"src/"
 
-CFLAGS=/O2 /EHsc /I"src/" /I"examples"/ /I"html"/
-CC=cl
-
-SUNDOWN_SRC=\
-	src\markdown.obj \
-	src\stack.obj \
-	src\buffer.obj \
+HOEDOWN_SRC = \
 	src\autolink.obj \
-	html\html.obj \
-	html\html_smartypants.obj \
-	html\houdini_html_e.obj \
-	html\houdini_href_e.obj
+	src\buffer.obj \
+	src\escape.obj \
+	src\html.obj \
+	src\html_blocks.obj \
+	src\html_smartypants.obj \
+	src\markdown.obj \
+	src\stack.obj
 
-all: sundown.dll sundown.exe
+all: hoedown.dll hoedown.exe smartypants.exe
 
-sundown.dll: $(SUNDOWN_SRC) sundown.def
-	$(CC) $(SUNDOWN_SRC) sundown.def /link /DLL $(LDFLAGS) /out:$@
+hoedown.dll: $(HOEDOWN_SRC) hoedown.def
+	$(CC) $(HOEDOWN_SRC) hoedown.def /link /DLL $(LDFLAGS) /out:$@
 
-sundown.exe: examples\sundown.obj $(SUNDOWN_SRC)
-	$(CC) examples\sundown.obj $(SUNDOWN_SRC) /link $(LDFLAGS) /out:$@
+hoedown.exe: examples\hoedown.obj $(HOEDOWN_SRC)
+	$(CC) examples\hoedown.obj $(HOEDOWN_SRC) /link $(LDFLAGS) /out:$@
 
-# housekeeping
+smartypants.exe: examples\smartypants.obj $(HOEDOWN_SRC)
+	$(CC) examples\smartypants.obj $(HOEDOWN_SRC) /link $(LDFLAGS) /out:$@
+
+# Housekeeping
+
 clean:
-	del $(SUNDOWN_SRC)
-	del sundown.dll sundown.exe
-	del sundown.exp sundown.lib
+	del $(HOEDOWN_SRC)
+	del hoedown.dll hoedown.exp hoedown.lib
+	del hoedown.exe smartypants.exe
 
-# generic object compilations
+# Generic object compilations
 
 .c.obj:
 	$(CC) $(CFLAGS) /c $< /Fo$@
-
