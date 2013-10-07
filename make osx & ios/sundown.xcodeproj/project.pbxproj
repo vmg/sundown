@@ -1,0 +1,807 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B435F98D15900B200025CC49 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B435F98C15900B200025CC49 /* Cocoa.framework */; };
+		B435F99715900B200025CC49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B435F99515900B200025CC49 /* InfoPlist.strings */; };
+		B435F99915900B200025CC49 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B435F99815900B200025CC49 /* main.m */; };
+		B435F99D15900B200025CC49 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B435F99B15900B200025CC49 /* Credits.rtf */; };
+		B435F9A015900B200025CC49 /* SundownAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B435F99F15900B200025CC49 /* SundownAppDelegate.m */; };
+		B435F9A315900B200025CC49 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B435F9A115900B200025CC49 /* MainMenu.xib */; };
+		B435F9A815900E3D0025CC49 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B435F9A715900E3D0025CC49 /* WebKit.framework */; };
+		B435F9B315900EA10025CC49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B435F9B215900EA10025CC49 /* UIKit.framework */; };
+		B435F9B515900EA10025CC49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B435F9B415900EA10025CC49 /* Foundation.framework */; };
+		B435F9B715900EA10025CC49 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B435F9B615900EA10025CC49 /* CoreGraphics.framework */; };
+		B435F9BD15900EA10025CC49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B435F9BB15900EA10025CC49 /* InfoPlist.strings */; };
+		B435F9BF15900EA10025CC49 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B435F9BE15900EA10025CC49 /* main.m */; };
+		B435F9C315900EA10025CC49 /* SundownAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B435F9C215900EA10025CC49 /* SundownAppDelegate.m */; };
+		B435F9C615900EA10025CC49 /* SundownViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B435F9C515900EA10025CC49 /* SundownViewController.m */; };
+		B435F9C915900EA10025CC49 /* SundownViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = B435F9C715900EA10025CC49 /* SundownViewController_iPhone.xib */; };
+		B435F9CC15900EA10025CC49 /* SundownViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = B435F9CA15900EA10025CC49 /* SundownViewController_iPad.xib */; };
+		B435F9D115900ED20025CC49 /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = B435F9D015900ED20025CC49 /* README.markdown */; };
+		B435FA0C159015B00025CC49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B435F9B415900EA10025CC49 /* Foundation.framework */; };
+		B435FA30159017310025CC49 /* libsundown-OSX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B435FA281590170F0025CC49 /* libsundown-OSX.dylib */; };
+		B435FA31159017380025CC49 /* libsundown-IOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B435FA0B159015B00025CC49 /* libsundown-IOS.a */; };
+		B4ED465A159017CB00584F23 /* houdini.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4648159017CB00584F23 /* houdini.h */; };
+		B4ED465B159017CB00584F23 /* houdini_href_e.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4649159017CB00584F23 /* houdini_href_e.c */; };
+		B4ED465C159017CB00584F23 /* houdini_href_e.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4649159017CB00584F23 /* houdini_href_e.c */; };
+		B4ED465D159017CB00584F23 /* houdini_html_e.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464A159017CB00584F23 /* houdini_html_e.c */; };
+		B4ED465E159017CB00584F23 /* houdini_html_e.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464A159017CB00584F23 /* houdini_html_e.c */; };
+		B4ED465F159017CB00584F23 /* html.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464B159017CB00584F23 /* html.c */; };
+		B4ED4660159017CB00584F23 /* html.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464B159017CB00584F23 /* html.c */; };
+		B4ED4661159017CB00584F23 /* html.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED464C159017CB00584F23 /* html.h */; };
+		B4ED4662159017CB00584F23 /* html_smartypants.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464D159017CB00584F23 /* html_smartypants.c */; };
+		B4ED4663159017CB00584F23 /* html_smartypants.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464D159017CB00584F23 /* html_smartypants.c */; };
+		B4ED4664159017CB00584F23 /* autolink.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464F159017CB00584F23 /* autolink.c */; };
+		B4ED4665159017CB00584F23 /* autolink.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED464F159017CB00584F23 /* autolink.c */; };
+		B4ED4666159017CB00584F23 /* autolink.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4650159017CB00584F23 /* autolink.h */; };
+		B4ED4667159017CB00584F23 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4651159017CB00584F23 /* buffer.c */; };
+		B4ED4668159017CB00584F23 /* buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4651159017CB00584F23 /* buffer.c */; };
+		B4ED4669159017CB00584F23 /* buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4652159017CB00584F23 /* buffer.h */; };
+		B4ED466A159017CB00584F23 /* html_blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4653159017CB00584F23 /* html_blocks.h */; };
+		B4ED466B159017CB00584F23 /* markdown.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4654159017CB00584F23 /* markdown.c */; };
+		B4ED466C159017CB00584F23 /* markdown.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4654159017CB00584F23 /* markdown.c */; };
+		B4ED466D159017CB00584F23 /* markdown.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4655159017CB00584F23 /* markdown.h */; };
+		B4ED466E159017CB00584F23 /* stack.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4656159017CB00584F23 /* stack.c */; };
+		B4ED466F159017CB00584F23 /* stack.c in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4656159017CB00584F23 /* stack.c */; };
+		B4ED4670159017CB00584F23 /* stack.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4657159017CB00584F23 /* stack.h */; };
+		B4ED4671159017CB00584F23 /* SundownWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = B4ED4658159017CB00584F23 /* SundownWrapper.h */; };
+		B4ED4672159017CB00584F23 /* SundownWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4659159017CB00584F23 /* SundownWrapper.m */; };
+		B4ED4673159017CB00584F23 /* SundownWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = B4ED4659159017CB00584F23 /* SundownWrapper.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B435FA2C159017200025CC49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B435F951159005F30025CC49 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B435FA0A159015B00025CC49;
+			remoteInfo = "sundown-IOS";
+		};
+		B435FA2E159017270025CC49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B435F951159005F30025CC49 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B435FA271590170F0025CC49;
+			remoteInfo = "sundown-OSX";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B435FA09159015B00025CC49 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B435F98915900B200025CC49 /* Demo-OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Demo-OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B435F98C15900B200025CC49 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B435F98F15900B200025CC49 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B435F99015900B200025CC49 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		B435F99115900B200025CC49 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B435F99415900B200025CC49 /* Demo-OSX-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-OSX-Info.plist"; sourceTree = "<group>"; };
+		B435F99615900B200025CC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B435F99815900B200025CC49 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B435F99A15900B200025CC49 /* Demo-OSX-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Demo-OSX-Prefix.pch"; sourceTree = "<group>"; };
+		B435F99C15900B200025CC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		B435F99E15900B200025CC49 /* SundownAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SundownAppDelegate.h; sourceTree = "<group>"; };
+		B435F99F15900B200025CC49 /* SundownAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SundownAppDelegate.m; sourceTree = "<group>"; };
+		B435F9A215900B200025CC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		B435F9A715900E3D0025CC49 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		B435F9B015900EA10025CC49 /* Demo-IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Demo-IOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B435F9B215900EA10025CC49 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		B435F9B415900EA10025CC49 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		B435F9B615900EA10025CC49 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
+		B435F9BA15900EA10025CC49 /* Demo-IOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Demo-IOS-Info.plist"; sourceTree = "<group>"; };
+		B435F9BC15900EA10025CC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B435F9BE15900EA10025CC49 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B435F9C015900EA10025CC49 /* Demo-IOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Demo-IOS-Prefix.pch"; sourceTree = "<group>"; };
+		B435F9C115900EA10025CC49 /* SundownAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SundownAppDelegate.h; sourceTree = "<group>"; };
+		B435F9C215900EA10025CC49 /* SundownAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SundownAppDelegate.m; sourceTree = "<group>"; };
+		B435F9C415900EA10025CC49 /* SundownViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SundownViewController.h; sourceTree = "<group>"; };
+		B435F9C515900EA10025CC49 /* SundownViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SundownViewController.m; sourceTree = "<group>"; };
+		B435F9C815900EA10025CC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SundownViewController_iPhone.xib; sourceTree = "<group>"; };
+		B435F9CB15900EA10025CC49 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/SundownViewController_iPad.xib; sourceTree = "<group>"; };
+		B435F9D015900ED20025CC49 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
+		B435FA0B159015B00025CC49 /* libsundown-IOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libsundown-IOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B435FA281590170F0025CC49 /* libsundown-OSX.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libsundown-OSX.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4ED4648159017CB00584F23 /* houdini.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = houdini.h; sourceTree = "<group>"; };
+		B4ED4649159017CB00584F23 /* houdini_href_e.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = houdini_href_e.c; sourceTree = "<group>"; };
+		B4ED464A159017CB00584F23 /* houdini_html_e.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = houdini_html_e.c; sourceTree = "<group>"; };
+		B4ED464B159017CB00584F23 /* html.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = html.c; sourceTree = "<group>"; };
+		B4ED464C159017CB00584F23 /* html.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = html.h; sourceTree = "<group>"; };
+		B4ED464D159017CB00584F23 /* html_smartypants.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = html_smartypants.c; sourceTree = "<group>"; };
+		B4ED464F159017CB00584F23 /* autolink.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = autolink.c; sourceTree = "<group>"; };
+		B4ED4650159017CB00584F23 /* autolink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autolink.h; sourceTree = "<group>"; };
+		B4ED4651159017CB00584F23 /* buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = buffer.c; sourceTree = "<group>"; };
+		B4ED4652159017CB00584F23 /* buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
+		B4ED4653159017CB00584F23 /* html_blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = html_blocks.h; sourceTree = "<group>"; };
+		B4ED4654159017CB00584F23 /* markdown.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = markdown.c; sourceTree = "<group>"; };
+		B4ED4655159017CB00584F23 /* markdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = markdown.h; sourceTree = "<group>"; };
+		B4ED4656159017CB00584F23 /* stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stack.c; sourceTree = "<group>"; };
+		B4ED4657159017CB00584F23 /* stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stack.h; sourceTree = "<group>"; };
+		B4ED4658159017CB00584F23 /* SundownWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SundownWrapper.h; sourceTree = "<group>"; };
+		B4ED4659159017CB00584F23 /* SundownWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SundownWrapper.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B435F98615900B200025CC49 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435FA30159017310025CC49 /* libsundown-OSX.dylib in Frameworks */,
+				B435F9A815900E3D0025CC49 /* WebKit.framework in Frameworks */,
+				B435F98D15900B200025CC49 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435F9AD15900EA10025CC49 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435FA31159017380025CC49 /* libsundown-IOS.a in Frameworks */,
+				B435F9B315900EA10025CC49 /* UIKit.framework in Frameworks */,
+				B435F9B515900EA10025CC49 /* Foundation.framework in Frameworks */,
+				B435F9B715900EA10025CC49 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435FA08159015B00025CC49 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435FA0C159015B00025CC49 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435FA251590170F0025CC49 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B435F94F159005F30025CC49 = {
+			isa = PBXGroup;
+			children = (
+				B435FA1B159015DF0025CC49 /* Sundown C Library */,
+				B435F99215900B200025CC49 /* Demo-OSX */,
+				B435F9B815900EA10025CC49 /* Demo-IOS */,
+				B435F98B15900B200025CC49 /* Frameworks */,
+				B435F95B159005F30025CC49 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B435F95B159005F30025CC49 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B435F98915900B200025CC49 /* Demo-OSX.app */,
+				B435F9B015900EA10025CC49 /* Demo-IOS.app */,
+				B435FA0B159015B00025CC49 /* libsundown-IOS.a */,
+				B435FA281590170F0025CC49 /* libsundown-OSX.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B435F98B15900B200025CC49 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B435F9A715900E3D0025CC49 /* WebKit.framework */,
+				B435F98C15900B200025CC49 /* Cocoa.framework */,
+				B435F9B215900EA10025CC49 /* UIKit.framework */,
+				B435F9B415900EA10025CC49 /* Foundation.framework */,
+				B435F9B615900EA10025CC49 /* CoreGraphics.framework */,
+				B435F98E15900B200025CC49 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B435F98E15900B200025CC49 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B435F98F15900B200025CC49 /* AppKit.framework */,
+				B435F99015900B200025CC49 /* CoreData.framework */,
+				B435F99115900B200025CC49 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		B435F99215900B200025CC49 /* Demo-OSX */ = {
+			isa = PBXGroup;
+			children = (
+				B435F99E15900B200025CC49 /* SundownAppDelegate.h */,
+				B435F99F15900B200025CC49 /* SundownAppDelegate.m */,
+				B435F9A115900B200025CC49 /* MainMenu.xib */,
+				B435F99315900B200025CC49 /* Supporting Files */,
+			);
+			path = "Demo-OSX";
+			sourceTree = "<group>";
+		};
+		B435F99315900B200025CC49 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B435F99415900B200025CC49 /* Demo-OSX-Info.plist */,
+				B435F99515900B200025CC49 /* InfoPlist.strings */,
+				B435F99815900B200025CC49 /* main.m */,
+				B435F99A15900B200025CC49 /* Demo-OSX-Prefix.pch */,
+				B435F99B15900B200025CC49 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B435F9B815900EA10025CC49 /* Demo-IOS */ = {
+			isa = PBXGroup;
+			children = (
+				B435F9C115900EA10025CC49 /* SundownAppDelegate.h */,
+				B435F9C215900EA10025CC49 /* SundownAppDelegate.m */,
+				B435F9C415900EA10025CC49 /* SundownViewController.h */,
+				B435F9C515900EA10025CC49 /* SundownViewController.m */,
+				B435F9C715900EA10025CC49 /* SundownViewController_iPhone.xib */,
+				B435F9CA15900EA10025CC49 /* SundownViewController_iPad.xib */,
+				B435F9B915900EA10025CC49 /* Supporting Files */,
+			);
+			path = "Demo-IOS";
+			sourceTree = "<group>";
+		};
+		B435F9B915900EA10025CC49 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B435F9D015900ED20025CC49 /* README.markdown */,
+				B435F9BA15900EA10025CC49 /* Demo-IOS-Info.plist */,
+				B435F9BB15900EA10025CC49 /* InfoPlist.strings */,
+				B435F9BE15900EA10025CC49 /* main.m */,
+				B435F9C015900EA10025CC49 /* Demo-IOS-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B435FA1B159015DF0025CC49 /* Sundown C Library */ = {
+			isa = PBXGroup;
+			children = (
+				B4ED4647159017CB00584F23 /* html */,
+				B4ED464E159017CB00584F23 /* src */,
+			);
+			name = "Sundown C Library";
+			sourceTree = "<group>";
+		};
+		B4ED4647159017CB00584F23 /* html */ = {
+			isa = PBXGroup;
+			children = (
+				B4ED4648159017CB00584F23 /* houdini.h */,
+				B4ED4649159017CB00584F23 /* houdini_href_e.c */,
+				B4ED464A159017CB00584F23 /* houdini_html_e.c */,
+				B4ED464B159017CB00584F23 /* html.c */,
+				B4ED464C159017CB00584F23 /* html.h */,
+				B4ED464D159017CB00584F23 /* html_smartypants.c */,
+			);
+			name = html;
+			path = ../html;
+			sourceTree = "<group>";
+		};
+		B4ED464E159017CB00584F23 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				B4ED464F159017CB00584F23 /* autolink.c */,
+				B4ED4650159017CB00584F23 /* autolink.h */,
+				B4ED4651159017CB00584F23 /* buffer.c */,
+				B4ED4652159017CB00584F23 /* buffer.h */,
+				B4ED4653159017CB00584F23 /* html_blocks.h */,
+				B4ED4654159017CB00584F23 /* markdown.c */,
+				B4ED4655159017CB00584F23 /* markdown.h */,
+				B4ED4656159017CB00584F23 /* stack.c */,
+				B4ED4657159017CB00584F23 /* stack.h */,
+				B4ED4658159017CB00584F23 /* SundownWrapper.h */,
+				B4ED4659159017CB00584F23 /* SundownWrapper.m */,
+			);
+			name = src;
+			path = ../src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B435FA261590170F0025CC49 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4ED465A159017CB00584F23 /* houdini.h in Headers */,
+				B4ED4661159017CB00584F23 /* html.h in Headers */,
+				B4ED4666159017CB00584F23 /* autolink.h in Headers */,
+				B4ED4669159017CB00584F23 /* buffer.h in Headers */,
+				B4ED466A159017CB00584F23 /* html_blocks.h in Headers */,
+				B4ED466D159017CB00584F23 /* markdown.h in Headers */,
+				B4ED4670159017CB00584F23 /* stack.h in Headers */,
+				B4ED4671159017CB00584F23 /* SundownWrapper.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B435F98815900B200025CC49 /* Demo-OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B435F9A415900B200025CC49 /* Build configuration list for PBXNativeTarget "Demo-OSX" */;
+			buildPhases = (
+				B435F98515900B200025CC49 /* Sources */,
+				B435F98615900B200025CC49 /* Frameworks */,
+				B435F98715900B200025CC49 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B435FA2F159017270025CC49 /* PBXTargetDependency */,
+			);
+			name = "Demo-OSX";
+			productName = "Demo-OSX";
+			productReference = B435F98915900B200025CC49 /* Demo-OSX.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B435F9AF15900EA10025CC49 /* Demo-IOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B435F9CD15900EA10025CC49 /* Build configuration list for PBXNativeTarget "Demo-IOS" */;
+			buildPhases = (
+				B435F9AC15900EA10025CC49 /* Sources */,
+				B435F9AD15900EA10025CC49 /* Frameworks */,
+				B435F9AE15900EA10025CC49 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B435FA2D159017200025CC49 /* PBXTargetDependency */,
+			);
+			name = "Demo-IOS";
+			productName = "Demo-IOS";
+			productReference = B435F9B015900EA10025CC49 /* Demo-IOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B435FA0A159015B00025CC49 /* sundown-IOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B435FA14159015B00025CC49 /* Build configuration list for PBXNativeTarget "sundown-IOS" */;
+			buildPhases = (
+				B435FA07159015B00025CC49 /* Sources */,
+				B435FA08159015B00025CC49 /* Frameworks */,
+				B435FA09159015B00025CC49 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "sundown-IOS";
+			productName = "sundown-IOS";
+			productReference = B435FA0B159015B00025CC49 /* libsundown-IOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B435FA271590170F0025CC49 /* sundown-OSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B435FA291590170F0025CC49 /* Build configuration list for PBXNativeTarget "sundown-OSX" */;
+			buildPhases = (
+				B435FA241590170F0025CC49 /* Sources */,
+				B435FA251590170F0025CC49 /* Frameworks */,
+				B435FA261590170F0025CC49 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "sundown-OSX";
+			productName = "sundown-OSX";
+			productReference = B435FA281590170F0025CC49 /* libsundown-OSX.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B435F951159005F30025CC49 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = sundown;
+			};
+			buildConfigurationList = B435F954159005F30025CC49 /* Build configuration list for PBXProject "sundown" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B435F94F159005F30025CC49;
+			productRefGroup = B435F95B159005F30025CC49 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B435F98815900B200025CC49 /* Demo-OSX */,
+				B435F9AF15900EA10025CC49 /* Demo-IOS */,
+				B435FA0A159015B00025CC49 /* sundown-IOS */,
+				B435FA271590170F0025CC49 /* sundown-OSX */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B435F98715900B200025CC49 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435F99715900B200025CC49 /* InfoPlist.strings in Resources */,
+				B435F99D15900B200025CC49 /* Credits.rtf in Resources */,
+				B435F9A315900B200025CC49 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435F9AE15900EA10025CC49 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435F9BD15900EA10025CC49 /* InfoPlist.strings in Resources */,
+				B435F9C915900EA10025CC49 /* SundownViewController_iPhone.xib in Resources */,
+				B435F9CC15900EA10025CC49 /* SundownViewController_iPad.xib in Resources */,
+				B435F9D115900ED20025CC49 /* README.markdown in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B435F98515900B200025CC49 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435F99915900B200025CC49 /* main.m in Sources */,
+				B435F9A015900B200025CC49 /* SundownAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435F9AC15900EA10025CC49 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B435F9BF15900EA10025CC49 /* main.m in Sources */,
+				B435F9C315900EA10025CC49 /* SundownAppDelegate.m in Sources */,
+				B435F9C615900EA10025CC49 /* SundownViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435FA07159015B00025CC49 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4ED465B159017CB00584F23 /* houdini_href_e.c in Sources */,
+				B4ED465D159017CB00584F23 /* houdini_html_e.c in Sources */,
+				B4ED465F159017CB00584F23 /* html.c in Sources */,
+				B4ED4662159017CB00584F23 /* html_smartypants.c in Sources */,
+				B4ED4664159017CB00584F23 /* autolink.c in Sources */,
+				B4ED4667159017CB00584F23 /* buffer.c in Sources */,
+				B4ED466B159017CB00584F23 /* markdown.c in Sources */,
+				B4ED466E159017CB00584F23 /* stack.c in Sources */,
+				B4ED4672159017CB00584F23 /* SundownWrapper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B435FA241590170F0025CC49 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B4ED465C159017CB00584F23 /* houdini_href_e.c in Sources */,
+				B4ED465E159017CB00584F23 /* houdini_html_e.c in Sources */,
+				B4ED4660159017CB00584F23 /* html.c in Sources */,
+				B4ED4663159017CB00584F23 /* html_smartypants.c in Sources */,
+				B4ED4665159017CB00584F23 /* autolink.c in Sources */,
+				B4ED4668159017CB00584F23 /* buffer.c in Sources */,
+				B4ED466C159017CB00584F23 /* markdown.c in Sources */,
+				B4ED466F159017CB00584F23 /* stack.c in Sources */,
+				B4ED4673159017CB00584F23 /* SundownWrapper.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B435FA2D159017200025CC49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B435FA0A159015B00025CC49 /* sundown-IOS */;
+			targetProxy = B435FA2C159017200025CC49 /* PBXContainerItemProxy */;
+		};
+		B435FA2F159017270025CC49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B435FA271590170F0025CC49 /* sundown-OSX */;
+			targetProxy = B435FA2E159017270025CC49 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		B435F99515900B200025CC49 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B435F99615900B200025CC49 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B435F99B15900B200025CC49 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B435F99C15900B200025CC49 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		B435F9A115900B200025CC49 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B435F9A215900B200025CC49 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		B435F9BB15900EA10025CC49 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B435F9BC15900EA10025CC49 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B435F9C715900EA10025CC49 /* SundownViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B435F9C815900EA10025CC49 /* en */,
+			);
+			name = SundownViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		B435F9CA15900EA10025CC49 /* SundownViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B435F9CB15900EA10025CC49 /* en */,
+			);
+			name = SundownViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B435F95C159005F30025CC49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN_OBJCPP_ARC_ABI = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = "";
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = macosx10.7;
+			};
+			name = Debug;
+		};
+		B435F95D159005F30025CC49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_WARN_OBJCPP_ARC_ABI = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = "";
+				SDKROOT = macosx10.7;
+			};
+			name = Release;
+		};
+		B435F9A515900B200025CC49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo-OSX/Demo-OSX-Prefix.pch";
+				INFOPLIST_FILE = "Demo-OSX/Demo-OSX-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B435F9A615900B200025CC49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo-OSX/Demo-OSX-Prefix.pch";
+				INFOPLIST_FILE = "Demo-OSX/Demo-OSX-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		B435F9CE15900EA10025CC49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode45-DP1.app/Contents/Developer/Library/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo-IOS/Demo-IOS-Prefix.pch";
+				INFOPLIST_FILE = "Demo-IOS/Demo-IOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B435F9CF15900EA10025CC49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode45-DP1.app/Contents/Developer/Library/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Demo-IOS/Demo-IOS-Prefix.pch";
+				INFOPLIST_FILE = "Demo-IOS/Demo-IOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		B435FA15159015B00025CC49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DSTROOT = /tmp/sundown_IOS.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode45-DP1.app/Contents/Developer/Library/Frameworks\"",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B435FA16159015B00025CC49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DSTROOT = /tmp/sundown_IOS.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode45-DP1.app/Contents/Developer/Library/Frameworks\"",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B435FA2A1590170F0025CC49 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				EXECUTABLE_PREFIX = lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B435FA2B1590170F0025CC49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				EXECUTABLE_PREFIX = lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B435F954159005F30025CC49 /* Build configuration list for PBXProject "sundown" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B435F95C159005F30025CC49 /* Debug */,
+				B435F95D159005F30025CC49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B435F9A415900B200025CC49 /* Build configuration list for PBXNativeTarget "Demo-OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B435F9A515900B200025CC49 /* Debug */,
+				B435F9A615900B200025CC49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B435F9CD15900EA10025CC49 /* Build configuration list for PBXNativeTarget "Demo-IOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B435F9CE15900EA10025CC49 /* Debug */,
+				B435F9CF15900EA10025CC49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B435FA14159015B00025CC49 /* Build configuration list for PBXNativeTarget "sundown-IOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B435FA15159015B00025CC49 /* Debug */,
+				B435FA16159015B00025CC49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B435FA291590170F0025CC49 /* Build configuration list for PBXNativeTarget "sundown-OSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B435FA2A1590170F0025CC49 /* Debug */,
+				B435FA2B1590170F0025CC49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B435F951159005F30025CC49 /* Project object */;
+}
