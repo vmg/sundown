@@ -75,7 +75,7 @@ void bufput(struct buf *, const void *, size_t);
 void bufputs(struct buf *, const char *);
 
 /* bufputc: appends a single char to a buffer */
-void bufputc(struct buf *, int);
+void bufputc(struct buf *, uint8_t);
 
 /* bufrelease: decrease the reference count and free the buffer if needed */
 void bufrelease(struct buf *);
