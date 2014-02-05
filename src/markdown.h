@@ -56,6 +56,7 @@ enum mkd_extensions {
 	MKDEXT_FENCED_CODE = (1 << 2),
 	MKDEXT_AUTOLINK = (1 << 3),
 	MKDEXT_STRIKETHROUGH = (1 << 4),
+	MKDEXT_INS = (1 << 5),
 	MKDEXT_SPACE_HEADERS = (1 << 6),
 	MKDEXT_SUPERSCRIPT = (1 << 7),
 	MKDEXT_LAX_SPACING = (1 << 8),
@@ -87,6 +88,7 @@ struct sd_callbacks {
 	int (*link)(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *content, void *opaque);
 	int (*raw_html_tag)(struct buf *ob, const struct buf *tag, void *opaque);
 	int (*triple_emphasis)(struct buf *ob, const struct buf *text, void *opaque);
+	int (*ins)(struct buf *ob, const struct buf *text, void *opaque);
 	int (*strikethrough)(struct buf *ob, const struct buf *text, void *opaque);
 	int (*superscript)(struct buf *ob, const struct buf *text, void *opaque);
 
@@ -97,6 +99,9 @@ struct sd_callbacks {
 	/* header and footer */
 	void (*doc_header)(struct buf *ob, void *opaque);
 	void (*doc_footer)(struct buf *ob, void *opaque);
+
+    /* outliner */
+    void (*outline)(struct buf *ob, void *opaque);
 };
 
 struct sd_markdown;

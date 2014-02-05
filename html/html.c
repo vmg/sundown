@@ -27,6 +27,7 @@
 
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
+
 int
 sdhtml_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname)
 {
@@ -170,6 +171,18 @@ rndr_codespan(struct buf *ob, const struct buf *text, void *opaque)
 }
 
 static int
+rndr_ins(struct buf *ob, const struct buf *text, void *opaque)
+{
+	if (!text || !text->size)
+		return 0;
+
+	BUFPUTSL(ob, "<ins>");
+	bufput(ob, text->data, text->size);
+	BUFPUTSL(ob, "</ins>");
+	return 1;
+}
+
+static int
 rndr_strikethrough(struct buf *ob, const struct buf *text, void *opaque)
 {
 	if (!text || !text->size)
@@ -214,11 +227,23 @@ rndr_linebreak(struct buf *ob, void *opaque)
 
 static void
 rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
-{
+{   
 	struct html_renderopt *options = opaque;
 
 	if (ob->size)
 		bufputc(ob, '\n');
+        
+    if (options->flags & HTML_OUTLINE) 
+    {
+        if(options->outline_data.current_level >= level)
+        {
+            BUFPUTSL(ob, "</section>");
+            options->outline_data.open_section_count--;
+        }
+        bufprintf(ob, "<section class=\"section%d\">\n", level);
+        options->outline_data.open_section_count++;
+        options->outline_data.current_level = level;
+    }
 
 	if (options->flags & HTML_TOC)
 		bufprintf(ob, "<h%d id=\"toc_%d\">", level, options->toc_data.header_count++);
@@ -487,6 +512,21 @@ rndr_normal_text(struct buf *ob, const struct buf *text, void *opaque)
 }
 
 static void
+rndr_finalize(struct buf *ob, void *opaque)
+{
+    struct html_renderopt *options = opaque;
+    int i;
+        
+    if (options->flags & HTML_OUTLINE) {
+        for(i = 0; i < options->outline_data.open_section_count; i++)
+        {
+            BUFPUTSL(ob, "\n</section>\n");
+        }
+    }
+}
+
+
+static void
 toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 {
 	struct html_renderopt *options = opaque;
@@ -564,6 +604,7 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 		toc_link,
 		NULL,
 		rndr_triple_emphasis,
+		rndr_ins,
 		rndr_strikethrough,
 		rndr_superscript,
 
@@ -572,6 +613,8 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 
 		NULL,
 		toc_finalize,
+
+		NULL,
 	};
 
 	memset(options, 0x0, sizeof(struct html_renderopt));
@@ -605,6 +648,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_link,
 		rndr_raw_html,
 		rndr_triple_emphasis,
+		rndr_ins,
 		rndr_strikethrough,
 		rndr_superscript,
 
@@ -613,6 +657,8 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 
 		NULL,
 		NULL,
+
+		NULL, //rndr_finalize,
 	};
 
 	/* Prepare the options pointer */
@@ -621,6 +667,14 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
+
+	if (render_flags & HTML_OUTLINE)
+    {
+		callbacks->outline = rndr_finalize;
+
+        options->outline_data.open_section_count = 0;
+        options->outline_data.current_level = 0;
+    }
 
 	if (render_flags & HTML_SKIP_IMAGES)
 		callbacks->image = NULL;

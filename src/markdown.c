@@ -526,6 +526,7 @@ parse_emph2(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 	int r;
 
 	render_method = (c == '~') ? rndr->cb.strikethrough : rndr->cb.double_emphasis;
+	render_method = (c == '+') ? rndr->cb.ins : render_method;
 
 	if (!render_method)
 		return 0;
@@ -603,8 +604,9 @@ char_emphasis(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 
 	if (size > 2 && data[1] != c) {
 		/* whitespace cannot follow an opening emphasis;
+		 * ins only takes two characters '++'
 		 * strikethrough only takes two characters '~~' */
-		if (c == '~' || _isspace(data[1]) || (ret = parse_emph1(ob, rndr, data + 1, size - 1, c)) == 0)
+		if (c == '+' || c == '~' || _isspace(data[1]) || (ret = parse_emph1(ob, rndr, data + 1, size - 1, c)) == 0)
 			return 0;
 
 		return ret + 1;
@@ -618,7 +620,7 @@ char_emphasis(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t of
 	}
 
 	if (size > 4 && data[1] == c && data[2] == c && data[3] != c) {
-		if (c == '~' || _isspace(data[3]) || (ret = parse_emph3(ob, rndr, data + 3, size - 3, c)) == 0)
+		if (c == '+' || c == '~' || _isspace(data[3]) || (ret = parse_emph3(ob, rndr, data + 3, size - 3, c)) == 0)
 			return 0;
 
 		return ret + 3;
@@ -2420,6 +2422,8 @@ sd_markdown_new(
 		md->active_char['_'] = MD_CHAR_EMPHASIS;
 		if (extensions & MKDEXT_STRIKETHROUGH)
 			md->active_char['~'] = MD_CHAR_EMPHASIS;
+		if (extensions & MKDEXT_INS)
+			md->active_char['+'] = MD_CHAR_EMPHASIS;
 	}
 
 	if (md->cb.codespan)
@@ -2519,6 +2523,9 @@ sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, str
 
 	if (md->cb.doc_footer)
 		md->cb.doc_footer(ob, md->opaque);
+
+	if (md->cb.outline)
+		md->cb.outline(ob, md->opaque);
 
 	/* clean-up */
 	bufrelease(text);
