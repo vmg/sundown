@@ -76,6 +76,7 @@ by our awesome contributors.
 - [MoonShine](https://github.com/brandonc/moonshine) (.NET)
 - [PHP-Sundown](https://github.com/chobie/php-sundown) (PHP)
 - [Sundown.net](https://github.com/txdv/sundown.net) (.NET)
+- [sundown-ffi](https://github.com/torch/sundown-ffi) (LuaJIT)
 
 Help us
 -------
