@@ -42,7 +42,7 @@ void src_map_release(src_map *map);
 src_map *src_map_new_submap(const src_map *map, const range *r);
 
 /* src_map_new_tail: create map from tail of map */
-src_map *src_map_new_tail(const src_map *map, size_t index);
+src_map *src_map_new_tail(const src_map *map, size_t index, size_t maxlen);
     
 /* src_map_append: append range to source map */
 void src_map_append(src_map *map, const range *r);

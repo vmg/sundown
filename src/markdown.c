@@ -1659,6 +1659,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i = 0;
 	int in_empty = 0, has_inside_empty = 0, in_fence = 0;
     src_map *item_map = NULL;
+    src_map *whole_item_map = NULL;
     
 	/* keeping track of the first indentation prefix */
 	while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
@@ -1793,7 +1794,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
             
             /* source map */
             if (item_map)
-                sublist_map = src_map_new_tail(item_map, sublist);
+                sublist_map = src_map_new_tail(item_map, sublist, -1);
             
 			parse_block(inter, rndr, work->data + sublist, work->size - sublist, sublist_map);
             
@@ -1811,7 +1812,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
             
             /* source map */
             if (item_map)
-                sublist_map = src_map_new_tail(item_map, sublist);
+                sublist_map = src_map_new_tail(item_map, sublist, -1);
 
 			parse_block(inter, rndr, work->data + sublist, work->size - sublist, sublist_map);
             
@@ -1828,10 +1829,15 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
     
     /* source map */
     if (item_map) {
+        range r = { orgpre, beg };
+
+        whole_item_map = src_map_new_tail(map, r.loc, r.len);
+        
         if (rndr->cb.block_did_parse)
-            rndr->cb.block_did_parse(item_map, data + i, size - i, rndr->opaque);
+            rndr->cb.block_did_parse(whole_item_map, data + i, size - i, rndr->opaque);
         
         src_map_release(item_map);
+        src_map_release(whole_item_map);
     }
 
 	rndr_popbuf(rndr, BUFFER_SPAN);
