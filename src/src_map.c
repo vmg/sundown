@@ -188,10 +188,7 @@ src_map_new_tail(const src_map *map, size_t index, size_t maxlen)
     
     /* create new map */
     new_map = src_map_new();
-	for (i = first_item; i < map->size; ++i) {
-        
-        if (count >= maxlen)
-            break;
+	for (i = first_item; i < map->size && count < maxlen; ++i) {
 
         range *it = (range *)map->item[i];
         range *add_range = range_new(it->loc, it->len);
