@@ -125,7 +125,7 @@ src_map_append(src_map *map, const range *r)
         /* check continuous range */
         range *last_range = (range *)map->item[map->size - 1];
         if (r->loc <= last_range->loc + last_range->len) {
-            last_range->len += r->len - (last_range->len - r->loc);
+            last_range->len += r->len - (last_range->loc + last_range->len - r->loc);
             return;
         }
     }
