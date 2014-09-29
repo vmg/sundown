@@ -2622,9 +2622,12 @@ sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, str
 		beg += 3;
 
 	while (beg < doc_size) /* iterating over lines */
-		if (is_ref(document, beg, doc_size, &end, md->refs))
+		if (is_ref(document, beg, doc_size, &end, md->refs)) {
+			if (end > beg)
+				expand_tabs(text, document + beg, end - beg);
+
 			beg = end;
-		else { /* skipping to the next line */
+		} else { /* skipping to the next line */
 			end = beg;
 			while (end < doc_size && document[end] != '\n' && document[end] != '\r')
 				end++;
