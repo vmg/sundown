@@ -28,7 +28,7 @@ extern "C" {
 
 #if defined(_MSC_VER)
 #define __attribute__(x)
-#define inline
+#define inline __inline
 #endif
 
 typedef enum {

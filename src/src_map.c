@@ -124,8 +124,8 @@ src_map_append(src_map *map, const range *r)
     if (map->size) {
         /* check continuous range */
         range *last_range = (range *)map->item[map->size - 1];
-        if (r->loc == last_range->loc + last_range->len) {
-            last_range->len += r->len;
+        if (r->loc <= last_range->loc + last_range->len) {
+            last_range->len += r->len - (last_range->loc + last_range->len - r->loc);
             return;
         }
     }
@@ -161,11 +161,12 @@ src_map_location(const src_map *map, size_t index)
 
 /* create new src_map from index onward */
 src_map *
-src_map_new_tail(const src_map *map, size_t index)
+src_map_new_tail(const src_map *map, size_t index, size_t maxlen)
 {
     size_t i = 0;
     size_t cur = 0;
     size_t first_item = -1;
+    size_t count = 0;
     src_map *new_map = NULL;
     
     if (!map ||
@@ -187,13 +188,16 @@ src_map_new_tail(const src_map *map, size_t index)
     
     /* create new map */
     new_map = src_map_new();
-    
-	for (i = first_item; i < map->size; ++i) {
-        
+	for (i = first_item; i < map->size && count < maxlen; ++i) {
+
         range *it = (range *)map->item[i];
         range *add_range = range_new(it->loc, it->len);
-        stack_push(new_map, add_range);
         
+        if (count + it->len > maxlen) {
+            add_range->len = maxlen - count;
+        }
+        count += it->len;
+        stack_push(new_map, add_range);   
     }
     
     return new_map;

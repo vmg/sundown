@@ -27,6 +27,7 @@ CC=gcc
 SUNDOWN_SRC=\
 	src/markdown.o \
 	src/stack.o \
+	src/src_map.o \
 	src/buffer.o \
 	src/autolink.o \
 	html/html.o \
@@ -44,7 +45,7 @@ libsundown.so:	libsundown.so.1
 	ln -f -s $^ $@
 
 libsundown.so.1: $(SUNDOWN_SRC)
-	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
+	$(CC) $(LDFLAGS) -shared $^ -o $@
 
 # executables
 
