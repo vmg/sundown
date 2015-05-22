@@ -1769,6 +1769,12 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 
 		in_empty = 0;
 
+        /* If there is a line which is a heading it isn't a line item. */
+        if (end > beg && !in_empty && data[beg] == '#') {
+            *flags |= MKD_LI_END;
+            break;
+        }
+
         /* source map */
         if (map) {
             size_t line_cur = src_map_location(map, beg + i);
