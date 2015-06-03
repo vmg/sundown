@@ -1769,8 +1769,8 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 
 		in_empty = 0;
 
-        /* If there is a line which is a heading it isn't a line item. */
-        if (end > beg && !in_empty && data[beg] == '#') {
+        /* If there is a line which is a heading, it isn't a line item. */
+        if (end > beg && !in_empty && (data[beg] == '#' || is_next_headerline(data + beg, end - beg) != 0)) {
             *flags |= MKD_LI_END;
             break;
         }
