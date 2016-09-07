@@ -1656,7 +1656,7 @@ static size_t
 parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size, int *flags, const src_map *map)
 {
 	struct buf *work = 0, *inter = 0;
-	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i = 0;
+	size_t beg = 0, end, sublist = 0, orgpre = 0, i = 0;
 	int in_empty = 0, has_inside_empty = 0, in_fence = 0;
     src_map *item_map = NULL;
     src_map *whole_item_map = NULL;
@@ -1717,8 +1717,6 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		while (i < 4 && beg + i < end && data[beg + i] == ' ')
 			i++;
 
-		pre = i;
-
 		if (rndr->ext_flags & MKDEXT_FENCED_CODE) {
 			if (is_codefence(data + beg + i, end - beg - i, NULL) != 0)
 				in_fence = !in_fence;
@@ -1744,7 +1742,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 			if (in_empty)
 				has_inside_empty = 1;
 
-			if (pre == orgpre) /* the following item must have */
+			if (i <= orgpre) /* the following item must have */
 				break;             /* the same indentation */
 
 			if (!sublist)
@@ -1753,7 +1751,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		/* joining only indented stuff after empty lines;
 		 * note that now we only require 1 space of indentation
 		 * to continue a list */
-		else if (in_empty && pre == 0) {
+		else if (in_empty && i == 0) {
 			*flags |= MKD_LI_END;
 			break;
 		}
@@ -1770,7 +1768,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 		in_empty = 0;
 
         /* If there is a line which is a heading, it isn't a line item. */
-        if (end > beg && !in_empty && (data[beg] == '#' || is_next_headerline(data + beg, end - beg) != 0)) {
+        if (end > beg && (data[beg] == '#' || is_next_headerline(data + beg, end - beg) != 0)) {
             *flags |= MKD_LI_END;
             break;
         }
