@@ -1786,7 +1786,7 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	}
 
 	/* render of li contents */
-	if (has_inside_empty)
+	//if (has_inside_empty)
 		*flags |= MKD_LI_BLOCK;
 
 	if (*flags & MKD_LI_BLOCK) {
