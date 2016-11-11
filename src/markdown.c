@@ -1786,8 +1786,20 @@ parse_listitem(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 	}
 
 	/* render of li contents */
+
+    /* There were following condition in original code
+     * we need different result of parsing (instead of span we need block)
+     *
 	if (has_inside_empty)
 		*flags |= MKD_LI_BLOCK;
+    *  
+    *  So we replace condition directly by set flag.
+    *  
+    *  It should be better make some refactoring of this code,
+    *  but we wold like to avoid bigger changes in code
+    *  for future backporting of changes from upstream repo
+    */
+	*flags |= MKD_LI_BLOCK;
 
 	if (*flags & MKD_LI_BLOCK) {
 		/* intermediate render of block li */
