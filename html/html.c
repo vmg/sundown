@@ -381,6 +381,35 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 }
 
 static int
+rndr_video(struct buf *ob, const struct buf **links,  const int link_count, const struct buf *alt, const struct buf* poster, void *opaque)
+{
+	int i;
+	if (!links || link_count <= 0) return 0;
+
+	BUFPUTSL(ob, "<video poster=\"");
+	if (poster && poster->size)
+		escape_href(ob, poster->data, poster->size);
+	BUFPUTSL(ob, "\" controls>");
+
+	for (i = 0; i < link_count; i++) {
+		if (!links[i] || !links[i]->data) break;
+
+		BUFPUTSL(ob, "<source src=\"");
+		escape_href(ob, links[i]->data, links[i]->size);
+		BUFPUTSL(ob, "\" />");
+	}
+
+	if (alt && alt->data) {
+		BUFPUTSL(ob, "<p>");
+		escape_html(ob, alt->data, alt->size);
+		BUFPUTSL(ob, "</p>");
+	}
+
+	bufputs(ob, "</video>");
+	return 1;
+}
+
+static int
 rndr_raw_html(struct buf *ob, const struct buf *text, void *opaque)
 {
 	struct html_renderopt *options = opaque;
@@ -561,6 +590,7 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
 		rndr_emphasis,
 		NULL,
 		NULL,
+		NULL,
 		toc_link,
 		NULL,
 		rndr_triple_emphasis,
@@ -601,6 +631,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_double_emphasis,
 		rndr_emphasis,
 		rndr_image,
+		rndr_video,
 		rndr_linebreak,
 		rndr_link,
 		rndr_raw_html,
@@ -622,8 +653,10 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 	/* Prepare the callbacks */
 	memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
 
-	if (render_flags & HTML_SKIP_IMAGES)
+	if (render_flags & HTML_SKIP_IMAGES) {
 		callbacks->image = NULL;
+		callbacks->video = NULL;
+	}
 
 	if (render_flags & HTML_SKIP_LINKS) {
 		callbacks->link = NULL;

@@ -59,6 +59,7 @@ enum mkd_extensions {
 	MKDEXT_SPACE_HEADERS = (1 << 6),
 	MKDEXT_SUPERSCRIPT = (1 << 7),
 	MKDEXT_LAX_SPACING = (1 << 8),
+	MKDEXT_VIDEO_TAG = (1 << 9),
 };
 
 /* sd_callbacks - functions for rendering parsed data */
@@ -83,6 +84,7 @@ struct sd_callbacks {
 	int (*double_emphasis)(struct buf *ob, const struct buf *text, void *opaque);
 	int (*emphasis)(struct buf *ob, const struct buf *text, void *opaque);
 	int (*image)(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *alt, void *opaque);
+	int (*video)(struct buf *ob, const struct buf **links, const int link_count, const struct buf *alt, const struct buf* poster, void *opaque);
 	int (*linebreak)(struct buf *ob, void *opaque);
 	int (*link)(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *content, void *opaque);
 	int (*raw_html_tag)(struct buf *ob, const struct buf *tag, void *opaque);
