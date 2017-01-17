@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+# verify arguments
+INCLUDE_DIR=$1
+if [ -z "$INCLUDE_DIR" ] || [ ! -d "$INCLUDE_DIR" ]
+then
+   echo "Usage: sync-to <include-dir> <src-dir>"
+   exit 1
+fi
+
+SOURCE_DIR=$2
+if [ -z "$INCLUDE_DIR" ] || [ ! -d "$SOURCE_DIR" ]
+then
+   echo "Usage: sync-to <include-dir> <src-dir>"
+   exit 1
+fi
+
+# checkout master and get version
+git checkout master
+git pull
+VERSION=`git rev-parse HEAD`
+
+# write version file
+echo "#define RSTUDIO_SUNDOWN_VERSION $VERSION" > $SOURCE_DIR/sundown_version.h
+
+# copy files
+SUNDOWN_DIR=`git rev-parse --show-toplevel`
+cp $SUNDOWN_DIR/src/autolink.h $INCLUDE_DIR
+cp $SUNDOWN_DIR/src/buffer.h $INCLUDE_DIR
+cp $SUNDOWN_DIR/src/markdown.h $INCLUDE_DIR
+cp $SUNDOWN_DIR/src/*.h $SOURCE_DIR
+cp $SUNDOWN_DIR/src/*.c $SOURCE_DIR
+cp $SUNDOWN_DIR/html/*.h $SOURCE_DIR
+cp $SUNDOWN_DIR/html/*.c $SOURCE_DIR
+
+
+
+

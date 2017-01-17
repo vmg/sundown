@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+# verify arguments
+RSTUDIO_DIR=$1
+if [ -z "$RSTUDIO_DIR" ] || [ ! -d "$RSTUDIO_DIR" ]
+then
+   echo "Usage: sync-to-rstudio <rstudio-dir>"
+   exit 1
+fi
+
+# sync to rstudio 
+RSTUDIO_SUNDOWN=$RSTUDIO_DIR/src/cpp/core/markdown/sundown
+./sync-to $RSTUDIO_SUNDOWN $RSTUDIO_SUNDOWN
+
+
+
