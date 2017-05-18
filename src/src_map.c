@@ -155,6 +155,9 @@ src_map_location(const src_map *map, size_t index)
         cur += it->len;
     }
 
+    if (index >= cur)
+      return cur;
+
  	assert(0);
     return -1;
 }
