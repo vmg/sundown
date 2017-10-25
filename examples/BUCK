@@ -1,0 +1,19 @@
+cxx_binary(
+  name = 'smartypants',
+  srcs = [
+    'smartypants.c',
+  ],
+  deps = [
+    '//:sundown',
+  ],
+)
+
+cxx_binary(
+  name = 'sundown',
+  srcs = [
+    'sundown.c',
+  ],
+  deps = [
+    '//:sundown',
+  ],
+)
