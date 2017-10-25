@@ -3,3 +3,8 @@ libsundown.so*
 sundown
 smartypants
 *.exe
+
+/.buckd/
+/buck-out/
+/buckaroo/
+.buckconfig.local

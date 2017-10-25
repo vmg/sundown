@@ -111,6 +111,22 @@ library, or to build the sample `sundown` executable, which is just a commandlin
 Markdown to XHTML parser. (If gcc gives you grief about `-fPIC`, e.g. with MinGW, try
 `make MFLAGS=` instead of just `make`.)
 
+Buck
+----
+
+`Sundown` can be built using Buck:
+
+```
+buck build :sundown
+```
+
+As can the examples:
+
+```
+buck run //examples/:smartypants
+buck run //examples/:sundown
+```
+
 License
 -------
 
