@@ -2,5 +2,5 @@
   ignore = .git, .buckd
 
 [cxx]
-  untracked_headers = error
+  untracked_headers = warn
   untracked_headers_whitelist = /usr/include/.*, /usr/local/Cellar/llvm/.*
